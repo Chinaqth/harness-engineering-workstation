@@ -1,0 +1,4 @@
+interface:
+  display_name: "Harness Audit"
+  short_description: "Audit AI engineering workflows and governance maturity"
+  default_prompt: "Use $harness-audit to audit this repository and propose prioritized improvements."
