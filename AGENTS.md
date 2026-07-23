@@ -1,34 +1,46 @@
-# AI 协作入口
+# AI Collaboration Entry Point
 
-本文件是索引，不是知识全集。只加载与当前任务有关的文档。
+This file is an index, not an encyclopedia. Load only the documents relevant to the current task.
 
-## 工作原则
+## Language Policy
 
-1. 先理解目标、影响范围和验收标准，再修改文件。
-2. 大型或高风险变更必须从 `changes/` 中的提案开始。
-3. 以仓库文件为长期记忆；不要把关键决策只留在聊天中。
-4. 自动化证据优先：测试、静态检查、构建结果和可复现步骤。
-5. 使用最小必要权限。删除、发布、权限变更、生产操作必须明确确认。
-6. 不掩盖失败，不伪造测试，不绕过质量门禁。
-7. 完成后更新相关文档和变更记录。
+English is the default language for all new or modified repository content, including:
 
-## 按需读取
+- Documentation and architecture records;
+- `SKILL.md` files, skill references, and skill UI metadata;
+- `AGENTS.md` files and other agent instructions;
+- Rules, workflows, templates, change proposals, and evaluation reports;
+- Pull request descriptions, commit messages, and code comments.
 
-| 任务 | 必读文件 |
+Use another language only when the user explicitly requests it or when preserving an authoritative source verbatim. Preserve non-English source material in `docs/reference/` with a locale suffix such as `.zh-CN.md`, and write derived guidance in English. Do not mix languages within the same generated document unless a translation example requires it.
+
+## Working Principles
+
+1. Understand the objective, impact surface, and acceptance criteria before editing files.
+2. Start medium, large, or high-risk changes with a proposal in `changes/`.
+3. Treat repository files as durable memory; do not leave important decisions only in chat.
+4. Prefer automated evidence: tests, static analysis, build results, and reproducible commands.
+5. Use the minimum necessary permission. Deletion, publication, access changes, and production operations require explicit authorization.
+6. Do not conceal failures, fabricate test results, or bypass quality gates.
+7. Update the relevant documentation and change record before completing work.
+
+## Read on Demand
+
+| Task | Required reading |
 | --- | --- |
-| 理解整体设计 | `docs/ARCHITECTURE.md` |
-| 规划复杂变更 | `workflows/3-plus-1.md`、`changes/README.md` |
-| 判断权限与审批 | `docs/GOVERNANCE.md`、`rules/CORE.md` |
-| 评估成熟度 | `docs/MATURITY_MODEL.md`、`skills/harness-audit/SKILL.md` |
-| 修改团队规范 | `docs/GOVERNANCE.md`，并创建变更提案 |
-| 追溯规范来源 | `docs/reference/original-harness-engineering-spec.md` |
+| Understand the overall design | `docs/ARCHITECTURE.md` |
+| Plan a complex change | `workflows/3-plus-1.md`, `changes/README.md` |
+| Decide permissions and approvals | `docs/GOVERNANCE.md`, `rules/CORE.md` |
+| Assess maturity | `docs/MATURITY_MODEL.md`, `skills/harness-audit/SKILL.md` |
+| Modify team policy | `docs/GOVERNANCE.md`, then create a change proposal |
+| Trace the original specification | `docs/reference/source-harness-engineering-spec.zh-CN.md` |
 
-## 完成定义
+## Definition of Done
 
-任务只有在以下条件满足时才算完成：
+A task is complete only when:
 
-- 验收标准逐项满足；
-- 相关自动化检查通过，或明确记录无法运行的原因；
-- 变更范围内没有已知 P0/P1 问题；
-- 文档、决策与实际行为一致；
-- 给出变更摘要、验证证据、剩余风险和回滚方式。
+- Every acceptance criterion is satisfied.
+- Relevant automated checks pass, or the reason they cannot run is recorded.
+- No known P0 or P1 issue remains within the change scope.
+- Documentation, decisions, and actual behavior agree.
+- The delivery includes a change summary, verification evidence, residual risks, and rollback guidance.

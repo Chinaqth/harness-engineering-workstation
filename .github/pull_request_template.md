@@ -1,18 +1,18 @@
-## 目标与范围
+## Objective and Scope
 
-## 关联变更提案
+## Related Change Proposal
 
-## 验收标准
+## Acceptance Criteria
 
 - [ ]
 
-## 验证证据
+## Verification Evidence
 
-## 风险、权限与数据影响
+## Risk, Permission, and Data Impact
 
-## 回滚方式
+## Rollback
 
-## 知识沉淀
+## Knowledge Institutionalization
 
-- [ ] 架构/规则/技能无需更新
-- [ ] 已更新相关长期文档
+- [ ] No architecture, rule, or skill update is required
+- [ ] Relevant durable documentation has been updated

@@ -1,15 +1,15 @@
-# 决策记录
+# Decision Record
 
 - Status: proposed
 - Date:
 - Decision owners:
 
-## 背景
+## Context
 
-## 备选方案
+## Options Considered
 
-## 决策
+## Decision
 
-## 影响
+## Consequences
 
-## 何时重新评估
+## Revisit When

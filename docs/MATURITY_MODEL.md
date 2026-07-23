@@ -1,44 +1,44 @@
-# Harness 成熟度模型
+# Harness Maturity Model
 
-## L0 — 临时协作
+## L0 — Ad Hoc
 
-- 主要依赖聊天历史和个人提示词；
-- 没有稳定规则、验收标准或审计证据。
+- Work depends primarily on chat history and individual prompts.
+- Stable rules, acceptance criteria, and audit evidence are absent.
 
-退出条件：建立入口文档、核心红线和基础检查。
+Exit criterion: establish an entry document, core red lines, and basic automated checks.
 
-## L1 — 可重复
+## L1 — Repeatable
 
-- 规则、Spec、模板进入 Git；
-- 复杂任务采用计划、实现、验证、归档闭环；
-- 构建、Lint、单元测试可重复运行。
+- Rules, specifications, and templates are versioned in Git.
+- Complex work follows a plan, implementation, verification, and archival loop.
+- Builds, linting, and unit tests run repeatably.
 
-退出条件：80% 的重要变更具备验收标准与自动验证。
+Exit criterion: at least 80% of material changes have acceptance criteria and automated verification.
 
-## L2 — 可治理
+## L2 — Governed
 
-- 权限与风险分级明确；
-- 关键变更有责任人、审批和回滚方案；
-- Skills、工具和知识来源有所有者；
-- 能持续统计返工、回滚、例外和检查稳定性。
+- Permission and risk classifications are explicit.
+- Critical changes have owners, approvals, and rollback plans.
+- Skills, tools, and knowledge sources have accountable owners.
+- Rework, rollback, exceptions, and check reliability are tracked continuously.
 
-退出条件：高风险变更可追溯，规则例外有到期治理。
+Exit criterion: high-risk changes are traceable and policy exceptions expire under active governance.
 
-## L3 — 可度量
+## L3 — Measured
 
-- 对 AI 任务集进行离线评估和回归；
-- 质量、周期、成本、可靠性有趋势数据；
-- 能按项目与任务类型识别薄弱环节。
+- AI task suites have offline evaluation and regression coverage.
+- Quality, lead time, cost, and reliability have trend data.
+- Weaknesses can be identified by project and task category.
 
-退出条件：模型、提示或技能升级前后能用同一评估集比较。
+Exit criterion: model, prompt, or skill upgrades can be compared against the same evaluation suite.
 
-## L4 — 自适应
+## L4 — Adaptive
 
-- Harness 能依据任务风险动态选择工具、上下文和审批；
-- 失败模式自动进入评估集；
-- 规则和技能通过受控实验持续优化；
-- 组织知识沉淀速度高于系统复杂度增长速度。
+- The harness selects tools, context, and approvals dynamically according to task risk.
+- New failure modes automatically enter evaluation suites.
+- Rules and skills improve through controlled experiments.
+- Organizational knowledge accumulates faster than system complexity grows.
 
-## 当前基线
+## Current Baseline
 
-本仓库 `v0.1` 目标为完整达到 L1，并为 L2 建立治理接口。不要在缺少真实使用数据时过早建设复杂平台。
+The `v0.1` goal is to fully reach L1 and establish governance interfaces for L2. Avoid building a complex platform before real usage data justifies it.

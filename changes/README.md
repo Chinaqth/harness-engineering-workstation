@@ -1,14 +1,14 @@
-# 变更提案
+# Change Proposals
 
-每个中大型变更使用一个目录：
+Create one directory for each medium or large change:
 
 ```text
 changes/<YYYYMMDD-short-name>/
 ├── requirements.md
 ├── task.md
-└── decision.md      # 有重要取舍时使用
+└── decision.md      # Use when an important trade-off is required
 ```
 
-状态使用：`draft`、`approved`、`implementing`、`evaluating`、`done`、`cancelled`。
+Allowed states are `draft`, `approved`, `implementing`, `evaluating`, `done`, and `cancelled`.
 
-完成后移动到 `changes/archive/<year>/`。小型 G0 变更可以直接通过 PR 描述记录，但仍需验收标准和验证证据。
+Move completed changes to `changes/archive/<year>/`. A small G0 change may be recorded directly in the pull request description, but it still requires acceptance criteria and verification evidence.

@@ -1,40 +1,40 @@
-# 工作基站架构
+# Workstation Architecture
 
-## 设计目标
+## Design Goal
 
-工作基站将模型能力转化为可重复、可治理的组织能力。它不绑定单一模型、IDE 或供应商，而是围绕六个稳定能力域建设。
+The workstation converts model capability into repeatable, governable organizational capability. It does not depend on a single model, IDE, or vendor. Instead, it is organized around six durable capability domains.
 
-## 六个能力域
+## Six Capability Domains
 
-| 能力域 | 仓库内载体 | 目标 |
+| Domain | Repository mechanism | Objective |
 | --- | --- | --- |
-| 上下文管理 | `AGENTS.md`、`docs/`、`changes/` | 让 AI 在正确时间获得最少且足够的信息 |
-| 工具系统 | `skills/`、外部连接清单 | 封装专业经验并安全连接真实系统 |
-| 执行编排 | `workflows/`、变更任务清单 | 让复杂工作可分解、可交接、可验收 |
-| 状态与记忆 | Git、Spec、Decision Record | 保持跨会话和跨人员的一致性 |
-| 评估与观测 | `scripts/`、CI、审计报告 | 用证据衡量质量、成本、可靠性 |
-| 约束与恢复 | `rules/`、审批边界、回滚方案 | 防止越界并降低失败恢复成本 |
+| Context architecture | `AGENTS.md`, `docs/`, `changes/` | Give AI the smallest sufficient context at the right time |
+| Tool system | `skills/`, external connection inventory | Package expertise and connect to real systems safely |
+| Execution orchestration | `workflows/`, change task lists | Make complex work decomposable, transferable, and verifiable |
+| State and memory | Git, specifications, decision records | Preserve consistency across sessions and contributors |
+| Evaluation and observability | `scripts/`, CI, audit reports | Measure quality, cost, and reliability with evidence |
+| Guardrails and recovery | `rules/`, approval boundaries, rollback plans | Prevent boundary violations and reduce recovery cost |
 
-## 信息分层
+## Information Layers
 
 ```text
-L0 入口：AGENTS.md
-  └─ L1 领域规范：architecture / governance / workflows / rules
-       └─ L2 任务上下文：changes/<change-id>/
-            └─ L3 深度参考：docs/reference/ 与 skill references
+L0 Entry point: AGENTS.md
+  └─ L1 Domain policies: architecture / governance / workflows / rules
+       └─ L2 Task context: changes/<change-id>/
+            └─ L3 Deep references: docs/reference/ and skill references
 ```
 
-默认只读 L0；根据任务进入 L1；只有正在处理对应变更时才加载 L2；需要证据或详细知识时再进入 L3。
+Read L0 by default. Enter L1 according to the task, load L2 only while working on that change, and consult L3 only when detailed knowledge or evidence is required.
 
-## 控制面与项目面
+## Control Plane and Project Plane
 
-- **控制面（本仓库）**：维护组织级默认规则、模板、技能、成熟度模型和审计标准。
-- **项目面（业务仓库）**：维护项目架构、业务 Spec、项目规则、测试与具体变更记录。
-- **同步原则**：控制面发布版本；项目显式选择版本并记录偏差，不自动覆盖项目定制。
+- **Control plane (this repository):** Organization defaults, templates, skills, maturity models, and audit standards.
+- **Project plane (product repositories):** Project architecture, domain specifications, project rules, tests, and concrete change records.
+- **Synchronization:** The control plane publishes versions. Projects explicitly adopt a version and record deviations; updates never silently overwrite project-specific policy.
 
-## 组织扩展原则
+## Scaling Principles
 
-- 规则分为组织默认、领域规则、项目规则，越靠近项目越具体，但不能削弱组织红线。
-- 技能按领域拥有者维护，必须有触发描述、输入输出约定和验证方法。
-- 每个自动化决策都应能追溯到规则、测试或人工批准。
-- 关键指标先从“是否有证据”开始，再逐步度量效率与质量趋势。
+- Organize rules as organization defaults, domain rules, and project rules. Rules become more specific closer to the project but cannot weaken organizational red lines.
+- Assign each skill to a domain owner and require a clear trigger description, input/output contract, and validation method.
+- Make every automated decision traceable to a rule, test, or human approval.
+- Begin metrics with the presence and quality of evidence, then add efficiency and quality trends as the system matures.

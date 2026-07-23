@@ -1,41 +1,41 @@
 # Harness Engineering Workstation
 
-面向个人起步、可扩展到大型组织的 AI 工程工作基站。
+An AI engineering workstation that can start with one person and scale to a large organization.
 
-本仓库不是一份静态规范，而是团队 AI 工作方式的 **System of Record**：规则、流程、技能、评估、决策与演进记录都在这里版本化，并通过 Pull Request 持续改进。
+This repository is not a static policy manual. It is the **system of record** for how a team works with AI: rules, workflows, skills, evaluations, decisions, and evolution history are versioned here and improved through pull requests.
 
-## 北极星
+## North Star
 
-让 AI 生成的交付具备与成熟工程团队相同的特征：
+AI-assisted delivery should have the same qualities expected from a mature engineering organization:
 
-- 有明确上下文，不依赖聊天历史猜测；
-- 有计划、有验收标准、有责任边界；
-- 默认最小权限，重要操作可审计、可恢复；
-- 质量由自动化证据证明，而不是由“看起来不错”证明；
-- 每次交付都会沉淀知识，下一次工作更快、更稳。
+- Context is explicit instead of inferred from chat history.
+- Work has a plan, acceptance criteria, and accountable owners.
+- Least privilege is the default; important actions are auditable and recoverable.
+- Quality is demonstrated by automated evidence, not by appearance.
+- Every delivery improves the knowledge available to the next task.
 
-## 从这里开始
+## Start Here
 
-1. 阅读 [AGENTS.md](AGENTS.md)，了解入口和强制规则。
-2. 阅读 [架构](docs/ARCHITECTURE.md) 与 [治理模型](docs/GOVERNANCE.md)。
-3. 从 `changes/_template/` 复制一份变更提案，按 `3+1` 流程执行。
-4. 运行 `./scripts/harness-check.sh` 检查基站完整性。
-5. 使用 `skills/harness-audit` 对接入项目进行成熟度审计。
+1. Read [AGENTS.md](AGENTS.md) for repository entry points and mandatory rules.
+2. Read the [architecture](docs/ARCHITECTURE.md) and [governance model](docs/GOVERNANCE.md).
+3. Copy `changes/_template/` to create a change proposal and follow the `3+1` workflow.
+4. Run `./scripts/harness-check.sh` to validate workstation integrity.
+5. Use `skills/harness-audit` to assess the maturity of an adopting repository.
 
-## 仓库结构
+## Repository Structure
 
 ```text
 .
-├── AGENTS.md                  # AI 入口与渐进式索引
-├── docs/                      # 架构、治理、成熟度与参考资料
-├── rules/                     # 强制规则与工程护栏
-├── workflows/                 # 可复用工作流
-├── changes/                   # 进行中和已归档的变更记录
-├── skills/                    # 团队领域技能
-├── scripts/                   # 确定性检查
-└── .github/                   # PR 模板与持续检查
+├── AGENTS.md                  # AI entry point and progressive index
+├── docs/                      # Architecture, governance, maturity, references
+├── rules/                     # Mandatory rules and engineering guardrails
+├── workflows/                 # Reusable delivery workflows
+├── changes/                   # Active and archived change records
+├── skills/                    # Team domain skills
+├── scripts/                   # Deterministic checks
+└── .github/                   # Pull request template and continuous checks
 ```
 
-## 当前状态
+## Current State
 
-当前为 `v0.1` 基线：先建立可执行的最小闭环，再用真实项目反馈完善。下一阶段重点见 [成熟度模型](docs/MATURITY_MODEL.md)。
+This is the `v0.1` baseline: establish a minimal executable loop first, then improve it with evidence from real projects. See the [maturity model](docs/MATURITY_MODEL.md) for the next stages.

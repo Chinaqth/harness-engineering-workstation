@@ -1,17 +1,17 @@
-# 实施任务
+# Implementation Tasks
 
-## 计划
+## Plan
 
-- [ ] 建立当前行为基线
-- [ ] 实现最小可逆变更
-- [ ] 补充或更新测试
-- [ ] 运行验证
-- [ ] 更新文档与决策记录
+- [ ] Establish a baseline for current behavior
+- [ ] Implement the smallest reversible change
+- [ ] Add or update tests
+- [ ] Run verification
+- [ ] Update documentation and decision records
 
-## 验证矩阵
+## Verification Matrix
 
-| 验收标准 | 验证方式 | 结果/证据 |
+| Acceptance criterion | Verification method | Result or evidence |
 | --- | --- | --- |
 |  |  |  |
 
-## 剩余风险
+## Residual Risks

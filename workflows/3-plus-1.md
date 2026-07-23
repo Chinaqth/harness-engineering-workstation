@@ -1,41 +1,41 @@
-# 3+1 工作流
+# 3+1 Workflow
 
-## Phase 1：计划
+## Phase 1: Plan
 
-输入：目标、背景、约束。
+Input: objective, background, and constraints.
 
-产出：
+Outputs:
 
-- `requirements.md`：问题、范围、非目标、验收标准、风险；
-- `task.md`：可验证的实施步骤；
-- 必要时创建 `decision.md`。
+- `requirements.md`: problem, scope, non-goals, acceptance criteria, and risks;
+- `task.md`: verifiable implementation steps;
+- `decision.md` when the change requires an important trade-off.
 
-进入实现前，由人类确认高影响假设和 G1 以上决策。
+Before implementation, a human confirms high-impact assumptions and all G1-or-higher decisions.
 
-## Phase 2：实现
+## Phase 2: Implement
 
-- 只在批准范围内修改；
-- 按需加载 Rules、Skills 和外部工具；
-- 先建立可观察的失败，再实现修复；
-- 每完成一个可验证单元就运行相应检查；
-- 发现范围变化时回到计划阶段。
+- Modify only the approved scope.
+- Load rules, skills, and external tools on demand.
+- Establish an observable failure before implementing a fix.
+- Run the relevant check after each verifiable unit of work.
+- Return to planning when the scope changes.
 
-## Phase 3：评估与交付
+## Phase 3: Evaluate and Deliver
 
-Evaluator 独立检查：
+The Evaluator independently checks:
 
-1. 验收标准；
-2. 正确性与边界条件；
-3. 安全、隐私和权限；
-4. 架构与兼容性；
-5. 测试质量；
-6. 文档与回滚。
+1. Acceptance criteria;
+2. Correctness and boundary conditions;
+3. Security, privacy, and permissions;
+4. Architecture and compatibility;
+5. Test quality;
+6. Documentation and rollback.
 
-PR 必须附验证证据和剩余风险。
+Every pull request includes verification evidence and residual risks.
 
-## +1：沉淀
+## +1: Institutionalize
 
-- 将完成的变更移动到 `changes/archive/`；
-- 把长期有效结论合并到架构、规则或技能；
-- 将新失败模式加入审计规则或评估集；
-- 记录指标，不保留已经失效的临时上下文。
+- Move completed changes to `changes/archive/`.
+- Merge durable conclusions into architecture, rules, or skills.
+- Add new failure modes to audit rules or evaluation suites.
+- Record metrics and remove temporary context that is no longer valid.

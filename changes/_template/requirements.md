@@ -1,22 +1,22 @@
-# 变更需求
+# Change Requirements
 
 - ID:
 - Owner:
 - Risk: G0 / G1 / G2 / G3
 - Status: draft
 
-## 问题
+## Problem
 
-## 目标
+## Goals
 
-## 非目标
+## Non-goals
 
-## 约束与事实来源
+## Constraints and Sources of Truth
 
-## 验收标准
+## Acceptance Criteria
 
 - [ ]
 
-## 风险、权限与数据影响
+## Risk, Permission, and Data Impact
 
-## 回滚方案
+## Rollback Plan
