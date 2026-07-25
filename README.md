@@ -21,6 +21,7 @@ AI-assisted delivery should have the same qualities expected from a mature engin
 3. Copy `changes/_template/` to create a change proposal and follow the `3+1` workflow.
 4. Run `./scripts/harness-check.sh` to validate workstation integrity.
 5. Use `skills/harness-audit` to assess the maturity of an adopting repository.
+6. Read the [video-informed Harness Engineering analysis](docs/knowledge/harness-engineering-video-analysis-bv12lr1b3eut.md) for evidence, interpretation, and recommended experiments.
 
 ## Repository Structure
 

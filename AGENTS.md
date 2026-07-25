@@ -32,6 +32,7 @@ Use another language only when the user explicitly requests it or when preservin
 | Plan a complex change | `workflows/3-plus-1.md`, `changes/README.md` |
 | Decide permissions and approvals | `docs/GOVERNANCE.md`, `rules/CORE.md` |
 | Assess maturity | `docs/MATURITY_MODEL.md`, `skills/harness-audit/SKILL.md` |
+| Study external Harness Engineering evidence | `docs/knowledge/harness-engineering-video-analysis-bv12lr1b3eut.md` |
 | Modify team policy | `docs/GOVERNANCE.md`, then create a change proposal |
 | Trace the original specification | `docs/reference/source-harness-engineering-spec.zh-CN.md` |
 
