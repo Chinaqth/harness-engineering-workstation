@@ -3,7 +3,7 @@
 - ID: 20260726-enterprise-domain-routing
 - Owner: Harness Engineering Owner
 - Risk: G2
-- Status: evaluating
+- Status: done
 - Review-By: 2026-08-09
 
 ## Problem
@@ -35,10 +35,10 @@ The Harness currently governs the shared delivery loop but has no versioned mech
 ## Acceptance Criteria
 
 - [x] AC-01: Architecture defines repository and policy boundaries.
-- [ ] AC-02: Machine-readable routing contracts and examples completely represent the documented audit contract. Remediation implemented; independent re-evaluation pending.
-- [ ] AC-03: Validation rejects internally inconsistent routing and incomplete active Domain artifacts. Regression coverage added; independent re-evaluation pending.
+- [x] AC-02: Machine-readable routing contracts and examples completely represent the documented audit contract. Satisfied by the final independent evaluation.
+- [x] AC-03: Validation rejects internally inconsistent routing and incomplete active Domain artifacts. Satisfied by the final independent evaluation.
 - [x] AC-04: Entry, governance, workflow, and bilingual operating guides describe Domain routing without implying a production Router already exists. Satisfied by the third independent evaluation.
-- [ ] AC-05: The full Harness check passes and an independent reviewer accepts the G2 change. Previous verdict was `FAIL`; re-evaluation pending.
+- [x] AC-05: The full Harness check passes and an independent reviewer accepts the G2 change. Final verdict: `PASS`.
 
 ## Risk, Permission, and Data Impact
 

@@ -14,28 +14,28 @@
 - [x] Remediate the second evaluation findings.
 - [x] Repeat independent evaluation against the second remediation revisions; verdict `FAIL`.
 - [x] Remediate project-overlay identity and uniqueness.
-- [ ] Repeat independent evaluation against the final immutable revisions.
+- [x] Repeat independent evaluation against the final immutable revisions; verdict `PASS`.
 
 ## Verification Matrix
 
 | Acceptance criterion | Verification method | Result or evidence |
 | --- | --- | --- |
 | AC-01 | Documentation review and local-link validation | `./scripts/harness-check.sh` passed on 2026-07-26 |
-| AC-02 | Parse configuration and example contracts | Overlay identity and uniqueness remediation implemented; re-evaluation pending |
-| AC-03 | Unit rejection tests plus adversarial fixtures | Overlay negative regression coverage passes; re-evaluation pending |
-| AC-04 | Documentation review | Passed third independent evaluation |
-| AC-05 | Complete integrity gate, rollback rehearsal, and external review | Both gates and isolated rollback rehearsal pass; independent re-evaluation pending |
+| AC-02 | Parse configuration and example contracts | Passed final independent evaluation |
+| AC-03 | Unit rejection tests plus adversarial fixtures | Passed final independent evaluation: 19/19 routing and 15/15 Domain journeys |
+| AC-04 | Documentation review | Passed final independent evaluation |
+| AC-05 | Complete integrity gate, rollback rehearsal, and external review | Final independent verdict `PASS` |
 
 ## Evaluator Verdict
 
-- Latest verdict: fail
-- Evaluator: Independent Agent `/root/g2_domain_architecture_final_evaluator`
+- Latest verdict: pass
+- Evaluator: Independent Agent `/root/g2_domain_architecture_release_evaluator`
 - Date: 2026-07-26
-- Evidence: `evaluation-20260726-v3.md`
+- Evidence: `evaluation-20260726-v4.md`
 
 ## Residual Risks
 
 - The first release defines protocol and repository structure, not a production resolver or installer.
 - No Domain will route until an owned Pack is activated.
 - The dependency-free validator must be extended before any schema introduces a new enforcement keyword.
-- Remediation claims are Generator evidence until independently reproduced.
+- The accepted release contains contracts and validation, not a production Router or active Domain.

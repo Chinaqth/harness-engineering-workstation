@@ -2,14 +2,14 @@
 
 - Change ID: 20260726-enterprise-domain-routing
 - Updated: 2026-07-26
-- Current phase: independent re-evaluation
+- Current phase: done
 - Last verified implementation revision: `45e290428d7853dc9ab9bf53b1c1837edb93b459`
 - Evaluation revision rule: Resolve the exact immutable Harness HEAD at evaluator start; audit-only records may follow the implementation commit.
 - Environment: macOS local repository
 
 ## Current State
 
-The third independent G2 evaluation returned `FAIL` with one P1 finding: project overlays accepted noncanonical and duplicate Domain identities. The focused remediation and regression coverage pass locally; a final independent evaluation remains.
+The final independent G2 evaluation returned `PASS` with zero P1 or P2 findings. All acceptance criteria are satisfied.
 
 ## Completed and Verified
 
@@ -39,14 +39,18 @@ The third independent G2 evaluation returned `FAIL` with one P1 finding: project
 - Project overlays now enforce the canonical Domain identity pattern.
 - The routing validator now rejects duplicate Domain entries, including contradictory pins or activation states.
 - Thirteen Harness routing tests pass, including both overlay regressions.
+- The final read-only evaluation is recorded in `evaluation-20260726-v4.md`.
+- The final evaluator reproduced 19/19 routing and overlay journeys and 15/15 Domain journeys.
+- Exact-head rollback passed against Harness `50e38c9` and Domain Packs `baa88a3`.
+- AC-01 through AC-05 are independently satisfied.
 
 ## Open Tasks
 
-- Repeat independent evaluation.
+- None.
 
 ## Blockers and Decisions Needed
 
-No implementation blocker. Generator evidence cannot close G2 acceptance; do not mark the change done or activate production routing before re-evaluation.
+None.
 
 ## Evidence
 
@@ -58,4 +62,4 @@ The remediation uses a dependency-free JSON Schema subset validator. A future sc
 
 ## Resume Here
 
-Publish an immutable remediation revision and repeat the read-only independent evaluation.
+The change is complete. A future change may implement a production Router or activate the first owned Domain Pack.
