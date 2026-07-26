@@ -12,7 +12,7 @@ English is the default language for all new or modified repository content, incl
 - Rules, workflows, templates, change proposals, and evaluation reports;
 - Pull request descriptions, commit messages, and code comments.
 
-Use another language only when the user explicitly requests it or when preserving an authoritative source verbatim. Preserve non-English source material in `docs/reference/` with a locale suffix such as `.zh-CN.md`, and write derived guidance in English. Do not mix languages within the same generated document unless a translation example requires it.
+Use another language only when the user explicitly requests it or when preserving an authoritative source verbatim. `README-CH.md` is the explicitly requested Chinese companion to the English primary README. Preserve other non-English source material in `docs/reference/` with a locale suffix such as `.zh-CN.md`, and write derived guidance in English. Do not mix languages within the same generated document unless a translation example requires it.
 
 ## Working Principles
 
