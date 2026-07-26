@@ -221,140 +221,158 @@ AGENTS.md
   -> changes/archive/ + durable policy updates
 ```
 
-The risk level determines how much of the flow is required.
+The user enters through a production goal, not a governance label. The workstation evaluates impact and reversibility internally, then selects the required artifact depth.
 
-### Scenario A: Correct a README Typo — G0
+### Scenario A: Develop a New Application
 
-The change is local, reversible, and does not alter a public contract.
-
-| Stage | What happens | Files and operation |
-| --- | --- | --- |
-| Enter | The agent loads repository-wide language and completion rules | **Read** `AGENTS.md` and `rules/CORE.md` |
-| Scope | Objective, acceptance, and risk are recorded in the task or pull request; no change directory is required | **Use** `.github/pull_request_template.md` |
-| Implement | Only the affected documentation is edited | **Update** `README.md` or another target document |
-| Verify | Required files, language policy, links, and validation tests are checked | **Validate** with `scripts/harness-check.sh` |
-| Deliver | The diff, check result, and rollback are recorded | **Update** the pull request description |
-| Learn | Nothing is institutionalized unless the typo reveals a repeated documentation problem | Optionally **update** `rules/CORE.md` or a documentation check |
-
-The workflow stops being G0 if the edit changes a policy, interface, approval boundary, or organization-wide convention.
-
-### Scenario B: Add a Dependency or Public API — G1
-
-Example: a product repository adds a library and exposes one new API response field.
+Example: build a customer-support web application from an idea to a usable first release.
 
 | Stage | What happens | Files and operation |
 | --- | --- | --- |
-| Enter | The agent discovers project conventions and risk rules | **Read** `AGENTS.md`, `docs/GOVERNANCE.md`, and `docs/AUTONOMY_POLICY.md` |
-| Plan | The Planner records the need, alternatives, compatibility impact, criteria, and rollback | **Create** `changes/<id>/requirements.md` |
-| Decompose | Work is split into dependency review, implementation, compatibility tests, and documentation | **Create** `changes/<id>/task.md` |
-| Establish continuity | The initial revision, environment, open work, and resume point are recorded | **Create and update** `changes/<id>/progress.md` |
-| Implement | The Generator changes product files and checks off bounded task units | **Update** product code, tests, `task.md`, and `progress.md` |
-| Verify | The verification matrix links each criterion to build, test, compatibility, or security evidence | **Update** `task.md`; **validate** product checks and `scripts/harness-check.sh` |
-| Review | A human checks rationale, compatibility, evidence, and rollback before merge | **Use** `.github/pull_request_template.md` and CI |
-| Close | The final result and residual risks are recorded, then the change moves out of active context | **Archive** under `changes/archive/<year>/<id>/` |
+| Discover | The agent loads global rules, existing product context, technical constraints, and completion expectations | **Read** `AGENTS.md`, `rules/CORE.md`, and relevant `docs/` |
+| Define the product | Users, core problem, first-release scope, non-goals, constraints, and observable success are fixed | **Create** `changes/<id>/requirements.md` |
+| Choose the architecture | Major stack, data, integration, deployment, and trade-off decisions are preserved | **Create** `decision.md`; **update** the product architecture |
+| Build the roadmap | The application is split into end-to-end increments such as shell, identity, first user journey, data persistence, and release | **Create and update** `task.md` |
+| Define completion | User-visible journeys receive stable criterion IDs and evidence requirements | **Create** `acceptance.json` and `contract.md` |
+| Develop incrementally | Each session implements one usable slice and records revision, environment, evidence, blockers, and next action | **Update** application code, tests, `task.md`, and `progress.md` |
+| Evaluate the application | The Evaluator starts the app, exercises critical journeys, observes failures, and reconciles acceptance | **Follow** `docs/OBSERVABILITY.md`; **use** `skills/end-to-end-evaluator/` |
+| Deliver and learn | CI, review, rollback, and residual risks are completed; reusable conclusions enter project knowledge | **Use** the pull request and CI; **archive** the change; **update** architecture, rules, or Skills where justified |
 
-`decision.md` is added when the dependency or interface choice creates an important trade-off. G1 does not require the complete six-artifact record by default.
+The result is not “a repository with generated files.” It is a runnable application whose critical user journeys are demonstrated by evidence.
 
-### Scenario C: Change a Permission or Security Boundary — G2
+### Scenario B: Implement a Feature in an Existing Application
 
-Example: an application changes which role can export customer records.
-
-| Stage | What happens | Files and operation |
-| --- | --- | --- |
-| Classify | Data sensitivity, privilege expansion, side effects, and reversibility establish G2 | **Read** `docs/GOVERNANCE.md`, `docs/AUTONOMY_POLICY.md`, and `rules/CORE.md` |
-| Define | The Owner and Planner freeze scope, non-goals, acceptance, autonomy budgets, and rollback | **Create** `requirements.md` from `changes/_template/requirements.md` |
-| Make state executable | Stable criterion IDs begin as `pending`; descriptions are not rewritten to match the implementation | **Create** `acceptance.json` |
-| Separate duties | Critical journey, evidence quality, Generator limits, and Evaluator verdict authority are agreed before implementation | **Create** `contract.md` |
-| Record the trade-off | Alternatives, security consequences, and revisit triggers are preserved | **Create** `decision.md` |
-| Execute | The Generator performs one approved reversible task unit and records revision, environment, evidence, and next action | **Update** `task.md`, `progress.md`, product code, and tests |
-| Observe | The system is started, exercised, inspected, reset, and stopped through a stable project adapter | **Follow** `docs/OBSERVABILITY.md` |
-| Evaluate | The Evaluator independently reproduces authorized and unauthorized journeys and reconciles every critical criterion | **Use** `skills/end-to-end-evaluator/`; **update** `acceptance.json` and the verdict in `task.md` |
-| Enforce | Artifact semantics, workstation integrity, and repository checks must pass | **Validate** with `scripts/validate_change.py`, `scripts/harness-check.sh`, product tests, and CI |
-| Approve and close | The Owner reviews the independent verdict and rollback evidence before merge or permission change | **Use** the pull request; then **archive** the six artifacts |
-
-If evaluation is blocked by access or observability, `acceptance.json` remains blocked. Missing evidence does not become approval.
-
-### Scenario D: Delete Production Data Under Regulation — G3
-
-The repository controls preparation and evidence; the irreversible operation remains human-led.
+Example: add saved searches and notifications to an existing analytics product.
 
 | Stage | What happens | Files and operation |
 | --- | --- | --- |
-| Establish authority | Exact data, legal basis, approvers, retention requirements, and prohibited actions are recorded | **Create** the complete change record; **read** `docs/GOVERNANCE.md` |
-| Bound the agent | The AI may inspect, simulate, draft, and validate but may not execute the deletion | **Record** the G3 budget in `requirements.md` and stop conditions in `contract.md` |
-| Prepare | A dry run, item count, backup or recovery position, and expected post-state are documented | **Update** `task.md`, `progress.md`, and evidence pointers in `acceptance.json` |
-| Authorize | Two people approve the immutable target and execution window outside the Generator role | **Record** approval references in `decision.md` and the delivery record |
-| Execute | An authorized human performs the state-changing step | **Do not delegate** the irreversible action to the Skill or Generator |
-| Confirm | An independent Evaluator verifies the post-state, audit evidence, and recovery obligations | **Update** `acceptance.json` and `task.md` with pass, fail, or blocked |
-| Retain | The complete decision and evidence record is retained according to policy | **Archive** the change; preserve external audit references |
+| Understand the existing system | The agent finds the current user journey, code ownership, interfaces, tests, and architecture constraints | **Read** `AGENTS.md`, product architecture, existing tests, and related archived changes |
+| Specify behavior | The Planner defines who needs the feature, what changes, what remains unchanged, and how a user proves it works | **Create** `requirements.md` |
+| Assess impact | Data, permissions, compatibility, external effects, and reversibility determine how complete the change record must be | **Read** governance and autonomy policy; optionally **create** `decision.md` |
+| Decompose vertically | Tasks follow deployable slices: data model, service behavior, UI, notifications, tests, and documentation | **Create and update** `task.md` |
+| Maintain continuity | Current revision, environment, completed slices, blockers, and resume point remain externalized | **Create and update** `progress.md` |
+| Implement | The Generator modifies the smallest supported scope and adds unit, integration, and journey coverage | **Update** product code, tests, `task.md`, and evidence |
+| Evaluate | Critical positive and negative journeys are reproduced independently; material work uses explicit acceptance state | **Use** `acceptance.json`, `contract.md`, and `skills/end-to-end-evaluator/` when impact requires them |
+| Ship | CI, human review, compatibility, documentation, residual risk, and rollback are reconciled before merge | **Use** `.github/pull_request_template.md`; **archive** the completed record |
 
-The workstation does not convert a missing authorization into an implied one.
+Feature completion means the intended behavior works inside the existing system without silently breaking adjacent behavior.
 
-### Scenario E: Continue a Feature Across Several Sessions
+### Scenario C: Diagnose and Fix a Bug
 
-This scenario explains how the same files carry state when a task outlives a chat context.
-
-| Moment | File behavior |
-| --- | --- |
-| First session starts | **Read** `requirements.md` and `contract.md`; select the next unchecked unit in `task.md` |
-| Work begins | **Update** `progress.md` with revision, environment, current phase, and baseline |
-| A criterion is exercised | Add evidence to the matching ID in `acceptance.json`; do not change its description |
-| A task unit completes | Check the item and verification row in `task.md`; refresh `progress.md` |
-| The session pauses | Record completed work, blockers, residual risks, and the exact next command or file in `progress.md` |
-| A later session resumes | **Read** repository state and `progress.md`; verify the recorded revision before editing |
-| Scope or risk changes | Stop implementation and **update** `requirements.md`, `decision.md`, and `contract.md` with Owner approval |
-| The complete journey passes | The Evaluator reconciles `acceptance.json`; the record is archived |
-
-Git preserves revisions; `progress.md` preserves operational state; `acceptance.json` preserves outcome state. Chat summaries are not the authority for any of the three.
-
-### Scenario F: Diagnose and Repair a Production-Like Bug
-
-Example: a user can submit an order, but the confirmation is never shown.
+Example: users can submit an order, but the confirmation page never appears.
 
 | Stage | What happens | Files and operation |
 | --- | --- | --- |
-| Orient | The agent loads project commands, boundaries, and evaluation expectations | **Read** `AGENTS.md`, `rules/CORE.md`, and relevant architecture |
-| Record | The symptom, impact, non-goals, and observable recovery criterion are captured at the risk-appropriate depth | **Create** G1 or G2 artifacts under `changes/<id>/` |
-| Reproduce | The failure is observed through the same journey the user experiences | **Follow** `docs/OBSERVABILITY.md`; attach logs, traces, screenshots, or test output as evidence |
-| Plan | The suspected invariant, smallest repair, regression coverage, and rollback are decomposed | **Update** `task.md` and `progress.md` |
-| Repair | The Generator changes the smallest supported scope and adds a failing-then-passing regression test | **Update** product code and tests |
-| Evaluate | The original user journey and relevant negative paths are independently rerun | **Use** `skills/end-to-end-evaluator/`; **update** the verdict and acceptance evidence |
-| Institutionalize | A repeated failure becomes a deterministic test, rule, audit check, architecture note, or Skill procedure | **Update** `rules/`, `scripts/`, `docs/`, or `skills/` |
-| Close | Checks pass, residual risks are documented, and the record is archived | **Validate** with project checks and `scripts/harness-check.sh`; **archive** the change |
+| Orient | The agent loads commands, architecture, recent changes, known failure modes, and authorization scope | **Read** `AGENTS.md`, relevant `docs/`, archived changes, and `rules/CORE.md` |
+| Capture the symptom | Expected behavior, actual behavior, affected users, frequency, environment, and non-goals are recorded | **Create** risk-appropriate files under `changes/<id>/` |
+| Reproduce before editing | The failure is observed through the real user journey and preserved as logs, traces, screenshots, or a failing test | **Follow** `docs/OBSERVABILITY.md`; **update** `progress.md` and evidence |
+| Isolate the cause | The violated invariant and smallest credible repair are added to the work plan | **Update** `task.md`; add `decision.md` only when a meaningful trade-off exists |
+| Repair | The Generator changes the smallest scope and adds a regression test that fails before and passes after the fix | **Update** product code, tests, `task.md`, and `progress.md` |
+| Re-evaluate | The original journey, adjacent behavior, boundary cases, and relevant negative paths are independently rerun | **Use** `skills/end-to-end-evaluator/`; **update** acceptance evidence and verdict |
+| Prevent recurrence | A repeated class of bug becomes a test, deterministic check, rule, architecture note, or Skill procedure | **Update** `tests/`, `scripts/`, `rules/`, `docs/`, or `skills/` |
+| Close | Checks pass, residual risks and rollback are documented, and the evidence is retained | **Validate** product checks and `scripts/harness-check.sh`; **archive** the change |
 
-If the request authorizes diagnosis only, the workflow stops after the evidence-backed cause is reported.
+If the request authorizes diagnosis only, the workflow stops after reporting the evidence-backed cause.
 
-### Scenario G: Change a Workstation Rule or Create a Skill
+### Scenario D: Refactor a Module Without Changing Behavior
 
-This is how the control plane evolves itself.
-
-| Stage | What happens | Files and operation |
-| --- | --- | --- |
-| Identify | Repeated review feedback or failures show that durable guidance is missing | **Read** archived changes, audit findings, and `docs/knowledge/` |
-| Govern | Because approval boundaries or organization rules may change, the work is handled as G2 | **Read** `docs/GOVERNANCE.md`; **create** the complete six-artifact change record |
-| Choose the mechanism | A mandatory invariant becomes a rule or check; a repeatable expert workflow becomes a Skill | **Record** the choice in `decision.md` |
-| Implement | Rules update under `rules/`; deterministic enforcement under `scripts/`; workflows under `skills/<name>/` | **Update or create** the selected control-plane files |
-| Validate | Rule changes pass the full harness; Skills pass their structural validator and realistic trigger tests | **Run** `scripts/harness-check.sh`; **update** `task.md` and `acceptance.json` |
-| Evaluate | The Evaluator checks for contradictions, weakened guardrails, unclear triggers, and migration impact | **Use** `skills/harness-audit/` or `skills/end-to-end-evaluator/` as applicable |
-| Publish | Entry documents and routing tables point to the new durable capability | **Update** `AGENTS.md`, `README.md`, architecture, governance, or rubric only where needed |
-| Learn | The completed proposal and evidence become the evolution history | **Archive** the change and schedule knowledge gardening |
-
-This prevents the control plane from accumulating disconnected instructions that no workflow can discover or enforce.
-
-### Scenario H: Adopt the Workstation in an Existing Product Repository
-
-The control-plane files are used to assess and guide adoption; product-specific facts remain in the product repository.
+Example: split an oversized billing service into smaller components while preserving every public contract.
 
 | Stage | What happens | Files and operation |
 | --- | --- | --- |
-| Baseline | Current context, tools, orchestration, memory, evaluation, guardrails, and governance are scored from evidence | **Use** `skills/harness-audit/` and its rubric |
-| Plan adoption | Gaps are prioritized by risk and converted into bounded adoption criteria | **Create** a change record in the adopting repository |
-| Add routing | The product receives a concise entry file pointing to its own architecture, commands, and domain sources | **Create or update** the product's `AGENTS.md` |
-| Add control | Organization red lines and risk handling are adopted without silently weakening project-specific rules | **Reference** `rules/CORE.md`, governance, and autonomy policy |
-| Add visibility | The product implements start, ready, exercise, observe, reset, and stop interfaces | **Implement against** `docs/OBSERVABILITY.md` |
-| Pilot | One G1 and one G2 change exercise planning, handoff, evaluation, approval, and archival | **Use** the change templates and evaluator Skill |
-| Measure | Rework, escaped defects, lead time, check reliability, and exception expiry are recorded | **Update** the adopting project's metrics and decisions |
-| Upgrade | A new control-plane version is explicitly reviewed and adopted | **Record** version and deviations; never silently overwrite project policy |
+| Establish invariants | Public APIs, outputs, side effects, performance expectations, and unsupported cleanup are declared | **Create** `requirements.md`; **read** architecture and compatibility rules |
+| Capture the baseline | Existing tests and representative journeys establish current behavior before structural changes | **Update** `task.md` with baseline evidence |
+| Design boundaries | New component ownership and dependency direction are documented when architecture changes | **Create or update** `decision.md` and architecture |
+| Slice the refactor | Tasks are organized into reversible moves that leave the system buildable after each step | **Update** `task.md` and `progress.md` |
+| Move structure | The Generator changes internals without mixing unrelated feature work | **Update** product code and focused tests |
+| Detect drift | Contract, regression, integration, performance, and user-journey checks compare before and after | **Validate** product checks; use `acceptance.json` for material invariants |
+| Review architecture | The Evaluator checks dependency direction, duplication, compatibility, and whether behavior actually remained stable | **Use** audit or end-to-end evaluation as appropriate |
+| Close | Architecture documentation matches the new structure and the reversible history is preserved | **Update** durable docs; **archive** the change |
+
+If behavior must change during the refactor, that behavior becomes an explicit feature criterion instead of hidden scope.
+
+### Scenario E: Integrate a Third-Party Service
+
+Example: connect the application to a payment, identity, messaging, or analytics provider.
+
+| Stage | What happens | Files and operation |
+| --- | --- | --- |
+| Define the need | Business outcome, provider responsibilities, data exchanged, availability expectations, and non-goals are fixed | **Create** `requirements.md` |
+| Evaluate options | Provider maturity, API stability, cost, license, privacy, lock-in, and alternatives are compared | **Create** `decision.md` |
+| Bound access | Credentials, environments, scopes, data classes, external writes, cost limits, and stop conditions are declared | **Read** governance and autonomy policy; **create** `contract.md` where material |
+| Design failure behavior | Timeouts, retries, idempotency, rate limits, fallback, and reconciliation are decomposed | **Update** `task.md` |
+| Implement safely | Secrets remain outside source control; adapters isolate vendor-specific behavior | **Update** product code, configuration templates, tests, and `progress.md` |
+| Observe | Sandbox calls, structured logs, metrics, traces, and provider responses prove both success and failure paths | **Follow** `docs/OBSERVABILITY.md`; **update** evidence |
+| Evaluate | The Evaluator tests valid, invalid, duplicate, delayed, unavailable, and permission-denied scenarios | **Use** `acceptance.json` and `skills/end-to-end-evaluator/` |
+| Ship and operate | CI, human review, rollback or provider-disable procedure, ownership, and runbook are completed | **Use** the pull request; **update** operational docs; **archive** the change |
+
+The integration is complete only when the application behaves predictably when the provider fails.
+
+### Scenario F: Change a Database Schema or Migrate Data
+
+Example: split a customer name field, backfill historical records, and keep old clients working during migration.
+
+| Stage | What happens | Files and operation |
+| --- | --- | --- |
+| Inventory | Schemas, data volume, consumers, retention, sensitive fields, and compatibility windows are identified | **Read** architecture, schema definitions, data policy, and recent changes |
+| Define invariants | Expected counts, transformations, compatibility, integrity constraints, and rollback limits become acceptance criteria | **Create** `requirements.md` and `acceptance.json` |
+| Choose the migration strategy | Expand-and-contract, dual write, backfill, cutover, and rollback options are compared | **Create** `decision.md` |
+| Rehearse | Backup, representative fixtures, dry run, duration, failure injection, and recovery steps are planned | **Create** `contract.md`; **update** `task.md` |
+| Execute incrementally | Schema change, application compatibility, backfill, verification, and cleanup remain separate checkpoints | **Update** migrations, product code, tests, `task.md`, and `progress.md` |
+| Observe data state | Counts, rejected rows, latency, replication, and integrity checks are captured without exposing sensitive data | **Follow** `docs/OBSERVABILITY.md`; **update** evidence |
+| Evaluate and approve | The Evaluator reproduces upgrade, rollback, old-client, and partial-failure behavior before cutover approval | **Use** `skills/end-to-end-evaluator/`; reconcile `acceptance.json` |
+| Complete | Cleanup happens only after the compatibility window and evidence are satisfied | **Validate** CI and change semantics; **archive** the record and update schema documentation |
+
+An irreversible cleanup step remains blocked until recovery and compatibility evidence are accepted.
+
+### Scenario G: Improve Performance or Reduce Cost
+
+Example: reduce dashboard load time and database cost without changing visible behavior.
+
+| Stage | What happens | Files and operation |
+| --- | --- | --- |
+| Establish a baseline | Workload, environment, latency distribution, throughput, resource use, and cost are measured before optimization | **Create** `requirements.md`; **update** `progress.md` with reproducible baseline evidence |
+| Set guardrails | Target metrics and behavior, correctness, reliability, and cost constraints become stable criteria | **Create or update** `acceptance.json` |
+| Find the bottleneck | Profiling, queries, traces, logs, and metrics identify the dominant cause rather than a guessed optimization | **Follow** `docs/OBSERVABILITY.md`; **update** `task.md` |
+| Choose the trade-off | Cache, query, algorithm, concurrency, infrastructure, and complexity options are compared | **Create** `decision.md` when the choice changes architecture or operating cost |
+| Optimize incrementally | One measurable change is implemented at a time, with current revision and results recorded | **Update** product code, benchmarks, tests, `task.md`, and `progress.md` |
+| Protect correctness | Functional, boundary, reliability, and user-journey checks run alongside benchmarks | **Validate** product tests and critical acceptance criteria |
+| Evaluate | The Evaluator reruns the same workload and confirms the gain is not caused by weaker behavior or unrealistic data | **Use** independent benchmark evidence and end-to-end evaluation |
+| Institutionalize | Performance budgets and regression thresholds enter continuous checks | **Update** tests, CI, architecture, or rules; **archive** the change |
+
+The accepted result compares the same workload before and after; isolated microbenchmarks are supporting evidence, not the whole verdict.
+
+### Scenario H: Respond to a Production Incident
+
+Example: checkout errors increase immediately after a deployment.
+
+| Stage | What happens | Files and operation |
+| --- | --- | --- |
+| Declare the incident | Impact, start time, affected journey, current owner, communication channel, and immediate safety boundary are externalized | **Create or update** an incident-scoped `progress.md` and requirements record |
+| Stabilize | The Owner chooses rollback, feature disablement, traffic reduction, or another reversible containment action | **Read** governance and runbooks; **record** the choice in `decision.md` |
+| Observe | Logs, metrics, traces, deploy state, and user-visible failures establish a shared timeline | **Follow** `docs/OBSERVABILITY.md`; attach evidence without exposing sensitive data |
+| Bound the repair | The smallest hotfix and explicit non-goals are separated from broader cleanup | **Update** `requirements.md`, `task.md`, and stop conditions |
+| Implement | The Generator applies the authorized containment or repair and preserves every command and result | **Update** product code or configuration, tests, and `progress.md` |
+| Verify recovery | The Evaluator confirms the original journey, system health, negative paths, and rollback state | **Use** `acceptance.json`, `contract.md`, and `skills/end-to-end-evaluator/` |
+| Deliver safely | Approval, CI, deployment evidence, monitoring window, and remaining risk are recorded | **Use** the pull request and operational delivery record |
+| Learn after recovery | Root cause, contributing conditions, detection gap, and prevention actions become durable work | **Archive** the incident change; **update** tests, rules, Skills, architecture, or runbooks |
+
+Incident urgency shortens feedback cycles; it does not remove evidence, authority, or rollback requirements.
+
+### Scenario I: Prepare and Release a Version
+
+Example: promote a tested application version from staging to production.
+
+| Stage | What happens | Files and operation |
+| --- | --- | --- |
+| Select scope | Included changes, excluded work, dependencies, migrations, feature flags, and release owner are fixed | **Read** completed change records; **create** release requirements and task list |
+| Confirm readiness | Every included change has a terminal verdict, evidence, residual risk, and rollback guidance | **Read** `acceptance.json`, `task.md`, and archived or active records |
+| Build the artifact | A reproducible revision produces an immutable package, image, or deployment candidate | **Update** release evidence with revision and artifact identity |
+| Rehearse | Staging journeys, migrations, configuration, monitoring, rollback, and recovery are exercised | **Use** `contract.md`, observability, and the end-to-end evaluator |
+| Approve | The release owner reviews checks, known risks, change window, and required human gates | **Use** governance, pull-request evidence, and CI |
+| Release | The authorized delivery mechanism changes the target environment | **Update** `progress.md` with timestamps, actions, and observed state |
+| Verify | Health, critical user journeys, metrics, logs, and error budgets are checked during the observation window | **Update** acceptance and final verdict evidence |
+| Close | Release notes, operational state, rollback status, and follow-up work are retained | **Archive** the release record and update durable documentation |
 
 ## Enterprise Adoption
 
