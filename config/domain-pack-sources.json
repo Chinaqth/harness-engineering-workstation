@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "sources": [
+    {
+      "id": "enterprise-domain-packs",
+      "repository": "git@github.com:Chinaqth/harness-engineering-domain-packs.git",
+      "ref": "main",
+      "registry": "registry/domains.json"
+    }
+  ],
+  "runtime": {
+    "domain_root": "~/.harness/domains",
+    "global_skill_root": "~/.agents/skills",
+    "project_overlay": ".harness/domains.json"
+  }
+}

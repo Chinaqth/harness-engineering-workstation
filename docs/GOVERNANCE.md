@@ -20,8 +20,12 @@ The level sets an autonomy ceiling, not only a review label. Apply the budgets a
 - **Generator:** Implements within the approved scope and produces verification evidence.
 - **Evaluator:** Independently assesses logic, policy, security, and architectural impact.
 - **Archiver:** Preserves specifications, decisions, metrics, and lessons.
+- **Domain Owner:** Owns the correctness, lifecycle, compatibility, and review of one Domain Pack.
+- **Router Owner:** Owns registry protocol, deterministic resolution, conflict handling, and routing provenance.
 
 Small teams may combine roles, but the Generator and approver for a G2 or G3 decision must not be the same decision-making entity.
+
+The central Harness team owns Kernel policy and routing schemas. Domain teams own their professional content. Product teams own project overlays. A project owner may enable or pin a Domain Pack but cannot silently alter its published contract.
 
 For G2 and G3 work, the Generator may update implementation state and attach evidence, while the Evaluator independently reproduces the critical journey and owns the final pass, fail, or blocked verdict. The Owner resolves changes to scope or acceptance criteria.
 
@@ -47,6 +51,14 @@ Every policy exception must identify:
 - An expiration date.
 
 Permanent exceptions, ownerless exceptions, and exceptions without an expiration date are invalid.
+
+## Domain Pack Changes
+
+- Registration creates a `draft` identity and does not authorize production routing.
+- Activation requires an owner, reviewer, meaningful routes, capabilities, evaluators, validation evidence, and compatibility review.
+- Breaking Domain inputs, outputs, routing, or evaluator contracts require a major version and migration guidance.
+- Deprecated Packs remain available only to pinned consumers; retired Packs cannot receive new work.
+- Routing conflicts and missing capabilities must be surfaced as explicit outcomes, not resolved by invented metadata.
 
 ## Metrics
 

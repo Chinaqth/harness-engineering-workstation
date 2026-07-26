@@ -11,9 +11,15 @@ required=(
   "docs/GOVERNANCE.md"
   "docs/MATURITY_MODEL.md"
   "docs/OBSERVABILITY.md"
+  "docs/ENTERPRISE_DOMAIN_ARCHITECTURE.md"
+  "docs/ROUTING.md"
   "rules/CORE.md"
   "workflows/3-plus-1.md"
   "changes/README.md"
+  "config/domain-pack-sources.json"
+  "schemas/task-envelope.schema.json"
+  "schemas/routing-plan.schema.json"
+  "schemas/project-domain-overlay.schema.json"
 )
 
 for path in "${required[@]}"; do
@@ -49,6 +55,10 @@ if ! python3 "$root/scripts/validate_change.py" "$root"; then
 fi
 
 if ! python3 "$root/scripts/knowledge-garden.py" "$root"; then
+  failures=$((failures + 1))
+fi
+
+if ! python3 "$root/scripts/validate_routing.py" "$root"; then
   failures=$((failures + 1))
 fi
 

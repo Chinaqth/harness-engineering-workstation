@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Project Domain Overlay",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "domains"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "domains": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "version", "enabled", "local_owner", "additional_signals", "constraints"],
+        "properties": {
+          "id": { "type": "string" },
+          "version": { "type": "string" },
+          "enabled": { "type": "boolean" },
+          "local_owner": { "type": "string" },
+          "additional_signals": { "type": "array", "items": { "type": "string" } },
+          "constraints": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

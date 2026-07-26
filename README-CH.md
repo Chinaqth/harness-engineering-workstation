@@ -33,6 +33,20 @@
 - 不是给 Agent 授予长期或无限权限的理由；
 - 不能在没有真实项目证据时直接证明企业已经具备成熟能力。
 
+## 底座、Domain Pack 与具体项目
+
+企业接入采用三个相互独立、可版本化的作用域：
+
+| 作用域 | 权威来源 | 职责 |
+| --- | --- | --- |
+| Harness 底座 | 当前仓库 | 跨职能工作流、风险、授权、路由协议、任务状态、证据和治理 |
+| Domain Pack | 独立私有仓库 `harness-engineering-domain-packs` | 可复用的职能路由、能力、流程、规则、Skill、工具和评估器 |
+| 具体产品项目 | 各产品仓库 | 架构、命令、启用的 Pack 版本、本地负责人、约束和任务记录 |
+
+Router 先把自然语言任务整理为 Task Envelope，再结合 Domain 注册表和项目 Overlay 解析当前可用的能力，最终输出可追溯的 Routing Plan。只有被选中的专业内容会被加载；缺失能力、冲突和审批需求必须作为明确状态保留下来。
+
+详细说明见 [企业 Domain 架构](docs/ENTERPRISE_DOMAIN_ARCHITECTURE.md) 与 [任务到能力的路由协议](docs/ROUTING.md)。
+
 ## 为什么需要 Harness Engineering
 
 Prompt Engineering 优化一次指令，Context Engineering 优化模型当前能看到什么，而 Harness Engineering 管理完整执行闭环：
@@ -134,6 +148,9 @@ Archiver -> 持久知识和下一轮系统改进
 | `docs/AUTONOMY_POLICY.md` | 范围、权限、成本、时间和升级预算 | 决定 Agent 可以自主执行什么时 |
 | `docs/OBSERVABILITY.md` | 启动、执行、观察和重置系统的最小接口 | 让产品具备 Agent 可评估能力时 |
 | `docs/MATURITY_MODEL.md` | L0–L4 能力等级和退出标准 | 审计采纳情况或规划改进时 |
+| `docs/ENTERPRISE_DOMAIN_ARCHITECTURE.md` | 底座、Domain Pack、项目 Overlay 和任务契约边界 | 扩展到多职能企业场景时 |
+| `docs/ROUTING.md` | 从 Task Envelope 到 Routing Plan 的协议 | 将任务路由到专业能力时 |
+| `config/domain-pack-sources.json` | Domain Pack 权威来源和运行时位置 | 配置 Domain 发现时 |
 
 ### 工作执行和持久状态
 
@@ -158,6 +175,9 @@ Archiver -> 持久知识和下一轮系统改进
 | `scripts/harness-check.sh` | 运行完整工作基站检查 |
 | `scripts/validate_change.py` | 验证变更制品与 `acceptance.json` 语义 |
 | `scripts/knowledge-garden.py` | 检查失效链接和过期活动变更 |
+| `scripts/validate_routing.py` | 验证 Domain 来源、Task Envelope 和 Routing Plan 示例 |
+| `schemas/` | Task Envelope、Routing Plan 与项目 Overlay 的机器可读契约 |
+| `examples/` | 路由输入和结果的可执行示例 |
 | `tests/` | 验证检查器的正确和拒绝路径 |
 | `.github/workflows/harness-check.yml` | 在推送和 Pull Request 时运行完整检查 |
 | `.github/workflows/knowledge-garden.yml` | 定期检查知识新鲜度 |
@@ -184,20 +204,21 @@ G0 可以记录在任务或 Pull Request 中。G1 需要 `requirements.md`、`ta
 ## 快速开始
 
 1. 阅读 [AGENTS.md](AGENTS.md)、[CORE.md](rules/CORE.md) 和当前项目上下文。
-2. 将任务评估为 G0–G3。
-3. 对于 G1 及以上任务，将 `changes/_template/` 复制到带日期的变更目录，并根据风险保留必要制品。
-4. 在实现前定义可观察的验收标准。
-5. 声明自治预算和人工审批点。
-6. 每次只实现一个受控工作单元，并持续更新 `progress.md`。
-7. 运行：
+2. 将目标整理为 Task Envelope，并通过项目 Overlay 解析启用的 Domain 能力。
+3. 将任务评估为 G0–G3。
+4. 对于 G1 及以上任务，将 `changes/_template/` 复制到带日期的变更目录，并根据风险保留必要制品。
+5. 在实现前定义可观察的验收标准。
+6. 声明自治预算和人工审批点。
+7. 每次只实现一个受控工作单元，并持续更新 `progress.md`。
+8. 运行：
 
    ```bash
    ./scripts/harness-check.sh
    ```
 
-8. 对重要的用户可见行为使用 `skills/end-to-end-evaluator`。
-9. 记录最终判定、剩余风险和回滚方式。
-10. 归档变更，并将稳定结论升级为规则、Skill、测试或架构知识。
+9. 对重要的用户可见行为使用 `skills/end-to-end-evaluator`。
+10. 记录最终判定、剩余风险和回滚方式。
+11. 归档变更：跨职能结论进入底座，专业实践进入 Domain Pack，项目事实留在具体项目。
 
 ## 多场景用例流程
 
@@ -214,6 +235,8 @@ G0 可以记录在任务或 Pull Request 中。G1 需要 `requirements.md`、`ta
 ```text
 AGENTS.md
   -> docs/ + rules/
+  -> Task Envelope + Domain 注册表 + 项目 Overlay
+  -> Routing Plan + 被选中的 Domain Pack 内容
   -> changes/<change-id>/
   -> 具体实现和项目测试
   -> scripts/ + skills/
@@ -222,6 +245,16 @@ AGENTS.md
 ```
 
 用户通过真实生产目标进入系统，而不是先选择治理等级。工作基站在内部评估影响和可逆性，再决定需要使用多完整的变更制品。
+
+不同生产场景中的 Domain 路由体现也不同：
+
+| 生产请求 | 典型路由方式 | 涉及的文件 |
+| --- | --- | --- |
+| 开发一个新应用 | Product 和 Design 先明确问题；当架构和交付范围具体化后，再加入平台、Security、QA 与 Operations 能力 | Task Envelope、Domain 注册表、项目 Overlay、Routing Plan，以及被选中的 Pack 工作流和评估器 |
+| 实现一个功能点 | 现有项目特征先缩小平台能力范围；只有功能跨越边界时才加入安全、数据、无障碍或 QA 能力 | 项目 Overlay、路由元数据、能力依赖、被选中的 Skill 和工具 |
+| 修改一个 Bug | 代码归属 Domain 主导诊断；原行为对应的评估器和受影响的边界 Domain 验证修复 | Task Envelope、诊断流程、项目可观测能力、Domain 评估器 |
+| 不改变行为地重构 | 代码归属 Domain 主导实现，兼容性与架构评估器保护外部契约 | 能力契约、项目架构、兼容性评估器、验收证据 |
+| 处理线上事故 | Operations 或 Reliability 能力负责协调，再将调查和修复路由给受影响的开发与安全 Domain | 高风险任务契约、审批门、事故流程、多 Domain Routing Plan |
 
 ### 场景 A：从零开发一个新应用
 

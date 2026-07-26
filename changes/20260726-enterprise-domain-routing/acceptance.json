@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "change_id": "20260726-enterprise-domain-routing",
+  "risk": "G2",
+  "status": "implementing",
+  "criteria": [
+    {
+      "id": "AC-01",
+      "description": "Architecture defines Kernel, Domain Pack, project overlay, and task-contract boundaries.",
+      "status": "passing",
+      "evidence": ["docs/ENTERPRISE_DOMAIN_ARCHITECTURE.md"]
+    },
+    {
+      "id": "AC-02",
+      "description": "Machine-readable routing contracts and examples exist.",
+      "status": "passing",
+      "evidence": ["schemas/", "examples/", "config/domain-pack-sources.json"]
+    },
+    {
+      "id": "AC-03",
+      "description": "Validation rejects internally inconsistent example routing.",
+      "status": "passing",
+      "evidence": ["scripts/validate_routing.py", "tests/test_routing_validation.py"]
+    },
+    {
+      "id": "AC-04",
+      "description": "Entry, governance, workflow, and bilingual operating guides describe Domain routing.",
+      "status": "passing",
+      "evidence": ["AGENTS.md", "README.md", "README-CH.md", "docs/GOVERNANCE.md", "workflows/3-plus-1.md"]
+    },
+    {
+      "id": "AC-05",
+      "description": "The full Harness check passes and an independent reviewer accepts the G2 change.",
+      "status": "pending",
+      "evidence": []
+    }
+  ]
+}

@@ -33,6 +33,20 @@ The workstation is intentionally model-, IDE-, and vendor-neutral. It does not t
 - A reason to grant an agent broad or permanent permissions;
 - Proof that a product repository is enterprise-ready without adoption evidence.
 
+## Kernel, Domain Packs, and Projects
+
+Enterprise adoption uses three versioned scopes:
+
+| Scope | Source of truth | Responsibility |
+| --- | --- | --- |
+| Harness Kernel | This repository | Cross-domain workflow, risk, authorization, routing protocol, task state, evidence, and governance |
+| Domain Packs | Private `harness-engineering-domain-packs` repository | Reusable function-level routes, capabilities, workflows, rules, Skills, tools, and evaluators |
+| Product project | Each product repository | Architecture, commands, enabled Pack versions, local ownership, constraints, and task records |
+
+The Router converts a natural-language task into a Task Envelope, resolves active capabilities from the Domain registry and project overlay, and emits a traceable Routing Plan. It loads selected professional content only after routing. Missing capabilities, conflicts, and approval needs remain explicit outcomes.
+
+See [Enterprise Domain Architecture](docs/ENTERPRISE_DOMAIN_ARCHITECTURE.md) and [Task-to-Capability Routing](docs/ROUTING.md).
+
 ## Why Harness Engineering
 
 Prompt engineering improves an instruction. Context engineering improves what the model can see. Harness engineering controls the complete execution loop:
@@ -134,6 +148,9 @@ Risk is determined by impact surface, reversibility, data sensitivity, and exter
 | `docs/AUTONOMY_POLICY.md` | Scope, permission, cost, time, and escalation budgets | Deciding what an agent may do autonomously |
 | `docs/OBSERVABILITY.md` | Minimum interface for starting, exercising, observing, and resetting a system | Making a product evaluable by an agent |
 | `docs/MATURITY_MODEL.md` | L0–L4 capability stages and exit criteria | Auditing adoption or planning improvements |
+| `docs/ENTERPRISE_DOMAIN_ARCHITECTURE.md` | Kernel, Domain Pack, project-overlay, and task-contract boundaries | Scaling across enterprise functions |
+| `docs/ROUTING.md` | Task Envelope to Routing Plan protocol | Routing work to professional capabilities |
+| `config/domain-pack-sources.json` | Authoritative Domain Pack source and runtime locations | Configuring Domain discovery |
 
 ### Work execution and durable state
 
@@ -158,6 +175,9 @@ Risk is determined by impact surface, reversibility, data sensitivity, and exter
 | `scripts/harness-check.sh` | Run the complete workstation integrity gate |
 | `scripts/validate_change.py` | Validate change artifacts and `acceptance.json` semantics |
 | `scripts/knowledge-garden.py` | Detect broken local links and stale active changes |
+| `scripts/validate_routing.py` | Validate Domain source, Task Envelope, and Routing Plan examples |
+| `schemas/` | Machine-readable Task Envelope, Routing Plan, and project-overlay contracts |
+| `examples/` | Executable examples of routing inputs and outcomes |
 | `tests/` | Prove validator behavior, including rejection paths |
 | `.github/workflows/harness-check.yml` | Run integrity checks on pushes and pull requests |
 | `.github/workflows/knowledge-garden.yml` | Run recurring knowledge-freshness checks |
@@ -184,20 +204,21 @@ G0 can live in a pull request or task description. G1 requires `requirements.md`
 ## Quick Start
 
 1. Read [AGENTS.md](AGENTS.md), [CORE.md](rules/CORE.md), and the relevant project context.
-2. Classify the work as G0–G3.
-3. For G1 or higher, copy `changes/_template/` into a dated change directory and remove artifacts not required by the risk level.
-4. Define observable acceptance criteria before implementation.
-5. Declare autonomy budgets and approval gates.
-6. Implement one bounded unit at a time and keep `progress.md` current.
-7. Run:
+2. Normalize the objective into a Task Envelope and resolve enabled Domain capabilities through the project overlay.
+3. Classify the work as G0–G3.
+4. For G1 or higher, copy `changes/_template/` into a dated change directory and remove artifacts not required by the risk level.
+5. Define observable acceptance criteria before implementation.
+6. Declare autonomy budgets and approval gates.
+7. Implement one bounded unit at a time and keep `progress.md` current.
+8. Run:
 
    ```bash
    ./scripts/harness-check.sh
    ```
 
-8. Use `skills/end-to-end-evaluator` for material user-visible behavior.
-9. Record the verdict, residual risks, and rollback guidance.
-10. Archive the change and promote durable lessons into rules, Skills, tests, or architecture.
+9. Use `skills/end-to-end-evaluator` for material user-visible behavior.
+10. Record the verdict, residual risks, and rollback guidance.
+11. Archive the change and promote durable cross-domain lessons to the Kernel, professional practice to the Domain Pack, and project facts to the project repository.
 
 ## Scenario Playbooks
 
@@ -214,6 +235,8 @@ The common file flow is:
 ```text
 AGENTS.md
   -> docs/ + rules/
+  -> Task Envelope + Domain registry + project overlay
+  -> Routing Plan + selected Domain Pack content
   -> changes/<change-id>/
   -> implementation and project tests
   -> scripts/ + skills/
@@ -222,6 +245,16 @@ AGENTS.md
 ```
 
 The user enters through a production goal, not a governance label. The workstation evaluates impact and reversibility internally, then selects the required artifact depth.
+
+Domain routing appears differently in each production scenario:
+
+| Production request | Typical routing behavior | Files involved |
+| --- | --- | --- |
+| Build a new application | Product and Design shape the problem; platform, Security, QA, and Operations capabilities join as architecture and delivery scope becomes concrete | Task Envelope, Domain registry, project overlay, Routing Plan, then selected Pack workflows and evaluators |
+| Implement a feature | Existing project signals narrow the platform capability; adjacent security, data, accessibility, or QA capabilities join only when the feature crosses their boundaries | Project overlay, route metadata, capability dependencies, selected Skills and tools |
+| Fix a bug | The owning implementation Domain handles diagnosis; the original behavior's evaluator and any affected boundary Domain verify the repair | Task Envelope, selected diagnostic workflow, project observability, Domain evaluators |
+| Refactor without behavior change | The code-owning Domain leads while compatibility and architecture evaluators protect external contracts | Capability contract, project architecture, compatibility evaluator, acceptance evidence |
+| Respond to an incident | Operations or reliability capability coordinates, then routes investigation and remediation work to affected implementation and security Domains | High-risk task contract, approval gates, incident workflow, multi-Domain Routing Plan |
 
 ### Scenario A: Develop a New Application
 

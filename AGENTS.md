@@ -25,12 +25,16 @@ Use another language only when the user explicitly requests it or when preservin
 7. For G2 and G3 work, keep `acceptance.json`, `progress.md`, and `contract.md` current throughout execution.
 8. The Generator must not issue the final verdict for G2 or G3 work.
 9. Update the relevant documentation and change record before completing work.
+10. Resolve enterprise functions through the Domain registry and project overlay. Do not invent an unregistered Domain or capability.
+11. Load only the selected Domain Pack content. Domain policy may specialize but may not weaken Kernel red lines.
 
 ## Read on Demand
 
 | Task | Required reading |
 | --- | --- |
 | Understand the overall design | `docs/ARCHITECTURE.md` |
+| Route a task to enterprise functions | `docs/ENTERPRISE_DOMAIN_ARCHITECTURE.md`, `docs/ROUTING.md` |
+| Configure Domain Pack sources | `config/domain-pack-sources.json` |
 | Plan a complex change | `workflows/3-plus-1.md`, `changes/README.md` |
 | Decide permissions and approvals | `docs/GOVERNANCE.md`, `docs/AUTONOMY_POLICY.md`, `rules/CORE.md` |
 | Make a system observable to an agent | `docs/OBSERVABILITY.md` |
@@ -51,3 +55,4 @@ A task is complete only when:
 - Documentation, decisions, and actual behavior agree.
 - The handoff record is sufficient for another qualified contributor to resume without chat history.
 - The delivery includes a change summary, verification evidence, residual risks, and rollback guidance.
+- Any routed work records the selected Domain Pack versions, capabilities, source references, and unresolved conflicts.

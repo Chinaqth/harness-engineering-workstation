@@ -23,10 +23,23 @@ Artifact depth is risk-proportional:
 
 Before implementation, a human confirms high-impact assumptions and all G1-or-higher decisions. G2 and G3 plans must also declare the autonomy budgets from `docs/AUTONOMY_POLICY.md`.
 
+### Route to Professional Capabilities
+
+After the objective is clear and before implementation begins:
+
+1. Normalize the request into a Task Envelope.
+2. Read the project Domain overlay and configured Domain registry.
+3. Select only active, compatible capabilities and resolve their dependencies.
+4. Record the resulting Routing Plan, including Pack versions, workflows, Skills, tools, evaluators, permissions, reasons, and conflicts.
+5. Load only the selected Domain content.
+
+If the result is `needs_input`, `needs_approval`, or `unroutable`, resolve that state before implementation. Do not invent a capability or bypass a missing approval.
+
 ## Phase 2: Implement
 
 - Modify only the approved scope.
 - Load rules, skills, and external tools on demand.
+- Follow the Routing Plan and record any capability or dependency change that forces rerouting.
 - Establish an observable failure before implementing a fix.
 - Run the relevant check after each verifiable unit of work.
 - Update `acceptance.json` only from observable evidence, not implementation confidence.
@@ -61,5 +74,6 @@ Every pull request includes verification evidence, evaluator identity or executi
 - Move completed changes to `changes/archive/`.
 - Merge durable conclusions into architecture, rules, or skills.
 - Add new failure modes to audit rules or evaluation suites.
+- Promote reusable professional practice to the owning Domain Pack; keep project facts in the project overlay.
 - Record metrics and remove temporary context that is no longer valid.
 - Run knowledge gardening to find broken references, stale active changes, superseded guidance, and temporary artifacts.

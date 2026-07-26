@@ -50,13 +50,17 @@ Read L0 by default. Enter L1 according to the task, load L2 only while working o
 
 ## Control Plane and Project Plane
 
-- **Control plane (this repository):** Organization defaults, templates, skills, maturity models, and audit standards.
-- **Project plane (product repositories):** Project architecture, domain specifications, project rules, tests, and concrete change records.
+- **Kernel control plane (this repository):** Organization defaults, cross-domain workflow, routing protocol, templates, Skills, maturity models, and audit standards.
+- **Domain plane (`harness-engineering-domain-packs`):** Versioned professional functions, route metadata, capability contracts, domain workflows, rules, Skills, and evaluators.
+- **Project plane (product repositories):** Project architecture, Domain Pack overlays, project rules, tests, and concrete change records.
 - **Synchronization:** The control plane publishes versions. Projects explicitly adopt a version and record deviations; updates never silently overwrite project-specific policy.
+
+The detailed boundary, lifecycle, precedence, and runtime distribution model is defined in [ENTERPRISE_DOMAIN_ARCHITECTURE.md](ENTERPRISE_DOMAIN_ARCHITECTURE.md). The task-to-capability protocol is defined in [ROUTING.md](ROUTING.md).
 
 ## Scaling Principles
 
 - Organize rules as organization defaults, domain rules, and project rules. Rules become more specific closer to the project but cannot weaken organizational red lines.
+- Discover professional capabilities through a registry and load full Domain Pack content only after the Router selects it.
 - Assign each skill to a domain owner and require a clear trigger description, input/output contract, and validation method.
 - Make every automated decision traceable to a rule, test, or human approval.
 - Treat logs, health checks, traces, screenshots, and reproducible user journeys as agent inputs, not operational exhaust.
