@@ -3,7 +3,7 @@
 - Change ID: 20260726-enterprise-domain-routing
 - Updated: 2026-07-26
 - Current phase: independent re-evaluation
-- Last verified implementation revision: `02ab19159d10a1f9c5b0fced45523e8c8c648b7b`
+- Last verified implementation revision: `45e290428d7853dc9ab9bf53b1c1837edb93b459`
 - Evaluation revision rule: Resolve the exact immutable Harness HEAD at evaluator start; audit-only records may follow the implementation commit.
 - Environment: macOS local repository
 

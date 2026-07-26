@@ -21,7 +21,9 @@
         "changes/20260726-enterprise-domain-routing/remediation-evidence-20260726.md",
         "Routing Plan selections now use the canonical Domain ID pattern",
         "changes/20260726-enterprise-domain-routing/evaluation-20260726-v3.md",
-        "Third evaluation found project-overlay identity and uniqueness gaps"
+        "Third evaluation found project-overlay identity and uniqueness gaps",
+        "schemas/project-domain-overlay.schema.json enforces canonical Domain IDs",
+        "scripts/validate_routing.py rejects duplicate Domain overlay entries"
       ]
     },
     {
@@ -35,7 +37,8 @@
         "changes/20260726-enterprise-domain-routing/remediation-evidence-20260726.md",
         "tests/test_routing_validation.py rejects Domain-schema-invalid identifiers",
         "changes/20260726-enterprise-domain-routing/evaluation-20260726-v3.md",
-        "Third evaluation found contradictory duplicate overlays were accepted"
+        "Third evaluation found contradictory duplicate overlays were accepted",
+        "tests/test_routing_validation.py covers invalid and duplicate overlay Domain IDs"
       ]
     },
     {
