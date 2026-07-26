@@ -3,12 +3,13 @@
 - Change ID: 20260726-enterprise-domain-routing
 - Updated: 2026-07-26
 - Current phase: independent re-evaluation
-- Last verified revision: `02ab19159d10a1f9c5b0fced45523e8c8c648b7b`
+- Last verified implementation revision: `02ab19159d10a1f9c5b0fced45523e8c8c648b7b`
+- Evaluation revision rule: Resolve the exact immutable Harness HEAD at evaluator start; audit-only records may follow the implementation commit.
 - Environment: macOS local repository
 
 ## Current State
 
-The second independent G2 evaluation returned `FAIL` after confirming the first-round remediation. The remaining Domain ID, documentation, stale-record, and rollback-method findings are now remediated. Publication and a third independent evaluation remain.
+The second independent G2 evaluation returned `FAIL` after confirming the first-round remediation. The remaining Domain ID, documentation, stale-record, and rollback-method findings are remediated and published. A third independent evaluation is the only open task.
 
 ## Completed and Verified
 
@@ -27,7 +28,7 @@ The second independent G2 evaluation returned `FAIL` after confirming the first-
 - Domain remediation revision: `a54ea46e0044af9b313084cff7815892c00957be`.
 - Harness remediation revision: `9361fbe8ef4533973e0be0d78be24d23d635327d`.
 - The isolated cross-repository rollback rehearsal passed with exact tree matches.
-- Both formal checkouts and private remote `main` branches match the pinned remediation revisions.
+- Both formal checkouts and private remote `main` branches contain the remediation and second-round fixes.
 - Both complete checks pass from the formal checkouts with 10 tests each.
 - The second read-only evaluation is recorded in `evaluation-20260726-v2.md`.
 - Routing Plan Domain IDs now use the canonical Domain identity pattern.
@@ -36,7 +37,6 @@ The second independent G2 evaluation returned `FAIL` after confirming the first-
 
 ## Open Tasks
 
-- Publish Harness `02ab191` and Domain Pack `baa88a3`.
 - Repeat independent evaluation.
 
 ## Blockers and Decisions Needed
@@ -53,4 +53,4 @@ The remediation uses a dependency-free JSON Schema subset validator. A future sc
 
 ## Resume Here
 
-Publish the fixed revisions, then run a fresh read-only independent evaluation and require it to rerun the rollback tool from the exact evaluated heads.
+Run a fresh read-only independent evaluation. Resolve both exact HEADs at evaluator start and require the Evaluator to rerun the rollback tool with those immutable values.

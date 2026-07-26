@@ -13,6 +13,8 @@
 
 The method does not depend on the number or order of later commits and does not rewrite shared history. A real rollback would commit the restored trees on dedicated rollback branches and merge them through G2 review.
 
+A fresh Evaluator must rerun the tool with the exact Harness and Domain HEADs resolved at evaluation start; the recorded example is evidence of the method, not a substitute for that reproduction.
+
 ## Evidence
 
 ```text

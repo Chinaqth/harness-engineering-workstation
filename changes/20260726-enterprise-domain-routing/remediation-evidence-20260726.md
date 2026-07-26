@@ -1,5 +1,7 @@
 # Remediation Evidence
 
+> Historical first-remediation evidence. The second independent evaluation and follow-up are recorded in `evaluation-20260726-v2.md` and `rollback-rehearsal-20260726-v2.md`.
+
 - Date: 2026-07-26
 - Harness revision: `40e379a13f51a406b55e65d847acb297604efc8f`
 - Domain Pack revision: `a54ea46e0044af9b313084cff7815892c00957be`
