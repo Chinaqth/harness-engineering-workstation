@@ -3,7 +3,7 @@
 - ID: 20260726-enterprise-domain-routing
 - Owner: Harness Engineering Owner
 - Risk: G2
-- Status: implementing
+- Status: evaluating
 - Review-By: 2026-08-09
 
 ## Problem
@@ -38,7 +38,7 @@ The Harness currently governs the shared delivery loop but has no versioned mech
 - [x] AC-02: Machine-readable routing contracts and examples exist.
 - [x] AC-03: Validation rejects internally inconsistent example routing.
 - [x] AC-04: Entry, governance, workflow, and bilingual operating guides describe Domain routing.
-- [ ] AC-05: The full Harness check passes and an independent reviewer accepts the G2 change.
+- [ ] AC-05: The full Harness check passes and an independent reviewer accepts the G2 change. The automated check passes; independent review remains pending.
 
 ## Risk, Permission, and Data Impact
 

@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "change_id": "20260726-enterprise-domain-routing",
   "risk": "G2",
-  "status": "implementing",
+  "status": "evaluating",
   "criteria": [
     {
       "id": "AC-01",
@@ -32,7 +32,10 @@
       "id": "AC-05",
       "description": "The full Harness check passes and an independent reviewer accepts the G2 change.",
       "status": "pending",
-      "evidence": []
+      "evidence": [
+        "scripts/harness-check.sh passed on 2026-07-26",
+        "git@github.com:Chinaqth/harness-engineering-domain-packs.git initialized at c5bf2de"
+      ]
     }
   ]
 }
