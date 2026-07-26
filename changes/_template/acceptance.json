@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "change_id": "YYYYMMDD-short-name",
+  "risk": "G1",
+  "status": "draft",
+  "criteria": [
+    {
+      "id": "AC-01",
+      "description": "Describe one observable outcome.",
+      "status": "pending",
+      "evidence": []
+    }
+  ]
+}

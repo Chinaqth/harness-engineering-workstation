@@ -1,0 +1,17 @@
+name: Knowledge Garden
+
+on:
+  schedule:
+    - cron: "17 3 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check links and active change freshness
+        run: python3 scripts/knowledge-garden.py

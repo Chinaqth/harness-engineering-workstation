@@ -20,8 +20,10 @@ AI-assisted delivery should have the same qualities expected from a mature engin
 2. Read the [architecture](docs/ARCHITECTURE.md) and [governance model](docs/GOVERNANCE.md).
 3. Copy `changes/_template/` to create a change proposal and follow the `3+1` workflow.
 4. Run `./scripts/harness-check.sh` to validate workstation integrity.
-5. Use `skills/harness-audit` to assess the maturity of an adopting repository.
-6. Read the [video-informed Harness Engineering analysis](docs/knowledge/harness-engineering-video-analysis-bv12lr1b3eut.md) for evidence, interpretation, and recommended experiments.
+5. Apply the [autonomy policy](docs/AUTONOMY_POLICY.md) and [agent observability contract](docs/OBSERVABILITY.md).
+6. Use `skills/end-to-end-evaluator` for independent, evidence-backed delivery evaluation.
+7. Use `skills/harness-audit` to assess the maturity of an adopting repository.
+8. Read the [video-informed Harness Engineering analysis](docs/knowledge/harness-engineering-video-analysis-bv12lr1b3eut.md) for evidence, interpretation, and recommended experiments.
 
 ## Repository Structure
 
@@ -39,4 +41,4 @@ AI-assisted delivery should have the same qualities expected from a mature engin
 
 ## Current State
 
-This is the `v0.1` baseline: establish a minimal executable loop first, then improve it with evidence from real projects. See the [maturity model](docs/MATURITY_MODEL.md) for the next stages.
+This is the `v0.2` hardening baseline. It adds machine-readable acceptance state, session handoffs, Generator–Evaluator contracts, risk-proportional autonomy budgets, independent end-to-end evaluation, and scheduled knowledge-gardening checks. See the [maturity model](docs/MATURITY_MODEL.md) for the next stages.

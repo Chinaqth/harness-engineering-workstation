@@ -20,15 +20,15 @@ Check tool inventory, owners, least-privilege scopes, input trust boundaries, sk
 
 ### 3. Execution orchestration
 
-Check requirements, non-goals, acceptance criteria, task decomposition, risk gates, independent evaluation, handoff rules and scope-change handling.
+Check requirements, non-goals, machine-readable acceptance state, task decomposition, autonomy budgets, Generator–Evaluator contracts, independent verdicts, handoff rules and scope-change handling.
 
 ### 4. State and memory
 
-Check Git-backed decisions, change history, knowledge freshness, archive process, source attribution and conflict resolution.
+Check Git-backed decisions, change history, cross-session resume records, scheduled knowledge gardening, archive process, source attribution and conflict resolution.
 
 ### 5. Evaluation and observability
 
-Check build/Lint/type/test/security layers, AI task regression sets, flaky-check tracking, cost/latency visibility, failure taxonomy and trend reporting.
+Check build/lint/type/test/security layers, reproducible user journeys, agent-legible health/log/trace adapters, evidence retention, AI task regression sets, flaky-check tracking, cost/latency visibility, failure taxonomy and trend reporting.
 
 ### 6. Guardrails and recovery
 

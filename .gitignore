@@ -4,3 +4,5 @@
 *.pem
 *.key
 reports/
+__pycache__/
+*.py[cod]

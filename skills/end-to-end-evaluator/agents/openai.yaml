@@ -1,0 +1,4 @@
+interface:
+  display_name: "End-to-End Evaluator"
+  short_description: "Verify user-visible behavior with independent evidence"
+  default_prompt: "Use $end-to-end-evaluator to verify this change end to end and produce an evidence-backed verdict."

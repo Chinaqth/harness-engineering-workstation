@@ -286,6 +286,22 @@ Define an autonomy budget for each governance level:
 | G2 | Planner, generator, independent evaluator, human approval |
 | G3 | Human-led decision, separation of duties, audited execution |
 
+## v0.2 Implementation Outcome
+
+The workstation implemented the recommended experiments as control-plane capabilities:
+
+| Experiment | Implemented mechanism |
+| --- | --- |
+| Machine-readable acceptance | `changes/_template/acceptance.json` and `scripts/validate_change.py` |
+| Cross-session continuity | `changes/_template/progress.md` and workflow handoff requirements |
+| Generator–Evaluator contract | `changes/_template/contract.md` and explicit verdict authority |
+| End-to-end evaluation | `skills/end-to-end-evaluator` |
+| Agent observability | `docs/OBSERVABILITY.md` |
+| Knowledge gardening | `scripts/knowledge-garden.py` and a monthly CI workflow |
+| Autonomy budgets | `docs/AUTONOMY_POLICY.md` |
+
+The completed change and its evidence are archived under `changes/archive/2026/20260726-harness-v0.2-hardening/`. Product-specific observability adapters, domain journeys, exception expiry checks, and measured pilot outcomes remain adoption work rather than control-plane claims.
+
 ## Practical Takeaway
 
 The video is most valuable when interpreted as a change in engineering responsibility:

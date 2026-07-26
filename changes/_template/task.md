@@ -14,4 +14,11 @@
 | --- | --- | --- |
 |  |  |  |
 
+## Evaluator Verdict
+
+- Verdict: pending
+- Evaluator:
+- Date:
+- Evidence:
+
 ## Residual Risks

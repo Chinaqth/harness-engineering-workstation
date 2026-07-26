@@ -15,6 +15,28 @@ The workstation converts model capability into repeatable, governable organizati
 | Evaluation and observability | `scripts/`, CI, audit reports | Measure quality, cost, and reliability with evidence |
 | Guardrails and recovery | `rules/`, approval boundaries, rollback plans | Prevent boundary violations and reduce recovery cost |
 
+## Execution Control Artifacts
+
+Conversation is a transient interface, not the source of truth. Material work is controlled by five artifacts:
+
+| Artifact | Purpose | Primary writer |
+| --- | --- | --- |
+| `requirements.md` | Scope, constraints, risk, and human-readable acceptance | Planner |
+| `task.md` | Decomposition and verification matrix | Planner and Generator |
+| `acceptance.json` | Machine-readable criterion state and evidence pointers | Generator, verified by Evaluator |
+| `progress.md` | Cross-session handoff and resume point | Current operator |
+| `contract.md` | Generator–Evaluator boundary, evidence standard, and verdict authority | Planner and Evaluator |
+
+The artifacts form a closed loop:
+
+```text
+Intent -> Plan -> Generate -> Observe -> Evaluate -> Decide
+   ^                                                |
+   +---------- Institutionalize evidence -----------+
+```
+
+The Generator may propose that a criterion passes. The Evaluator owns the independent verdict for G2 and G3 work. Neither role may silently weaken acceptance criteria after implementation begins.
+
 ## Information Layers
 
 ```text
@@ -37,4 +59,6 @@ Read L0 by default. Enter L1 according to the task, load L2 only while working o
 - Organize rules as organization defaults, domain rules, and project rules. Rules become more specific closer to the project but cannot weaken organizational red lines.
 - Assign each skill to a domain owner and require a clear trigger description, input/output contract, and validation method.
 - Make every automated decision traceable to a rule, test, or human approval.
+- Treat logs, health checks, traces, screenshots, and reproducible user journeys as agent inputs, not operational exhaust.
+- Bound autonomy by risk, permissions, external effects, cost, and mandatory checkpoints.
 - Begin metrics with the presence and quality of evidence, then add efficiency and quality trends as the system matures.

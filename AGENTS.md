@@ -22,7 +22,9 @@ Use another language only when the user explicitly requests it or when preservin
 4. Prefer automated evidence: tests, static analysis, build results, and reproducible commands.
 5. Use the minimum necessary permission. Deletion, publication, access changes, and production operations require explicit authorization.
 6. Do not conceal failures, fabricate test results, or bypass quality gates.
-7. Update the relevant documentation and change record before completing work.
+7. For G2 and G3 work, keep `acceptance.json`, `progress.md`, and `contract.md` current throughout execution.
+8. The Generator must not issue the final verdict for G2 or G3 work.
+9. Update the relevant documentation and change record before completing work.
 
 ## Read on Demand
 
@@ -30,7 +32,9 @@ Use another language only when the user explicitly requests it or when preservin
 | --- | --- |
 | Understand the overall design | `docs/ARCHITECTURE.md` |
 | Plan a complex change | `workflows/3-plus-1.md`, `changes/README.md` |
-| Decide permissions and approvals | `docs/GOVERNANCE.md`, `rules/CORE.md` |
+| Decide permissions and approvals | `docs/GOVERNANCE.md`, `docs/AUTONOMY_POLICY.md`, `rules/CORE.md` |
+| Make a system observable to an agent | `docs/OBSERVABILITY.md` |
+| Evaluate a delivery end to end | `skills/end-to-end-evaluator/SKILL.md` |
 | Assess maturity | `docs/MATURITY_MODEL.md`, `skills/harness-audit/SKILL.md` |
 | Study external Harness Engineering evidence | `docs/knowledge/harness-engineering-video-analysis-bv12lr1b3eut.md` |
 | Modify team policy | `docs/GOVERNANCE.md`, then create a change proposal |
@@ -41,7 +45,9 @@ Use another language only when the user explicitly requests it or when preservin
 A task is complete only when:
 
 - Every acceptance criterion is satisfied.
+- Machine-readable acceptance state agrees with the human-readable change record.
 - Relevant automated checks pass, or the reason they cannot run is recorded.
 - No known P0 or P1 issue remains within the change scope.
 - Documentation, decisions, and actual behavior agree.
+- The handoff record is sufficient for another qualified contributor to resume without chat history.
 - The delivery includes a change summary, verification evidence, residual risks, and rollback guidance.

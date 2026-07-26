@@ -11,6 +11,8 @@
 
 Determine risk from impact surface, reversibility, data sensitivity, and external side effects. Round up when uncertain.
 
+The level sets an autonomy ceiling, not only a review label. Apply the budgets and mandatory checkpoints in [AUTONOMY_POLICY.md](AUTONOMY_POLICY.md).
+
 ## Roles
 
 - **Owner:** Accountable for the rule and final outcome.
@@ -21,15 +23,18 @@ Determine risk from impact surface, reversibility, data sensitivity, and externa
 
 Small teams may combine roles, but the Generator and approver for a G2 or G3 decision must not be the same decision-making entity.
 
+For G2 and G3 work, the Generator may update implementation state and attach evidence, while the Evaluator independently reproduces the critical journey and owns the final pass, fail, or blocked verdict. The Owner resolves changes to scope or acceptance criteria.
+
 ## Policy Changes
 
 When changing `rules/`, audit scoring, or approval boundaries:
 
-1. Create `changes/<id>/requirements.md`.
+1. Create a complete G2 change record under `changes/<id>/`.
 2. Document motivation, applicability, migration, and failure modes.
-3. Describe compatibility impact and rollback.
-4. Review the change through a pull request.
-5. Record the version and notify affected projects after merge.
+3. Describe compatibility impact, autonomy budgets, evaluation contract, and rollback.
+4. Validate machine-readable acceptance state and obtain an independent verdict.
+5. Review the change through a pull request.
+6. Record the version and notify affected projects after merge.
 
 ## Exception Management
 

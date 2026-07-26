@@ -21,6 +21,8 @@ These rules apply to every adopting project.
 
 - Identify authoritative facts, impact surface, and existing conventions before making changes.
 - Require verifiable acceptance criteria for every new behavior.
+- Keep machine-readable acceptance state and human-readable requirements consistent for G2 and G3 work.
+- Preserve a resumable handoff at checkpoints; do not rely on chat history as durable state.
 - Prefer the smallest reversible change consistent with the existing architecture.
 - For every new dependency, document necessity, maintenance status, license, and alternatives.
 - Consider compatibility for public interfaces, schemas, and data migrations.
@@ -31,4 +33,5 @@ These rules apply to every adopting project.
 - Run build, lint, type, unit, integration, and security checks in proportion to risk.
 - If a check cannot run, state the reason, impact, and substitute human evidence.
 - Never manufacture a passing result by deleting tests, weakening assertions, or broadening ignore rules.
+- Separate Generator evidence from the final Evaluator verdict for G2 and G3 work.
 - Include residual risks and rollback guidance in every delivery.

@@ -8,6 +8,12 @@
 
 ## Verification Evidence
 
+## Evaluator Verdict
+
+- Verdict:
+- Evaluator or execution context:
+- Critical journey:
+
 ## Risk, Permission, and Data Impact
 
 ## Rollback

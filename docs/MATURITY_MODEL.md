@@ -19,6 +19,7 @@ Exit criterion: at least 80% of material changes have acceptance criteria and au
 
 - Permission and risk classifications are explicit.
 - Critical changes have owners, approvals, and rollback plans.
+- High-risk work has machine-readable acceptance, bounded autonomy, resumable handoffs, and independent verdicts.
 - Skills, tools, and knowledge sources have accountable owners.
 - Rework, rollback, exceptions, and check reliability are tracked continuously.
 
@@ -41,4 +42,4 @@ Exit criterion: model, prompt, or skill upgrades can be compared against the sam
 
 ## Current Baseline
 
-The `v0.1` goal is to fully reach L1 and establish governance interfaces for L2. Avoid building a complex platform before real usage data justifies it.
+The `v0.2` baseline reaches L1 at the control-plane level and establishes executable interfaces for L2: machine-readable acceptance, risk-proportional autonomy, independent evaluation, agent observability, and knowledge gardening. Full L2 readiness still requires adoption evidence, named domain owners, product-specific adapters, exception tracking, and measured outcomes from real projects.

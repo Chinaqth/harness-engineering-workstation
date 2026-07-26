@@ -7,8 +7,10 @@ failures=0
 required=(
   "AGENTS.md"
   "docs/ARCHITECTURE.md"
+  "docs/AUTONOMY_POLICY.md"
   "docs/GOVERNANCE.md"
   "docs/MATURITY_MODEL.md"
+  "docs/OBSERVABILITY.md"
   "rules/CORE.md"
   "workflows/3-plus-1.md"
   "changes/README.md"
@@ -40,6 +42,18 @@ done < <(
     -not -name '*.[a-z][a-z]-[A-Z][A-Z].md' \
     -not -path '*/.git/*'
 )
+
+if ! python3 "$root/scripts/validate_change.py" "$root"; then
+  failures=$((failures + 1))
+fi
+
+if ! python3 "$root/scripts/knowledge-garden.py" "$root"; then
+  failures=$((failures + 1))
+fi
+
+if ! python3 -m unittest discover -s "$root/tests"; then
+  failures=$((failures + 1))
+fi
 
 if (( failures > 0 )); then
   printf '\nHarness check failed with %d issue(s).\n' "$failures"

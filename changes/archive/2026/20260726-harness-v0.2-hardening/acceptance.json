@@ -1,0 +1,72 @@
+{
+  "schema_version": "1.0",
+  "change_id": "20260726-harness-v0.2-hardening",
+  "risk": "G2",
+  "status": "done",
+  "criteria": [
+    {
+      "id": "AC-01",
+      "description": "G2 and G3 change records have a validated machine-readable acceptance state.",
+      "status": "passing",
+      "evidence": [
+        "scripts/validate_change.py",
+        "tests/test_validation.py"
+      ]
+    },
+    {
+      "id": "AC-02",
+      "description": "A standard handoff record makes work resumable without chat history.",
+      "status": "passing",
+      "evidence": [
+        "changes/_template/progress.md",
+        "workflows/3-plus-1.md"
+      ]
+    },
+    {
+      "id": "AC-03",
+      "description": "Generator and Evaluator responsibilities and verdict authority are explicit.",
+      "status": "passing",
+      "evidence": [
+        "changes/_template/contract.md",
+        "docs/GOVERNANCE.md",
+        "skills/end-to-end-evaluator/SKILL.md"
+      ]
+    },
+    {
+      "id": "AC-04",
+      "description": "Autonomy is bounded by risk, scope, permissions, side effects, time, cost, and evidence.",
+      "status": "passing",
+      "evidence": [
+        "docs/AUTONOMY_POLICY.md",
+        "changes/_template/requirements.md"
+      ]
+    },
+    {
+      "id": "AC-05",
+      "description": "Adopting projects have a minimum agent observability contract.",
+      "status": "passing",
+      "evidence": [
+        "docs/OBSERVABILITY.md"
+      ]
+    },
+    {
+      "id": "AC-06",
+      "description": "An independently validated end-to-end evaluator Skill exists.",
+      "status": "passing",
+      "evidence": [
+        "Official quick_validate.py result: Skill is valid!",
+        "skills/end-to-end-evaluator/agents/openai.yaml"
+      ]
+    },
+    {
+      "id": "AC-07",
+      "description": "CI and a schedule detect broken knowledge links and stale active changes.",
+      "status": "passing",
+      "evidence": [
+        "scripts/knowledge-garden.py",
+        ".github/workflows/knowledge-garden.yml",
+        "tests/test_validation.py"
+      ]
+    }
+  ]
+}
