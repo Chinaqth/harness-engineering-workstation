@@ -12,29 +12,40 @@
     },
     {
       "id": "AC-02",
-      "description": "Machine-readable routing contracts and examples exist.",
-      "status": "passing",
-      "evidence": ["schemas/", "examples/", "config/domain-pack-sources.json"]
+      "description": "Machine-readable routing contracts and examples completely represent the documented audit contract.",
+      "status": "failing",
+      "evidence": [
+        "changes/20260726-enterprise-domain-routing/evaluation-20260726.md",
+        "Routing Plan schema lacks permission and immutable-source provenance"
+      ]
     },
     {
       "id": "AC-03",
-      "description": "Validation rejects internally inconsistent example routing.",
-      "status": "passing",
-      "evidence": ["scripts/validate_routing.py", "tests/test_routing_validation.py"]
+      "description": "Validation rejects internally inconsistent routing and incomplete active Domain artifacts.",
+      "status": "failing",
+      "evidence": [
+        "changes/20260726-enterprise-domain-routing/evaluation-20260726.md",
+        "Five contradictory routing fixtures and one incomplete active Domain fixture were accepted"
+      ]
     },
     {
       "id": "AC-04",
-      "description": "Entry, governance, workflow, and bilingual operating guides describe Domain routing.",
-      "status": "passing",
-      "evidence": ["AGENTS.md", "README.md", "README-CH.md", "docs/GOVERNANCE.md", "workflows/3-plus-1.md"]
+      "description": "Entry, governance, workflow, and bilingual operating guides describe Domain routing without implying a production Router exists.",
+      "status": "failing",
+      "evidence": [
+        "changes/20260726-enterprise-domain-routing/evaluation-20260726.md",
+        "Present-tense Router descriptions remain ambiguous"
+      ]
     },
     {
       "id": "AC-05",
       "description": "The full Harness check passes and an independent reviewer accepts the G2 change.",
-      "status": "pending",
+      "status": "failing",
       "evidence": [
         "scripts/harness-check.sh passed on 2026-07-26",
-        "git@github.com:Chinaqth/harness-engineering-domain-packs.git initialized at c5bf2de"
+        "git@github.com:Chinaqth/harness-engineering-domain-packs.git initialized at c5bf2de",
+        "Independent verdict: FAIL",
+        "changes/20260726-enterprise-domain-routing/evaluation-20260726.md"
       ]
     }
   ]
