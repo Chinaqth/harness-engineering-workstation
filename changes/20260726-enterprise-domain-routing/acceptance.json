@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "change_id": "20260726-enterprise-domain-routing",
   "risk": "G2",
-  "status": "implementing",
+  "status": "evaluating",
   "criteria": [
     {
       "id": "AC-01",
@@ -17,7 +17,8 @@
       "evidence": [
         "changes/20260726-enterprise-domain-routing/evaluation-20260726.md",
         "schemas/routing-plan.schema.json now includes permissions and immutable-source provenance",
-        "schemas/project-domain-overlay.schema.json now includes mappings and disabled capabilities"
+        "schemas/project-domain-overlay.schema.json now includes mappings and disabled capabilities",
+        "changes/20260726-enterprise-domain-routing/remediation-evidence-20260726.md"
       ]
     },
     {
@@ -27,7 +28,8 @@
       "evidence": [
         "changes/20260726-enterprise-domain-routing/evaluation-20260726.md",
         "tests/test_routing_validation.py covers the reproduced contradictory states",
-        "Domain Pack tests/test_registry_validation.py covers schema-invalid active Packs"
+        "Domain Pack tests/test_registry_validation.py covers schema-invalid active Packs",
+        "changes/20260726-enterprise-domain-routing/remediation-evidence-20260726.md"
       ]
     },
     {
@@ -36,7 +38,8 @@
       "status": "pending",
       "evidence": [
         "changes/20260726-enterprise-domain-routing/evaluation-20260726.md",
-        "README.md, README-CH.md, and docs/ROUTING.md explicitly state the protocol-only boundary"
+        "README.md, README-CH.md, and docs/ROUTING.md explicitly state the protocol-only boundary",
+        "changes/20260726-enterprise-domain-routing/remediation-evidence-20260726.md"
       ]
     },
     {

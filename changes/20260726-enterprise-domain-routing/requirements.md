@@ -3,7 +3,7 @@
 - ID: 20260726-enterprise-domain-routing
 - Owner: Harness Engineering Owner
 - Risk: G2
-- Status: implementing
+- Status: evaluating
 - Review-By: 2026-08-09
 
 ## Problem
