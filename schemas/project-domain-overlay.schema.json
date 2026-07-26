@@ -13,7 +13,7 @@
         "additionalProperties": false,
         "required": ["id", "version", "enabled", "local_owner", "additional_signals", "constraints", "disabled_capabilities", "mappings"],
         "properties": {
-          "id": { "type": "string", "minLength": 1 },
+          "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*(\\.[a-z0-9][a-z0-9-]*)+$" },
           "version": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },
           "enabled": { "type": "boolean" },
           "local_owner": { "type": "string", "minLength": 1 },

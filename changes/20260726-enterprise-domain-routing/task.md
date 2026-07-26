@@ -12,6 +12,8 @@
 - [x] Rehearse the cross-repository rollback.
 - [x] Repeat independent evaluation against first remediation revisions; verdict `FAIL`.
 - [x] Remediate the second evaluation findings.
+- [x] Repeat independent evaluation against the second remediation revisions; verdict `FAIL`.
+- [x] Remediate project-overlay identity and uniqueness.
 - [ ] Repeat independent evaluation against the final immutable revisions.
 
 ## Verification Matrix
@@ -19,17 +21,17 @@
 | Acceptance criterion | Verification method | Result or evidence |
 | --- | --- | --- |
 | AC-01 | Documentation review and local-link validation | `./scripts/harness-check.sh` passed on 2026-07-26 |
-| AC-02 | Parse configuration and example contracts | Remediated; independent re-evaluation pending |
-| AC-03 | Unit rejection tests plus adversarial fixtures | Remediated with Harness and Domain regression coverage; re-evaluation pending |
-| AC-04 | Documentation review | Protocol-only boundary clarified; re-evaluation pending |
+| AC-02 | Parse configuration and example contracts | Overlay identity and uniqueness remediation implemented; re-evaluation pending |
+| AC-03 | Unit rejection tests plus adversarial fixtures | Overlay negative regression coverage passes; re-evaluation pending |
+| AC-04 | Documentation review | Passed third independent evaluation |
 | AC-05 | Complete integrity gate, rollback rehearsal, and external review | Both gates and isolated rollback rehearsal pass; independent re-evaluation pending |
 
 ## Evaluator Verdict
 
 - Latest verdict: fail
-- Evaluator: Independent Agent `/root/g2_domain_architecture_reevaluator`
+- Evaluator: Independent Agent `/root/g2_domain_architecture_final_evaluator`
 - Date: 2026-07-26
-- Evidence: `evaluation-20260726-v2.md`
+- Evidence: `evaluation-20260726-v3.md`
 
 ## Residual Risks
 

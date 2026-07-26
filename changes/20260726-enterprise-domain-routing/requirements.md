@@ -37,7 +37,7 @@ The Harness currently governs the shared delivery loop but has no versioned mech
 - [x] AC-01: Architecture defines repository and policy boundaries.
 - [ ] AC-02: Machine-readable routing contracts and examples completely represent the documented audit contract. Remediation implemented; independent re-evaluation pending.
 - [ ] AC-03: Validation rejects internally inconsistent routing and incomplete active Domain artifacts. Regression coverage added; independent re-evaluation pending.
-- [ ] AC-04: Entry, governance, workflow, and bilingual operating guides describe Domain routing without implying a production Router already exists. Wording updated; independent re-evaluation pending.
+- [x] AC-04: Entry, governance, workflow, and bilingual operating guides describe Domain routing without implying a production Router already exists. Satisfied by the third independent evaluation.
 - [ ] AC-05: The full Harness check passes and an independent reviewer accepts the G2 change. Previous verdict was `FAIL`; re-evaluation pending.
 
 ## Risk, Permission, and Data Impact

@@ -48,6 +48,24 @@ class RoutingValidationTests(unittest.TestCase):
             "reason": "The task and repository signals match.",
         }
 
+    def overlay_domain(self) -> dict:
+        return {
+            "id": "engineering.ios",
+            "version": "1.0.0",
+            "enabled": True,
+            "local_owner": "mobile-team",
+            "additional_signals": ["swift"],
+            "constraints": ["Use project signing policy."],
+            "disabled_capabilities": ["legacy-release"],
+            "mappings": [
+                {
+                    "capability_id": "delivery",
+                    "project_paths": ["ios/"],
+                    "commands": ["make test-ios"],
+                }
+            ],
+        }
+
     def test_repository_examples_are_valid(self) -> None:
         self.assertEqual(MODULE.validate(self.root), [])
 
@@ -158,27 +176,40 @@ class RoutingValidationTests(unittest.TestCase):
         path = self.root / "examples" / "project-domain-overlay.json"
         overlay = {
             "schema_version": "1.0",
-            "domains": [
-                {
-                    "id": "engineering.ios",
-                    "version": "1.0.0",
-                    "enabled": True,
-                    "local_owner": "mobile-team",
-                    "additional_signals": ["swift"],
-                    "constraints": ["Use project signing policy."],
-                    "disabled_capabilities": ["legacy-release"],
-                    "mappings": [
-                        {
-                            "capability_id": "delivery",
-                            "project_paths": ["ios/"],
-                            "commands": ["make test-ios"],
-                        }
-                    ],
-                }
-            ],
+            "domains": [self.overlay_domain()],
         }
         path.write_text(json.dumps(overlay, indent=2) + "\n", encoding="utf-8")
         self.assertEqual(MODULE.validate(self.root), [])
+
+    def test_overlay_domain_id_must_match_domain_identity_contract(self) -> None:
+        path = self.root / "examples" / "project-domain-overlay.json"
+        overlay = {
+            "schema_version": "1.0",
+            "domains": [self.overlay_domain()],
+        }
+        overlay["domains"][0]["id"] = "INVALID DOMAIN"
+        path.write_text(json.dumps(overlay, indent=2) + "\n", encoding="utf-8")
+        errors = MODULE.validate(self.root)
+        self.assertTrue(any("required pattern" in error for error in errors))
+
+    def test_overlay_domain_ids_must_be_unique(self) -> None:
+        path = self.root / "examples" / "project-domain-overlay.json"
+        domain = self.overlay_domain()
+        duplicate = dict(domain)
+        duplicate.update(
+            {
+                "version": "2.0.0",
+                "enabled": not domain["enabled"],
+                "local_owner": "conflicting-team",
+            }
+        )
+        overlay = {
+            "schema_version": "1.0",
+            "domains": [domain, duplicate],
+        }
+        path.write_text(json.dumps(overlay, indent=2) + "\n", encoding="utf-8")
+        errors = MODULE.validate(self.root)
+        self.assertTrue(any("Domain IDs must be unique" in error for error in errors))
 
 
 if __name__ == "__main__":

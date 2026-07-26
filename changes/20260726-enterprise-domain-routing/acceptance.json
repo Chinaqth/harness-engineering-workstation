@@ -19,7 +19,9 @@
         "schemas/routing-plan.schema.json now includes permissions and immutable-source provenance",
         "schemas/project-domain-overlay.schema.json now includes mappings and disabled capabilities",
         "changes/20260726-enterprise-domain-routing/remediation-evidence-20260726.md",
-        "Routing Plan selections now use the canonical Domain ID pattern"
+        "Routing Plan selections now use the canonical Domain ID pattern",
+        "changes/20260726-enterprise-domain-routing/evaluation-20260726-v3.md",
+        "Third evaluation found project-overlay identity and uniqueness gaps"
       ]
     },
     {
@@ -31,18 +33,21 @@
         "tests/test_routing_validation.py covers the reproduced contradictory states",
         "Domain Pack tests/test_registry_validation.py covers schema-invalid active Packs",
         "changes/20260726-enterprise-domain-routing/remediation-evidence-20260726.md",
-        "tests/test_routing_validation.py rejects Domain-schema-invalid identifiers"
+        "tests/test_routing_validation.py rejects Domain-schema-invalid identifiers",
+        "changes/20260726-enterprise-domain-routing/evaluation-20260726-v3.md",
+        "Third evaluation found contradictory duplicate overlays were accepted"
       ]
     },
     {
       "id": "AC-04",
       "description": "Entry, governance, workflow, and bilingual operating guides describe Domain routing without implying a production Router exists.",
-      "status": "pending",
+      "status": "passing",
       "evidence": [
         "changes/20260726-enterprise-domain-routing/evaluation-20260726.md",
         "README.md, README-CH.md, and docs/ROUTING.md explicitly state the protocol-only boundary",
         "changes/20260726-enterprise-domain-routing/remediation-evidence-20260726.md",
-        "Domain Pack architecture, governance, Skill, and registration reference use future/protocol-only wording"
+        "Domain Pack architecture, governance, Skill, and registration reference use future/protocol-only wording",
+        "Third independent evaluation satisfied AC-04"
       ]
     },
     {
@@ -57,7 +62,8 @@
         "changes/20260726-enterprise-domain-routing/evaluation-20260726.md",
         "changes/20260726-enterprise-domain-routing/rollback-rehearsal-20260726.md",
         "changes/20260726-enterprise-domain-routing/evaluation-20260726-v2.md",
-        "changes/20260726-enterprise-domain-routing/rollback-rehearsal-20260726-v2.md"
+        "changes/20260726-enterprise-domain-routing/rollback-rehearsal-20260726-v2.md",
+        "changes/20260726-enterprise-domain-routing/evaluation-20260726-v3.md"
       ]
     }
   ]

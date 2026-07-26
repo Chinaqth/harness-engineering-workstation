@@ -69,6 +69,19 @@ def validate_plan_state(plan: dict, errors: list[str]) -> None:
             errors.append("routing plan: unroutable status requires a conflict or reason")
 
 
+def validate_overlay(overlay: dict, errors: list[str]) -> None:
+    domains = overlay.get("domains")
+    if not isinstance(domains, list):
+        return
+    domain_ids = [
+        domain.get("id")
+        for domain in domains
+        if isinstance(domain, dict) and isinstance(domain.get("id"), str)
+    ]
+    if len(domain_ids) != len(set(domain_ids)):
+        errors.append("project overlay: Domain IDs must be unique")
+
+
 def validate(root: Path) -> list[str]:
     root = root.resolve()
     errors: list[str] = []
@@ -96,6 +109,7 @@ def validate(root: Path) -> list[str]:
     config = documents["source configuration"][0]
     envelope = documents["task envelope"][0]
     plan = documents["routing plan"][0]
+    overlay = documents["project overlay"][0]
     sources = config.get("sources", [])
     if isinstance(sources, list):
         source_ids = [
@@ -107,6 +121,7 @@ def validate(root: Path) -> list[str]:
     if plan.get("task_id") != envelope.get("task_id"):
         errors.append("routing plan: task_id must match the Task Envelope")
     validate_plan_state(plan, errors)
+    validate_overlay(overlay, errors)
 
     plan_source = plan.get("source")
     if isinstance(plan_source, dict) and isinstance(sources, list):

@@ -9,7 +9,7 @@
 
 ## Current State
 
-The second independent G2 evaluation returned `FAIL` after confirming the first-round remediation. The remaining Domain ID, documentation, stale-record, and rollback-method findings are remediated and published. A third independent evaluation is the only open task.
+The third independent G2 evaluation returned `FAIL` with one P1 finding: project overlays accepted noncanonical and duplicate Domain identities. The focused remediation and regression coverage pass locally; a final independent evaluation remains.
 
 ## Completed and Verified
 
@@ -34,6 +34,11 @@ The second independent G2 evaluation returned `FAIL` after confirming the first-
 - Routing Plan Domain IDs now use the canonical Domain identity pattern.
 - Domain-owned documents now state the future/protocol-only boundary.
 - A HEAD-independent tree-restoration tool and successful rehearsal replace sequential reverts.
+- The third read-only evaluation is recorded in `evaluation-20260726-v3.md`.
+- The third evaluation found no remaining Domain Pack, Routing Plan, documentation, or rollback finding.
+- Project overlays now enforce the canonical Domain identity pattern.
+- The routing validator now rejects duplicate Domain entries, including contradictory pins or activation states.
+- Thirteen Harness routing tests pass, including both overlay regressions.
 
 ## Open Tasks
 
@@ -53,4 +58,4 @@ The remediation uses a dependency-free JSON Schema subset validator. A future sc
 
 ## Resume Here
 
-Run a fresh read-only independent evaluation. Resolve both exact HEADs at evaluator start and require the Evaluator to rerun the rollback tool with those immutable values.
+Publish an immutable remediation revision and repeat the read-only independent evaluation.
