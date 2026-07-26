@@ -10,7 +10,9 @@
 - [x] Obtain an independent G2 verdict.
 - [x] Remediate the independent P1 and P2 findings in both repositories.
 - [x] Rehearse the cross-repository rollback.
-- [ ] Repeat independent evaluation against new immutable revisions.
+- [x] Repeat independent evaluation against first remediation revisions; verdict `FAIL`.
+- [x] Remediate the second evaluation findings.
+- [ ] Repeat independent evaluation against the final immutable revisions.
 
 ## Verification Matrix
 
@@ -24,10 +26,10 @@
 
 ## Evaluator Verdict
 
-- Verdict: fail
-- Evaluator: Independent Agent `/root/g2_domain_architecture_evaluator`
+- Latest verdict: fail
+- Evaluator: Independent Agent `/root/g2_domain_architecture_reevaluator`
 - Date: 2026-07-26
-- Evidence: `evaluation-20260726.md`
+- Evidence: `evaluation-20260726-v2.md`
 
 ## Residual Risks
 

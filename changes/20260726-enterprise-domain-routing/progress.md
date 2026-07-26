@@ -3,12 +3,12 @@
 - Change ID: 20260726-enterprise-domain-routing
 - Updated: 2026-07-26
 - Current phase: independent re-evaluation
-- Last verified revision: `40e379a13f51a406b55e65d847acb297604efc8f`
+- Last verified revision: `02ab19159d10a1f9c5b0fced45523e8c8c648b7b`
 - Environment: macOS local repository
 
 ## Current State
 
-The independent G2 evaluation returned `FAIL`. The bounded remediation, rollback rehearsal, formal-checkout verification, and private publication are complete. Fresh independent evaluation is the only open task.
+The second independent G2 evaluation returned `FAIL` after confirming the first-round remediation. The remaining Domain ID, documentation, stale-record, and rollback-method findings are now remediated. Publication and a third independent evaluation remain.
 
 ## Completed and Verified
 
@@ -29,9 +29,14 @@ The independent G2 evaluation returned `FAIL`. The bounded remediation, rollback
 - The isolated cross-repository rollback rehearsal passed with exact tree matches.
 - Both formal checkouts and private remote `main` branches match the pinned remediation revisions.
 - Both complete checks pass from the formal checkouts with 10 tests each.
+- The second read-only evaluation is recorded in `evaluation-20260726-v2.md`.
+- Routing Plan Domain IDs now use the canonical Domain identity pattern.
+- Domain-owned documents now state the future/protocol-only boundary.
+- A HEAD-independent tree-restoration tool and successful rehearsal replace sequential reverts.
 
 ## Open Tasks
 
+- Publish Harness `02ab191` and Domain Pack `baa88a3`.
 - Repeat independent evaluation.
 
 ## Blockers and Decisions Needed
@@ -48,4 +53,4 @@ The remediation uses a dependency-free JSON Schema subset validator. A future sc
 
 ## Resume Here
 
-Run a fresh read-only independent evaluation against Harness `40e379a` and Domain Pack `a54ea46`; reconcile its verdict without relying on Generator evidence.
+Publish the fixed revisions, then run a fresh read-only independent evaluation and require it to rerun the rollback tool from the exact evaluated heads.
