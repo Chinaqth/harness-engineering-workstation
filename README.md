@@ -201,104 +201,160 @@ G0 can live in a pull request or task description. G1 requires `requirements.md`
 
 ## Scenario Playbooks
 
-### Scenario A: Small documentation or safe refactoring change — G0
+These playbooks show how repository files cooperate during real work. File operations use:
 
-Use when the work is local, reversible, and has no external side effect.
+- **Read:** load constraints or context;
+- **Create:** establish a durable record before execution;
+- **Update:** externalize current state and evidence;
+- **Validate:** run deterministic or independent checks;
+- **Archive:** preserve the completed record and promote durable knowledge.
 
-```text
-State objective and acceptance
-  -> make the smallest change
-  -> run relevant checks
-  -> review the diff
-  -> commit with evidence
-```
-
-Required record: task or pull-request description. Escalate to G1 if a public contract, dependency, or broad convention changes.
-
-### Scenario B: Feature, dependency, or public API change — G1
-
-1. Create `requirements.md`, `task.md`, and `progress.md`.
-2. Record necessity, compatibility, alternatives, and rollback.
-3. Define an observable user or system outcome.
-4. Implement in bounded increments.
-5. Run automated checks and targeted evaluation.
-6. Obtain a human review before merge.
-7. Archive the record and update durable guidance.
-
-### Scenario C: Permission, security, or breaking migration — G2
-
-1. Create the complete six-artifact change record.
-2. Assign Owner, Planner, Generator, and Evaluator responsibilities.
-3. Declare environments, accounts, data classes, tool permissions, side effects, cost, and checkpoints.
-4. Establish a failing baseline or pre-change invariant.
-5. Implement only an approved reversible task unit.
-6. Have the Evaluator reproduce the critical journey independently.
-7. Rehearse rollback or document why rehearsal is impossible.
-8. Require owner approval before merge, migration, deployment, or permission change.
-
-### Scenario D: Irreversible or regulated action — G3
-
-The agent may inspect, simulate, draft, and collect evidence. State-changing execution remains human-led.
+The common file flow is:
 
 ```text
-Two-person authorization
-  -> immutable scope and evidence record
-  -> dry run or simulation
-  -> pre-action checkpoint
-  -> human-executed state change
-  -> independent confirmation
-  -> audit and recovery record
+AGENTS.md
+  -> docs/ + rules/
+  -> changes/<change-id>/
+  -> implementation and project tests
+  -> scripts/ + skills/
+  -> pull request and CI
+  -> changes/archive/ + durable policy updates
 ```
 
-Do not convert missing authority into assumed authority.
+The risk level determines how much of the flow is required.
 
-### Scenario E: Long-running, multi-session task
+### Scenario A: Correct a README Typo — G0
 
-1. Break the objective into independently verifiable increments.
-2. Keep acceptance descriptions stable in `acceptance.json`.
-3. At every pause, update `progress.md` with the current revision, environment, evidence, blockers, and next smallest safe action.
-4. Begin the next session from repository state and the handoff, not from reconstructed chat memory.
-5. Re-plan when scope, architecture, or risk changes.
+The change is local, reversible, and does not alter a public contract.
 
-### Scenario F: Bug diagnosis and repair
+| Stage | What happens | Files and operation |
+| --- | --- | --- |
+| Enter | The agent loads repository-wide language and completion rules | **Read** `AGENTS.md` and `rules/CORE.md` |
+| Scope | Objective, acceptance, and risk are recorded in the task or pull request; no change directory is required | **Use** `.github/pull_request_template.md` |
+| Implement | Only the affected documentation is edited | **Update** `README.md` or another target document |
+| Verify | Required files, language policy, links, and validation tests are checked | **Validate** with `scripts/harness-check.sh` |
+| Deliver | The diff, check result, and rollback are recorded | **Update** the pull request description |
+| Learn | Nothing is institutionalized unless the typo reveals a repeated documentation problem | Optionally **update** `rules/CORE.md` or a documentation check |
 
-```text
-Reproduce observable failure
-  -> preserve baseline evidence
-  -> identify the violated invariant
-  -> implement the smallest repair
-  -> run regression and boundary checks
-  -> evaluate the original user journey
-  -> encode the failure mode as a test, rule, or Skill
-```
+The workflow stops being G0 if the edit changes a policy, interface, approval boundary, or organization-wide convention.
 
-Diagnosis alone does not authorize a fix unless the task includes implementation.
+### Scenario B: Add a Dependency or Public API — G1
 
-### Scenario G: Adopt the workstation in an existing product repository
+Example: a product repository adds a library and exposes one new API response field.
 
-1. Run `skills/harness-audit` to establish an evidence-backed baseline.
-2. Add a concise project-level `AGENTS.md` that routes to authoritative project documents.
-3. Adopt organization red lines without weakening them.
-4. Implement the observability adapter for the product's critical journeys.
-5. Pilot one G1 and one G2 change before enforcing the complete model broadly.
-6. Record deviations, owners, expiration dates, and compensating controls.
-7. Track rework, escaped defects, lead time, evaluation reliability, and exception expiry.
+| Stage | What happens | Files and operation |
+| --- | --- | --- |
+| Enter | The agent discovers project conventions and risk rules | **Read** `AGENTS.md`, `docs/GOVERNANCE.md`, and `docs/AUTONOMY_POLICY.md` |
+| Plan | The Planner records the need, alternatives, compatibility impact, criteria, and rollback | **Create** `changes/<id>/requirements.md` |
+| Decompose | Work is split into dependency review, implementation, compatibility tests, and documentation | **Create** `changes/<id>/task.md` |
+| Establish continuity | The initial revision, environment, open work, and resume point are recorded | **Create and update** `changes/<id>/progress.md` |
+| Implement | The Generator changes product files and checks off bounded task units | **Update** product code, tests, `task.md`, and `progress.md` |
+| Verify | The verification matrix links each criterion to build, test, compatibility, or security evidence | **Update** `task.md`; **validate** product checks and `scripts/harness-check.sh` |
+| Review | A human checks rationale, compatibility, evidence, and rollback before merge | **Use** `.github/pull_request_template.md` and CI |
+| Close | The final result and residual risks are recorded, then the change moves out of active context | **Archive** under `changes/archive/<year>/<id>/` |
 
-The control plane publishes versions; product repositories explicitly pin or adopt them. Updates must not silently overwrite project-specific policy.
+`decision.md` is added when the dependency or interface choice creates an important trade-off. G1 does not require the complete six-artifact record by default.
 
-### Scenario H: Turn repeated knowledge into a Skill or rule
+### Scenario C: Change a Permission or Security Boundary — G2
 
-Use a Skill when the task has a repeatable trigger, specialized procedure, clear input/output contract, and validation method. Use a rule when the organization must enforce an invariant.
+Example: an application changes which role can export customer records.
 
-```text
-Repeated task or failure
-  -> identify stable knowledge
-  -> choose guidance, Skill, test, or rule
-  -> define owner and trigger
-  -> validate with realistic cases
-  -> publish through a change record
-  -> measure usefulness and retire stale content
-```
+| Stage | What happens | Files and operation |
+| --- | --- | --- |
+| Classify | Data sensitivity, privilege expansion, side effects, and reversibility establish G2 | **Read** `docs/GOVERNANCE.md`, `docs/AUTONOMY_POLICY.md`, and `rules/CORE.md` |
+| Define | The Owner and Planner freeze scope, non-goals, acceptance, autonomy budgets, and rollback | **Create** `requirements.md` from `changes/_template/requirements.md` |
+| Make state executable | Stable criterion IDs begin as `pending`; descriptions are not rewritten to match the implementation | **Create** `acceptance.json` |
+| Separate duties | Critical journey, evidence quality, Generator limits, and Evaluator verdict authority are agreed before implementation | **Create** `contract.md` |
+| Record the trade-off | Alternatives, security consequences, and revisit triggers are preserved | **Create** `decision.md` |
+| Execute | The Generator performs one approved reversible task unit and records revision, environment, evidence, and next action | **Update** `task.md`, `progress.md`, product code, and tests |
+| Observe | The system is started, exercised, inspected, reset, and stopped through a stable project adapter | **Follow** `docs/OBSERVABILITY.md` |
+| Evaluate | The Evaluator independently reproduces authorized and unauthorized journeys and reconciles every critical criterion | **Use** `skills/end-to-end-evaluator/`; **update** `acceptance.json` and the verdict in `task.md` |
+| Enforce | Artifact semantics, workstation integrity, and repository checks must pass | **Validate** with `scripts/validate_change.py`, `scripts/harness-check.sh`, product tests, and CI |
+| Approve and close | The Owner reviews the independent verdict and rollback evidence before merge or permission change | **Use** the pull request; then **archive** the six artifacts |
+
+If evaluation is blocked by access or observability, `acceptance.json` remains blocked. Missing evidence does not become approval.
+
+### Scenario D: Delete Production Data Under Regulation — G3
+
+The repository controls preparation and evidence; the irreversible operation remains human-led.
+
+| Stage | What happens | Files and operation |
+| --- | --- | --- |
+| Establish authority | Exact data, legal basis, approvers, retention requirements, and prohibited actions are recorded | **Create** the complete change record; **read** `docs/GOVERNANCE.md` |
+| Bound the agent | The AI may inspect, simulate, draft, and validate but may not execute the deletion | **Record** the G3 budget in `requirements.md` and stop conditions in `contract.md` |
+| Prepare | A dry run, item count, backup or recovery position, and expected post-state are documented | **Update** `task.md`, `progress.md`, and evidence pointers in `acceptance.json` |
+| Authorize | Two people approve the immutable target and execution window outside the Generator role | **Record** approval references in `decision.md` and the delivery record |
+| Execute | An authorized human performs the state-changing step | **Do not delegate** the irreversible action to the Skill or Generator |
+| Confirm | An independent Evaluator verifies the post-state, audit evidence, and recovery obligations | **Update** `acceptance.json` and `task.md` with pass, fail, or blocked |
+| Retain | The complete decision and evidence record is retained according to policy | **Archive** the change; preserve external audit references |
+
+The workstation does not convert a missing authorization into an implied one.
+
+### Scenario E: Continue a Feature Across Several Sessions
+
+This scenario explains how the same files carry state when a task outlives a chat context.
+
+| Moment | File behavior |
+| --- | --- |
+| First session starts | **Read** `requirements.md` and `contract.md`; select the next unchecked unit in `task.md` |
+| Work begins | **Update** `progress.md` with revision, environment, current phase, and baseline |
+| A criterion is exercised | Add evidence to the matching ID in `acceptance.json`; do not change its description |
+| A task unit completes | Check the item and verification row in `task.md`; refresh `progress.md` |
+| The session pauses | Record completed work, blockers, residual risks, and the exact next command or file in `progress.md` |
+| A later session resumes | **Read** repository state and `progress.md`; verify the recorded revision before editing |
+| Scope or risk changes | Stop implementation and **update** `requirements.md`, `decision.md`, and `contract.md` with Owner approval |
+| The complete journey passes | The Evaluator reconciles `acceptance.json`; the record is archived |
+
+Git preserves revisions; `progress.md` preserves operational state; `acceptance.json` preserves outcome state. Chat summaries are not the authority for any of the three.
+
+### Scenario F: Diagnose and Repair a Production-Like Bug
+
+Example: a user can submit an order, but the confirmation is never shown.
+
+| Stage | What happens | Files and operation |
+| --- | --- | --- |
+| Orient | The agent loads project commands, boundaries, and evaluation expectations | **Read** `AGENTS.md`, `rules/CORE.md`, and relevant architecture |
+| Record | The symptom, impact, non-goals, and observable recovery criterion are captured at the risk-appropriate depth | **Create** G1 or G2 artifacts under `changes/<id>/` |
+| Reproduce | The failure is observed through the same journey the user experiences | **Follow** `docs/OBSERVABILITY.md`; attach logs, traces, screenshots, or test output as evidence |
+| Plan | The suspected invariant, smallest repair, regression coverage, and rollback are decomposed | **Update** `task.md` and `progress.md` |
+| Repair | The Generator changes the smallest supported scope and adds a failing-then-passing regression test | **Update** product code and tests |
+| Evaluate | The original user journey and relevant negative paths are independently rerun | **Use** `skills/end-to-end-evaluator/`; **update** the verdict and acceptance evidence |
+| Institutionalize | A repeated failure becomes a deterministic test, rule, audit check, architecture note, or Skill procedure | **Update** `rules/`, `scripts/`, `docs/`, or `skills/` |
+| Close | Checks pass, residual risks are documented, and the record is archived | **Validate** with project checks and `scripts/harness-check.sh`; **archive** the change |
+
+If the request authorizes diagnosis only, the workflow stops after the evidence-backed cause is reported.
+
+### Scenario G: Change a Workstation Rule or Create a Skill
+
+This is how the control plane evolves itself.
+
+| Stage | What happens | Files and operation |
+| --- | --- | --- |
+| Identify | Repeated review feedback or failures show that durable guidance is missing | **Read** archived changes, audit findings, and `docs/knowledge/` |
+| Govern | Because approval boundaries or organization rules may change, the work is handled as G2 | **Read** `docs/GOVERNANCE.md`; **create** the complete six-artifact change record |
+| Choose the mechanism | A mandatory invariant becomes a rule or check; a repeatable expert workflow becomes a Skill | **Record** the choice in `decision.md` |
+| Implement | Rules update under `rules/`; deterministic enforcement under `scripts/`; workflows under `skills/<name>/` | **Update or create** the selected control-plane files |
+| Validate | Rule changes pass the full harness; Skills pass their structural validator and realistic trigger tests | **Run** `scripts/harness-check.sh`; **update** `task.md` and `acceptance.json` |
+| Evaluate | The Evaluator checks for contradictions, weakened guardrails, unclear triggers, and migration impact | **Use** `skills/harness-audit/` or `skills/end-to-end-evaluator/` as applicable |
+| Publish | Entry documents and routing tables point to the new durable capability | **Update** `AGENTS.md`, `README.md`, architecture, governance, or rubric only where needed |
+| Learn | The completed proposal and evidence become the evolution history | **Archive** the change and schedule knowledge gardening |
+
+This prevents the control plane from accumulating disconnected instructions that no workflow can discover or enforce.
+
+### Scenario H: Adopt the Workstation in an Existing Product Repository
+
+The control-plane files are used to assess and guide adoption; product-specific facts remain in the product repository.
+
+| Stage | What happens | Files and operation |
+| --- | --- | --- |
+| Baseline | Current context, tools, orchestration, memory, evaluation, guardrails, and governance are scored from evidence | **Use** `skills/harness-audit/` and its rubric |
+| Plan adoption | Gaps are prioritized by risk and converted into bounded adoption criteria | **Create** a change record in the adopting repository |
+| Add routing | The product receives a concise entry file pointing to its own architecture, commands, and domain sources | **Create or update** the product's `AGENTS.md` |
+| Add control | Organization red lines and risk handling are adopted without silently weakening project-specific rules | **Reference** `rules/CORE.md`, governance, and autonomy policy |
+| Add visibility | The product implements start, ready, exercise, observe, reset, and stop interfaces | **Implement against** `docs/OBSERVABILITY.md` |
+| Pilot | One G1 and one G2 change exercise planning, handoff, evaluation, approval, and archival | **Use** the change templates and evaluator Skill |
+| Measure | Rework, escaped defects, lead time, check reliability, and exception expiry are recorded | **Update** the adopting project's metrics and decisions |
+| Upgrade | A new control-plane version is explicitly reviewed and adopted | **Record** version and deviations; never silently overwrite project policy |
 
 ## Enterprise Adoption
 
