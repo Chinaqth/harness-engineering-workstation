@@ -4,7 +4,7 @@
   "source": {
     "source_id": "enterprise-domain-packs",
     "repository": "git@github.com:Chinaqth/harness-engineering-domain-packs.git",
-    "revision": "a54ea46e0044af9b313084cff7815892c00957be",
+    "revision": "baa88a39ef7e8f6e9001c39290c65a5e4d90087b",
     "registry": "registry/domains.json"
   },
   "status": "unroutable",

@@ -124,6 +124,22 @@ class RoutingValidationTests(unittest.TestCase):
         errors = self.save_plan(path, plan)
         self.assertTrue(any("routing plan: $" in error for error in errors))
 
+    def test_domain_id_must_match_domain_identity_contract(self) -> None:
+        path, plan = self.plan()
+        selection = self.selection()
+        selection["domain_id"] = "INVALID DOMAIN"
+        plan.update(
+            {
+                "status": "routed",
+                "selections": [selection],
+                "approvals": [],
+                "conflicts": [],
+                "missing_inputs": [],
+            }
+        )
+        errors = self.save_plan(path, plan)
+        self.assertTrue(any("required pattern" in error for error in errors))
+
     def test_plan_must_reference_same_task(self) -> None:
         path, plan = self.plan()
         plan["task_id"] = "other-task"

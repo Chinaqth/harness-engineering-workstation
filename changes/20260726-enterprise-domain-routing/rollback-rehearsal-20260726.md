@@ -1,5 +1,7 @@
 # Cross-Repository Rollback Rehearsal
 
+> Historical evidence: this first rehearsal covered Harness `9361fbe` and Domain `a54ea46`. It was superseded after later evidence commits by the HEAD-independent tree-restoration rehearsal recorded in `rollback-rehearsal-20260726-v2.md`.
+
 - Date: 2026-07-26
 - Environment: Isolated temporary local clones on macOS
 - Production or remote mutation: None

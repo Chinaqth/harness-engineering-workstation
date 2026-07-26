@@ -58,12 +58,13 @@ The change affects organization-wide routing and governance semantics but does n
 
 Rollback spans both repositories:
 
-1. Revert Harness `9361fbe`, `6a91514`, `628d0e9`, and `a76046d` in reverse chronological order.
-2. Revert Domain Pack `a54ea46` and `c5bf2de` in reverse chronological order.
-3. Restore the previously pinned Domain revision in `config/domain-pack-sources.json`.
-4. Run both complete repository checks from isolated clones.
-5. Confirm adopting projects have not consumed the unaccepted protocol revision.
+1. Create dedicated rollback branches from the exact release heads; do not rewrite shared history.
+2. Restore the Harness working tree and index from immutable pre-change baseline `c90a82d`.
+3. Restore the Domain Pack working tree and index from Git's canonical empty tree.
+4. Run the reverted Harness integrity gate and compare both resulting trees with their immutable baselines.
+5. Commit the tree restorations, obtain G2 approval, and merge through normal review.
+6. Confirm adopting projects have not consumed the unaccepted protocol revision.
 
 Existing product workflows remain valid because no production Router or active Domain depends on these contracts.
 
-The isolated rehearsal and immutable tree comparisons are recorded in `rollback-rehearsal-20260726.md`.
+`scripts/rehearse_domain_routing_rollback.py` performs this process in isolated temporary clones from any exact current HEAD, avoiding order-dependent revert conflicts.

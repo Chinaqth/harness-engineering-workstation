@@ -33,6 +33,5 @@
 
 - The first release defines protocol and repository structure, not a production resolver or installer.
 - No Domain will route until an owned Pack is activated.
-- Current validation can accept contradictory Routing Plans and incomplete active Packs.
-- Routing decisions cannot preserve all required permission and source provenance.
+- The dependency-free validator must be extended before any schema introduces a new enforcement keyword.
 - Remediation claims are Generator evidence until independently reproduced.
