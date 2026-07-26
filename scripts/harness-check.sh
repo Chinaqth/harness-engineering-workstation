@@ -20,6 +20,8 @@ required=(
   "schemas/task-envelope.schema.json"
   "schemas/routing-plan.schema.json"
   "schemas/project-domain-overlay.schema.json"
+  "schemas/domain-pack-source.schema.json"
+  "examples/project-domain-overlay.json"
 )
 
 for path in "${required[@]}"; do

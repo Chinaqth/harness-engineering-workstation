@@ -9,10 +9,10 @@
     "task_id": { "type": "string", "minLength": 1 },
     "intent": { "type": "string", "minLength": 1 },
     "task_type": { "type": "string", "minLength": 1 },
-    "deliverables": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
-    "constraints": { "type": "array", "items": { "type": "string" } },
-    "repository_signals": { "type": "array", "items": { "type": "string" } },
-    "required_evidence": { "type": "array", "items": { "type": "string" } },
-    "risk_hints": { "type": "array", "items": { "type": "string" } }
+    "deliverables": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1, "uniqueItems": true },
+    "constraints": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "repository_signals": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "required_evidence": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "risk_hints": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
   }
 }

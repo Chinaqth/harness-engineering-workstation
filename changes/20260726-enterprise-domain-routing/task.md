@@ -8,7 +8,8 @@
 - [x] Update entry, governance, workflow, and bilingual operating guidance.
 - [x] Run full verification and record the final evidence.
 - [x] Obtain an independent G2 verdict.
-- [ ] Remediate the independent P1 and P2 findings.
+- [x] Remediate the independent P1 and P2 findings in both repositories.
+- [ ] Rehearse the cross-repository rollback.
 - [ ] Repeat independent evaluation against new immutable revisions.
 
 ## Verification Matrix
@@ -16,10 +17,10 @@
 | Acceptance criterion | Verification method | Result or evidence |
 | --- | --- | --- |
 | AC-01 | Documentation review and local-link validation | `./scripts/harness-check.sh` passed on 2026-07-26 |
-| AC-02 | Parse configuration and example contracts | Failing: schema cannot represent required permissions and immutable source provenance |
-| AC-03 | Unit rejection tests plus adversarial temporary fixtures | Failing: contradictory routing and incomplete active Domain fixtures were accepted |
-| AC-04 | Documentation review | Failing: present-tense Router wording remains ambiguous |
-| AC-05 | Complete integrity gate and external review | Integrity gate passed; independent verdict `FAIL` |
+| AC-02 | Parse configuration and example contracts | Remediated; independent re-evaluation pending |
+| AC-03 | Unit rejection tests plus adversarial fixtures | Remediated with Harness and Domain regression coverage; re-evaluation pending |
+| AC-04 | Documentation review | Protocol-only boundary clarified; re-evaluation pending |
+| AC-05 | Complete integrity gate, rollback rehearsal, and external review | Previous verdict `FAIL`; remediation evaluation pending |
 
 ## Evaluator Verdict
 
@@ -34,3 +35,4 @@
 - No Domain will route until an owned Pack is activated.
 - Current validation can accept contradictory Routing Plans and incomplete active Packs.
 - Routing decisions cannot preserve all required permission and source provenance.
+- Remediation claims are Generator evidence until independently reproduced.

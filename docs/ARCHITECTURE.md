@@ -60,7 +60,7 @@ The detailed boundary, lifecycle, precedence, and runtime distribution model is 
 ## Scaling Principles
 
 - Organize rules as organization defaults, domain rules, and project rules. Rules become more specific closer to the project but cannot weaken organizational red lines.
-- Discover professional capabilities through a registry and load full Domain Pack content only after the Router selects it.
+- Discover professional capabilities through a registry and load full Domain Pack content only after a conforming resolver selects it.
 - Assign each skill to a domain owner and require a clear trigger description, input/output contract, and validation method.
 - Make every automated decision traceable to a rule, test, or human approval.
 - Treat logs, health checks, traces, screenshots, and reproducible user journeys as agent inputs, not operational exhaust.

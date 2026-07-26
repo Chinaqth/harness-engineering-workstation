@@ -3,7 +3,7 @@
 - ID: 20260726-enterprise-domain-routing
 - Owner: Harness Engineering Owner
 - Risk: G2
-- Status: evaluating
+- Status: implementing
 - Review-By: 2026-08-09
 
 ## Problem
@@ -35,10 +35,10 @@ The Harness currently governs the shared delivery loop but has no versioned mech
 ## Acceptance Criteria
 
 - [x] AC-01: Architecture defines repository and policy boundaries.
-- [ ] AC-02: Machine-readable routing contracts and examples completely represent the documented audit contract. Independent evaluation found missing permission and immutable-source fields.
-- [ ] AC-03: Validation rejects internally inconsistent routing and incomplete active Domain artifacts. Independent negative fixtures were incorrectly accepted.
-- [ ] AC-04: Entry, governance, workflow, and bilingual operating guides describe Domain routing without implying a production Router already exists.
-- [ ] AC-05: The full Harness check passes and an independent reviewer accepts the G2 change. Independent verdict: `FAIL`.
+- [ ] AC-02: Machine-readable routing contracts and examples completely represent the documented audit contract. Remediation implemented; independent re-evaluation pending.
+- [ ] AC-03: Validation rejects internally inconsistent routing and incomplete active Domain artifacts. Regression coverage added; independent re-evaluation pending.
+- [ ] AC-04: Entry, governance, workflow, and bilingual operating guides describe Domain routing without implying a production Router already exists. Wording updated; independent re-evaluation pending.
+- [ ] AC-05: The full Harness check passes and an independent reviewer accepts the G2 change. Previous verdict was `FAIL`; re-evaluation pending.
 
 ## Risk, Permission, and Data Impact
 
@@ -56,4 +56,12 @@ The change affects organization-wide routing and governance semantics but does n
 
 ## Rollback Plan
 
-Revert the change commit. Existing project workflows remain valid because no product repository or runtime Router depends on the new contracts yet.
+Rollback spans both repositories:
+
+1. Revert the Harness remediation and routing-architecture commits in reverse order.
+2. Revert the Domain Pack remediation and foundation commits in reverse order.
+3. Restore the previously pinned Domain revision in `config/domain-pack-sources.json`.
+4. Run both complete repository checks from isolated clones.
+5. Confirm adopting projects have not consumed the unaccepted protocol revision.
+
+Existing product workflows remain valid because no production Router or active Domain depends on these contracts.

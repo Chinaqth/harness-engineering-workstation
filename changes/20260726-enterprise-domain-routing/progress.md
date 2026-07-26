@@ -2,13 +2,13 @@
 
 - Change ID: 20260726-enterprise-domain-routing
 - Updated: 2026-07-26
-- Current phase: evaluation failed; remediation decision required
+- Current phase: remediation verification
 - Last verified revision: `a76046d` plus verification-record update
 - Environment: macOS local repository
 
 ## Current State
 
-The independent G2 evaluation completed with verdict `FAIL`. The repository structure and basic checks work, but the evaluator reproduced release-blocking contract and validation gaps.
+The independent G2 evaluation returned `FAIL`. The bounded remediation is implemented in both repositories and awaits rollback rehearsal, publication, and fresh independent evaluation.
 
 ## Completed and Verified
 
@@ -20,19 +20,22 @@ The independent G2 evaluation completed with verdict `FAIL`. The repository stru
 - The Domain Pack repository check and four registration tests pass.
 - Local and remote Domain Pack `main` resolve to `c5bf2de`.
 - The independent evaluation remained read-only and produced `evaluation-20260726.md`.
+- Routing Plan state invariants, permission fields, and immutable source provenance are implemented.
+- Harness documents are validated against their JSON Schemas.
+- Domain activation is schema-backed and requires evaluator, evidence, compatibility, ownership, and dependency completeness.
+- Registration now stages JSON-safe content and rolls back a failed registry commit.
+- Domain remediation revision: `a54ea46e0044af9b313084cff7815892c00957be`.
 
 ## Open Tasks
 
-- Enforce state-dependent Routing Plan invariants.
-- Add permission and immutable-source provenance.
-- Validate artifacts against the actual JSON Schemas.
-- Strengthen active Domain gates and registration atomicity.
-- Clarify protocol-only documentation and rehearse rollback.
+- Commit the Harness remediation.
+- Rehearse and record the cross-repository rollback.
+- Publish both remediation revisions.
 - Repeat independent evaluation.
 
 ## Blockers and Decisions Needed
 
-G2 acceptance is blocked by three P1 findings. Do not mark the change done or activate production routing.
+No implementation blocker. Generator evidence cannot close G2 acceptance; do not mark the change done or activate production routing before re-evaluation.
 
 ## Evidence
 
@@ -40,8 +43,8 @@ See `task.md` and `acceptance.json`.
 
 ## Residual Risks
 
-See `evaluation-20260726.md`. The current validators can accept contradictory routing states and incomplete active Domains.
+The remediation uses a dependency-free JSON Schema subset validator. A future schema keyword must be added to that validator before the repository can rely on it.
 
 ## Resume Here
 
-Owner decision: authorize a bounded remediation change for the six required items in `evaluation-20260726.md`, then request a fresh independent evaluation.
+Run both complete checks, commit the Harness remediation, rehearse rollback from isolated clones, and request a fresh independent evaluation.

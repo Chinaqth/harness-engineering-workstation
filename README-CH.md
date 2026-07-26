@@ -43,7 +43,7 @@
 | Domain Pack | 独立私有仓库 `harness-engineering-domain-packs` | 可复用的职能路由、能力、流程、规则、Skill、工具和评估器 |
 | 具体产品项目 | 各产品仓库 | 架构、命令、启用的 Pack 版本、本地负责人、约束和任务记录 |
 
-Router 先把自然语言任务整理为 Task Envelope，再结合 Domain 注册表和项目 Overlay 解析当前可用的能力，最终输出可追溯的 Routing Plan。只有被选中的专业内容会被加载；缺失能力、冲突和审批需求必须作为明确状态保留下来。
+当前版本只定义路由协议和验证契约，并没有交付生产级 Router。未来符合协议的 Resolver 会先把自然语言任务整理为 Task Envelope，再结合不可变的 Domain 注册表版本和项目 Overlay 解析可用能力，最后输出可追溯的 Routing Plan。只有被选中的专业内容才会被加载；缺失能力、输入、冲突和审批需求必须保留为明确状态。
 
 详细说明见 [企业 Domain 架构](docs/ENTERPRISE_DOMAIN_ARCHITECTURE.md) 与 [任务到能力的路由协议](docs/ROUTING.md)。
 

@@ -43,7 +43,7 @@ Enterprise adoption uses three versioned scopes:
 | Domain Packs | Private `harness-engineering-domain-packs` repository | Reusable function-level routes, capabilities, workflows, rules, Skills, tools, and evaluators |
 | Product project | Each product repository | Architecture, commands, enabled Pack versions, local ownership, constraints, and task records |
 
-The Router converts a natural-language task into a Task Envelope, resolves active capabilities from the Domain registry and project overlay, and emits a traceable Routing Plan. It loads selected professional content only after routing. Missing capabilities, conflicts, and approval needs remain explicit outcomes.
+This release defines the routing protocol and validation contracts; it does not ship a production Router. A future conforming resolver will convert a natural-language task into a Task Envelope, resolve active capabilities from an immutable Domain registry revision and project overlay, and emit a traceable Routing Plan. Selected professional content will load only after routing, while missing capabilities, conflicts, inputs, and approval needs remain explicit outcomes.
 
 See [Enterprise Domain Architecture](docs/ENTERPRISE_DOMAIN_ARCHITECTURE.md) and [Task-to-Capability Routing](docs/ROUTING.md).
 

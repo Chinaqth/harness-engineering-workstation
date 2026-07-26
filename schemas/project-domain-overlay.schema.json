@@ -11,14 +11,28 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "version", "enabled", "local_owner", "additional_signals", "constraints"],
+        "required": ["id", "version", "enabled", "local_owner", "additional_signals", "constraints", "disabled_capabilities", "mappings"],
         "properties": {
-          "id": { "type": "string" },
-          "version": { "type": "string" },
+          "id": { "type": "string", "minLength": 1 },
+          "version": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },
           "enabled": { "type": "boolean" },
-          "local_owner": { "type": "string" },
-          "additional_signals": { "type": "array", "items": { "type": "string" } },
-          "constraints": { "type": "array", "items": { "type": "string" } }
+          "local_owner": { "type": "string", "minLength": 1 },
+          "additional_signals": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+          "constraints": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+          "disabled_capabilities": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+          "mappings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["capability_id", "project_paths", "commands"],
+              "properties": {
+                "capability_id": { "type": "string", "minLength": 1 },
+                "project_paths": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+                "commands": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+              }
+            }
+          }
         }
       }
     }

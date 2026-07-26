@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "change_id": "20260726-enterprise-domain-routing",
   "risk": "G2",
-  "status": "evaluating",
+  "status": "implementing",
   "criteria": [
     {
       "id": "AC-01",
@@ -13,38 +13,41 @@
     {
       "id": "AC-02",
       "description": "Machine-readable routing contracts and examples completely represent the documented audit contract.",
-      "status": "failing",
+      "status": "pending",
       "evidence": [
         "changes/20260726-enterprise-domain-routing/evaluation-20260726.md",
-        "Routing Plan schema lacks permission and immutable-source provenance"
+        "schemas/routing-plan.schema.json now includes permissions and immutable-source provenance",
+        "schemas/project-domain-overlay.schema.json now includes mappings and disabled capabilities"
       ]
     },
     {
       "id": "AC-03",
       "description": "Validation rejects internally inconsistent routing and incomplete active Domain artifacts.",
-      "status": "failing",
+      "status": "pending",
       "evidence": [
         "changes/20260726-enterprise-domain-routing/evaluation-20260726.md",
-        "Five contradictory routing fixtures and one incomplete active Domain fixture were accepted"
+        "tests/test_routing_validation.py covers the reproduced contradictory states",
+        "Domain Pack tests/test_registry_validation.py covers schema-invalid active Packs"
       ]
     },
     {
       "id": "AC-04",
       "description": "Entry, governance, workflow, and bilingual operating guides describe Domain routing without implying a production Router exists.",
-      "status": "failing",
+      "status": "pending",
       "evidence": [
         "changes/20260726-enterprise-domain-routing/evaluation-20260726.md",
-        "Present-tense Router descriptions remain ambiguous"
+        "README.md, README-CH.md, and docs/ROUTING.md explicitly state the protocol-only boundary"
       ]
     },
     {
       "id": "AC-05",
       "description": "The full Harness check passes and an independent reviewer accepts the G2 change.",
-      "status": "failing",
+      "status": "pending",
       "evidence": [
         "scripts/harness-check.sh passed on 2026-07-26",
         "git@github.com:Chinaqth/harness-engineering-domain-packs.git initialized at c5bf2de",
-        "Independent verdict: FAIL",
+        "Previous independent verdict: FAIL",
+        "Remediation requires fresh independent evaluation",
         "changes/20260726-enterprise-domain-routing/evaluation-20260726.md"
       ]
     }

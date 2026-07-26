@@ -10,7 +10,7 @@ These layers are separate so that global governance can evolve without absorbing
 
 ```text
 Harness Kernel
-  -> Domain Registry and Router
+  -> Domain Registry and Routing Protocol
        -> Versioned Domain Packs
             -> Project Domain Overlays
                  -> Task Envelope and Routing Plan
@@ -33,15 +33,15 @@ The strictest applicable safety rule wins. A Domain Pack or project overlay may 
 
 Git is authoritative. Runtime copies may be installed under `~/.harness/domains/`, while globally discoverable Skills may be published under `~/.agents/skills/`. Runtime installation is a projection of versioned source, not another source of truth.
 
-## Why Routing Is a Subsystem
+## Routing Protocol and Future Runtime
 
-Routing combines judgment and deterministic resolution:
+This release defines contracts and validators, not an operating production Router. A future conforming routing subsystem will combine judgment and deterministic resolution:
 
 1. An agent interprets natural-language intent and produces a Task Envelope.
 2. The resolver reads the registry and considers only active, enabled, compatible Packs.
 3. Route conditions identify candidate capabilities.
 4. Dependency, policy, permission, and project-overlay checks filter candidates.
-5. The Router emits a traceable Routing Plan containing selected Domains, capabilities, workflows, Skills, tools, evaluators, and approvals.
+5. The resolver emits a traceable Routing Plan containing selected Domains, capabilities, workflows, Skills, tools, evaluators, permissions, approvals, and immutable source provenance.
 
 A Skill may help construct or inspect routing data, but a Skill alone is not the Router. Registry resolution, lifecycle filtering, dependency checking, and provenance must remain deterministic and auditable.
 
@@ -59,10 +59,10 @@ Safety and authorization become at least as strict:
 effective constraint = strictest applicable constraint
 ```
 
-If two selected Domain Packs conflict, the Router records the conflict and escalation owner. It must not silently choose the more permissive interpretation.
+If two selected Domain Packs conflict, a conforming resolver must record the conflict and escalation owner. It must not silently choose the more permissive interpretation.
 
 ## Domain Lifecycle
 
-Domain Packs use `draft`, `active`, `deprecated`, and `retired` states. The Router selects only `active` Packs by default. A deprecated Pack is available only to explicitly pinned consumers. A draft Pack is visible to maintainers but cannot receive production work.
+Domain Packs use `draft`, `active`, `deprecated`, and `retired` states. A conforming resolver may select only schema-valid `active` Packs by default. A deprecated Pack is available only to explicitly pinned consumers. A draft Pack is visible to maintainers but cannot receive production work.
 
 New functions are registered in the Domain Pack repository through `$register-domain-pack`. Registration establishes identity and ownership; activation is a separate reviewed change.

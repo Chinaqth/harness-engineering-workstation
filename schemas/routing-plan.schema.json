@@ -3,31 +3,44 @@
   "title": "Harness Routing Plan",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "task_id", "status", "selections", "approvals", "conflicts"],
+  "required": ["schema_version", "task_id", "source", "status", "selections", "approvals", "conflicts", "missing_inputs"],
   "properties": {
     "schema_version": { "const": "1.0" },
     "task_id": { "type": "string", "minLength": 1 },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "repository", "revision", "registry"],
+      "properties": {
+        "source_id": { "type": "string", "minLength": 1 },
+        "repository": { "type": "string", "minLength": 1 },
+        "revision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "registry": { "type": "string", "minLength": 1 }
+      }
+    },
     "status": { "enum": ["routed", "needs_input", "needs_approval", "unroutable"] },
     "selections": {
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["domain_id", "version", "route_id", "capability_ids", "workflows", "skills", "tools", "evaluators", "reason"],
+        "required": ["domain_id", "version", "route_id", "capability_ids", "workflows", "skills", "tools", "evaluators", "permissions", "reason"],
         "properties": {
-          "domain_id": { "type": "string" },
-          "version": { "type": "string" },
-          "route_id": { "type": "string" },
-          "capability_ids": { "type": "array", "items": { "type": "string" } },
-          "workflows": { "type": "array", "items": { "type": "string" } },
-          "skills": { "type": "array", "items": { "type": "string" } },
-          "tools": { "type": "array", "items": { "type": "string" } },
-          "evaluators": { "type": "array", "items": { "type": "string" } },
+          "domain_id": { "type": "string", "minLength": 1 },
+          "version": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },
+          "route_id": { "type": "string", "minLength": 1 },
+          "capability_ids": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+          "workflows": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+          "skills": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+          "tools": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+          "evaluators": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+          "permissions": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
           "reason": { "type": "string", "minLength": 1 }
         }
       }
     },
-    "approvals": { "type": "array", "items": { "type": "string" } },
-    "conflicts": { "type": "array", "items": { "type": "string" } }
+    "approvals": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "conflicts": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "missing_inputs": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
   }
 }

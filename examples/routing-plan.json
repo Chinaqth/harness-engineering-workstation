@@ -1,10 +1,17 @@
 {
   "schema_version": "1.0",
   "task_id": "example-biometric-login",
+  "source": {
+    "source_id": "enterprise-domain-packs",
+    "repository": "git@github.com:Chinaqth/harness-engineering-domain-packs.git",
+    "revision": "a54ea46e0044af9b313084cff7815892c00957be",
+    "registry": "registry/domains.json"
+  },
   "status": "unroutable",
   "selections": [],
   "approvals": [],
   "conflicts": [
     "No active Domain Pack currently provides the required iOS and security capabilities."
-  ]
+  ],
+  "missing_inputs": []
 }

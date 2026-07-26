@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Domain Pack Sources",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "sources", "runtime"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "repository", "ref", "registry"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "repository": { "type": "string", "minLength": 1 },
+          "ref": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+          "registry": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["domain_root", "global_skill_root", "project_overlay"],
+      "properties": {
+        "domain_root": { "type": "string", "minLength": 1 },
+        "global_skill_root": { "type": "string", "minLength": 1 },
+        "project_overlay": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
