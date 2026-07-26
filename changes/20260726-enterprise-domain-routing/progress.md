@@ -2,7 +2,7 @@
 
 - Change ID: 20260726-enterprise-domain-routing
 - Updated: 2026-07-26
-- Current phase: remediation verification
+- Current phase: ready for publication and independent re-evaluation
 - Last verified revision: `a76046d` plus verification-record update
 - Environment: macOS local repository
 
@@ -25,11 +25,11 @@ The independent G2 evaluation returned `FAIL`. The bounded remediation is implem
 - Domain activation is schema-backed and requires evaluator, evidence, compatibility, ownership, and dependency completeness.
 - Registration now stages JSON-safe content and rolls back a failed registry commit.
 - Domain remediation revision: `a54ea46e0044af9b313084cff7815892c00957be`.
+- Harness remediation revision: `9361fbe8ef4533973e0be0d78be24d23d635327d`.
+- The isolated cross-repository rollback rehearsal passed with exact tree matches.
 
 ## Open Tasks
 
-- Commit the Harness remediation.
-- Rehearse and record the cross-repository rollback.
 - Publish both remediation revisions.
 - Repeat independent evaluation.
 
@@ -47,4 +47,4 @@ The remediation uses a dependency-free JSON Schema subset validator. A future sc
 
 ## Resume Here
 
-Run both complete checks, commit the Harness remediation, rehearse rollback from isolated clones, and request a fresh independent evaluation.
+Publish the pinned revisions, rerun both complete checks from the formal checkouts, and request a fresh independent evaluation.

@@ -9,7 +9,7 @@
 - [x] Run full verification and record the final evidence.
 - [x] Obtain an independent G2 verdict.
 - [x] Remediate the independent P1 and P2 findings in both repositories.
-- [ ] Rehearse the cross-repository rollback.
+- [x] Rehearse the cross-repository rollback.
 - [ ] Repeat independent evaluation against new immutable revisions.
 
 ## Verification Matrix
@@ -20,7 +20,7 @@
 | AC-02 | Parse configuration and example contracts | Remediated; independent re-evaluation pending |
 | AC-03 | Unit rejection tests plus adversarial fixtures | Remediated with Harness and Domain regression coverage; re-evaluation pending |
 | AC-04 | Documentation review | Protocol-only boundary clarified; re-evaluation pending |
-| AC-05 | Complete integrity gate, rollback rehearsal, and external review | Previous verdict `FAIL`; remediation evaluation pending |
+| AC-05 | Complete integrity gate, rollback rehearsal, and external review | Both gates and isolated rollback rehearsal pass; independent re-evaluation pending |
 
 ## Evaluator Verdict
 

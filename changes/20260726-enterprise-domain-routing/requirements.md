@@ -58,10 +58,12 @@ The change affects organization-wide routing and governance semantics but does n
 
 Rollback spans both repositories:
 
-1. Revert the Harness remediation and routing-architecture commits in reverse order.
-2. Revert the Domain Pack remediation and foundation commits in reverse order.
+1. Revert Harness `9361fbe`, `6a91514`, `628d0e9`, and `a76046d` in reverse chronological order.
+2. Revert Domain Pack `a54ea46` and `c5bf2de` in reverse chronological order.
 3. Restore the previously pinned Domain revision in `config/domain-pack-sources.json`.
 4. Run both complete repository checks from isolated clones.
 5. Confirm adopting projects have not consumed the unaccepted protocol revision.
 
 Existing product workflows remain valid because no production Router or active Domain depends on these contracts.
+
+The isolated rehearsal and immutable tree comparisons are recorded in `rollback-rehearsal-20260726.md`.

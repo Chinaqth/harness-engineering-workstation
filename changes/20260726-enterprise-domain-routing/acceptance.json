@@ -48,7 +48,8 @@
         "git@github.com:Chinaqth/harness-engineering-domain-packs.git initialized at c5bf2de",
         "Previous independent verdict: FAIL",
         "Remediation requires fresh independent evaluation",
-        "changes/20260726-enterprise-domain-routing/evaluation-20260726.md"
+        "changes/20260726-enterprise-domain-routing/evaluation-20260726.md",
+        "changes/20260726-enterprise-domain-routing/rollback-rehearsal-20260726.md"
       ]
     }
   ]
