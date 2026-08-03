@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "change_id": "20260802-domain-auto-activation",
+  "risk": "G2",
+  "status": "done",
+  "criteria": [
+    {"id": "AC-1", "description": "Human lifecycle approval is not required after automated completion.", "status": "passing", "evidence": ["docs/GOVERNANCE.md", "evaluation.md"]},
+    {"id": "AC-2", "description": "Registration remains draft-only and incomplete Packs remain unroutable.", "status": "passing", "evidence": ["validation.md", "evaluation.md"]},
+    {"id": "AC-3", "description": "Successful completion atomically activates registry and manifest.", "status": "passing", "evidence": ["validation.md", "evaluation.md"]},
+    {"id": "AC-4", "description": "Operational permissions and missing project inputs remain fail-closed.", "status": "passing", "evidence": ["docs/GOVERNANCE.md", "evaluation.md"]},
+    {"id": "AC-5", "description": "Kernel and Domain Pack contracts remain synchronized.", "status": "passing", "evidence": ["docs/ENTERPRISE_DOMAIN_ARCHITECTURE.md", "evaluation.md"]},
+    {"id": "AC-6", "description": "Automated and independent evaluation pass.", "status": "passing", "evidence": ["validation.md", "evaluation.md"]}
+  ]
+}
