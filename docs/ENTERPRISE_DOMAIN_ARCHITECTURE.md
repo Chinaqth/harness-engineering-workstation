@@ -65,4 +65,8 @@ If two selected Domain Packs conflict, a conforming resolver must record the con
 
 Domain Packs use `draft`, `active`, `deprecated`, and `retired` states. A conforming resolver may select only schema-valid `active` Packs by default. A deprecated Pack is available only to explicitly pinned consumers. A draft Pack is visible to maintainers but cannot receive production work.
 
-New functions are registered in the Domain Pack repository through `$register-domain-pack`. Registration establishes identity and ownership; activation is a separate reviewed change.
+New functions are registered in the Domain Pack repository through `$register-domain-pack`.
+Registration establishes a draft identity and owner. The completion workflow adds the reusable
+professional contract and automatically activates the Pack after its automated content, routing,
+reference, compatibility, and evaluation checks pass. Activation affects routing eligibility only;
+it does not grant task, publication, deployment, or production authority.

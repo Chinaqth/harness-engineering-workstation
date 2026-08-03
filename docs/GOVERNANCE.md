@@ -20,7 +20,7 @@ The level sets an autonomy ceiling, not only a review label. Apply the budgets a
 - **Generator:** Implements within the approved scope and produces verification evidence.
 - **Evaluator:** Independently assesses logic, policy, security, and architectural impact.
 - **Archiver:** Preserves specifications, decisions, metrics, and lessons.
-- **Domain Owner:** Owns the correctness, lifecycle, compatibility, and review of one Domain Pack.
+- **Domain Owner:** Owns the correctness, lifecycle, and compatibility of one Domain Pack.
 - **Router Owner:** Owns registry protocol, deterministic resolution, conflict handling, and routing provenance.
 
 Small teams may combine roles, but the Generator and approver for a G2 or G3 decision must not be the same decision-making entity.
@@ -55,7 +55,15 @@ Permanent exceptions, ownerless exceptions, and exceptions without an expiration
 ## Domain Pack Changes
 
 - Registration creates a `draft` identity and does not authorize production routing.
-- Activation requires an owner, reviewer, meaningful routes, capabilities, evaluators, validation evidence, and compatibility review.
+- A non-breaking registration and completion that changes only reusable routing metadata is G1 by
+  default because it is reversible and grants no operational permission. Round up when the Pack
+  changes permissions, security boundaries, compatibility, or production configuration.
+- Successful Domain completion automatically activates the Pack when it has a named owner,
+  meaningful routes and capabilities, evaluator coverage, compatibility, resolvable references,
+  and passing automated evidence. A separate owner or reviewer lifecycle approval is not required.
+- Automatic Domain activation grants routing eligibility only. Publication, deployment,
+  production access, release decisions, exceptions, and task-specific permissions remain subject
+  to their applicable human authorization gates.
 - Breaking Domain inputs, outputs, routing, or evaluator contracts require a major version and migration guidance.
 - Deprecated Packs remain available only to pinned consumers; retired Packs cannot receive new work.
 - Routing conflicts and missing capabilities must be surfaced as explicit outcomes, not resolved by invented metadata.
