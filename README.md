@@ -43,7 +43,7 @@ Enterprise adoption uses three versioned scopes:
 | Domain Packs | Private `harness-engineering-domain-packs` repository | Reusable function-level routes, capabilities, workflows, rules, Skills, tools, and evaluators |
 | Product project | Each product repository | Architecture, commands, enabled Pack versions, local ownership, constraints, and task records |
 
-This release defines the routing protocol and validation contracts; it does not ship a production Router. A future conforming resolver will convert a natural-language task into a Task Envelope, resolve active capabilities from an immutable Domain registry revision and project overlay, and emit a traceable Routing Plan. Selected professional content will load only after routing, while missing capabilities, conflicts, inputs, and approval needs remain explicit outcomes.
+This release defines the routing protocol and validation contracts; it does not ship a production Router. A future conforming resolver will convert a natural-language task into a Task Envelope, select exactly one registered Kernel task workflow, assess impact and risk, resolve active professional capabilities from an immutable Domain registry revision and project overlay, and emit a traceable Routing Plan. Selected professional content will load only after routing, while missing capabilities, conflicts, inputs, and structured approval gates remain explicit outcomes. Concrete features and defect symptoms remain task context; they are not packaged as task-specific Skills.
 
 See [Enterprise Domain Architecture](docs/ENTERPRISE_DOMAIN_ARCHITECTURE.md) and [Task-to-Capability Routing](docs/ROUTING.md).
 
@@ -151,6 +151,7 @@ Risk is determined by impact surface, reversibility, data sensitivity, and exter
 | `docs/ENTERPRISE_DOMAIN_ARCHITECTURE.md` | Kernel, Domain Pack, project-overlay, and task-contract boundaries | Scaling across enterprise functions |
 | `docs/ROUTING.md` | Task Envelope to Routing Plan protocol | Routing work to professional capabilities |
 | `config/domain-pack-sources.json` | Authoritative Domain Pack source and runtime locations | Configuring Domain discovery |
+| `config/task-workflows.json` | Registered Kernel task workflows and deterministic task-class mappings | Classifying the task lifecycle |
 
 ### Work execution and durable state
 
@@ -176,7 +177,7 @@ Risk is determined by impact surface, reversibility, data sensitivity, and exter
 | `scripts/validate_change.py` | Validate change artifacts and `acceptance.json` semantics |
 | `scripts/knowledge-garden.py` | Detect broken local links and stale active changes |
 | `scripts/validate_routing.py` | Validate Domain source, Task Envelope, and Routing Plan examples |
-| `schemas/` | Machine-readable Task Envelope, Routing Plan, and project-overlay contracts |
+| `schemas/` | Machine-readable task-workflow registry, Task Envelope, Routing Plan, and project-overlay contracts |
 | `examples/` | Executable examples of routing inputs and outcomes |
 | `tests/` | Prove validator behavior, including rejection paths |
 | `.github/workflows/harness-check.yml` | Run integrity checks on pushes and pull requests |
@@ -204,12 +205,12 @@ G0 can live in a pull request or task description. G1 requires `requirements.md`
 ## Quick Start
 
 1. Read [AGENTS.md](AGENTS.md), [CORE.md](rules/CORE.md), and the relevant project context.
-2. Normalize the objective into a Task Envelope and resolve enabled Domain capabilities through the project overlay.
-3. Classify the work as G0–G3.
+2. Normalize concrete task facts into a Task Envelope and select one registered Kernel task workflow.
+3. Assess the work as G0–G3, then resolve enabled Domain capabilities and their declared reusable Skills through the project overlay.
 4. For G1 or higher, copy `changes/_template/` into a dated change directory and remove artifacts not required by the risk level.
 5. Define observable acceptance criteria before implementation.
-6. Declare autonomy budgets and approval gates.
-7. Implement one bounded unit at a time and keep `progress.md` current.
+6. Declare autonomy budgets and scope-bound approval gates; use generic Domain Skills to contribute professional assessment and proposals.
+7. Implement one bounded unit only after required gates are approved, and keep `progress.md` current.
 8. Run:
 
    ```bash
@@ -235,7 +236,8 @@ The common file flow is:
 ```text
 AGENTS.md
   -> docs/ + rules/
-  -> Task Envelope + Domain registry + project overlay
+  -> Task Envelope + task-workflow registry
+  -> Domain registry + project overlay
   -> Routing Plan + selected Domain Pack content
   -> changes/<change-id>/
   -> implementation and project tests

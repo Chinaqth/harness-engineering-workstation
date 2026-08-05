@@ -28,15 +28,29 @@ Before implementation, a human confirms high-impact assumptions and all G1-or-hi
 After the objective is clear and before implementation begins:
 
 1. Normalize the request into a Task Envelope.
-2. Read the project Domain overlay and configured Domain registry.
-3. Select only active, compatible capabilities and resolve their dependencies.
-4. Record the resulting Routing Plan, including Pack versions, workflows, Skills, tools, evaluators, permissions, reasons, and conflicts.
-5. Load only the selected Domain content.
+2. Select exactly one registered Kernel task workflow; do not use a professional Domain as the task lifecycle.
+3. Record the preliminary impact, reversibility, data sensitivity, external effects, and G0–G3 assessment.
+4. Read the project Domain overlay and configured Domain registry.
+5. Select only active, compatible capabilities and resolve their dependencies and Domain-declared reusable Skill bindings.
+6. Record the resulting Routing Plan, including task workflow provenance, assessment, Pack versions, Domain workflows, Skills, tools, evaluators, permissions, structured approval gates, reasons, and conflicts.
+7. Load only the selected Domain content.
 
-If the result is `needs_input`, `needs_approval`, or `unroutable`, resolve that state before implementation. Do not invent a capability or bypass a missing approval.
+If the result is `needs_input`, `needs_approval`, `approval_rejected`, or `unroutable`, resolve that state before implementation. Do not invent a capability or bypass a missing approval.
+
+### Professional Assessment and Proposal
+
+A selected generic Domain Skill may run before implementation to establish a professional baseline,
+diagnose the concrete task, evaluate the Domain-owned impact surface, and contribute options and a
+recommended plan. The concrete feature, screen, endpoint, or defect remains task context and must
+not become a task-specific Skill.
+
+Reconcile Kernel and Domain assessments into the approval scope. Bind each required approval to a
+fingerprint of that scope. The Kernel owns approval state; a Domain Skill cannot approve its own
+proposal or turn planning authority into implementation authority.
 
 ## Phase 2: Implement
 
+- Begin only when the Routing Plan is `routed` and every present approval gate is approved with evidence.
 - Modify only the approved scope.
 - Load rules, skills, and external tools on demand.
 - Follow the Routing Plan and record any capability or dependency change that forces rerouting.
@@ -45,6 +59,8 @@ If the result is `needs_input`, `needs_approval`, or `unroutable`, resolve that 
 - Update `acceptance.json` only from observable evidence, not implementation confidence.
 - Refresh `progress.md` at every checkpoint, handoff, pause, or material discovery.
 - Return to planning when the scope changes.
+- Invalidate affected approval gates when scope, permission, external effect, capability selection,
+  or the material implementation plan changes.
 
 At the end of a session, leave a handoff containing:
 

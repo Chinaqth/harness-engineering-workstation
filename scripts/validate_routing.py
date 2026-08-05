@@ -31,42 +31,173 @@ def apply_schema(document: dict, schema: dict, label: str, errors: list[str]) ->
 def validate_plan_state(plan: dict, errors: list[str]) -> None:
     status = plan.get("status")
     selections = plan.get("selections")
-    approvals = plan.get("approvals")
+    approval_gates = plan.get("approval_gates")
     conflicts = plan.get("conflicts")
     missing_inputs = plan.get("missing_inputs")
-    if not all(isinstance(value, list) for value in (selections, approvals, conflicts, missing_inputs)):
+    if not all(
+        isinstance(value, list)
+        for value in (selections, approval_gates, conflicts, missing_inputs)
+    ):
         return
+
+    gate_statuses = [
+        gate.get("status") for gate in approval_gates if isinstance(gate, dict)
+    ]
+    pending = "pending" in gate_statuses
+    rejected = "rejected" in gate_statuses
 
     if status == "routed":
         if not selections:
             errors.append("routing plan: routed status requires at least one selection")
-        if approvals or conflicts or missing_inputs:
+        if pending or rejected or conflicts or missing_inputs:
             errors.append(
-                "routing plan: routed status cannot contain approvals, conflicts, or missing inputs"
+                "routing plan: routed status requires every gate approved and no conflicts or missing inputs"
             )
     elif status == "needs_approval":
         if not selections:
             errors.append("routing plan: needs_approval status requires a candidate selection")
-        if not approvals:
-            errors.append("routing plan: needs_approval status requires an approval")
+        if not pending:
+            errors.append("routing plan: needs_approval status requires a pending approval gate")
+        if rejected or conflicts or missing_inputs:
+            errors.append(
+                "routing plan: needs_approval status cannot contain rejected gates, conflicts, or missing inputs"
+            )
+    elif status == "approval_rejected":
+        if not selections:
+            errors.append("routing plan: approval_rejected status requires a candidate selection")
+        if not rejected:
+            errors.append("routing plan: approval_rejected status requires a rejected gate")
         if conflicts or missing_inputs:
             errors.append(
-                "routing plan: needs_approval status cannot contain conflicts or missing inputs"
+                "routing plan: approval_rejected status cannot contain conflicts or missing inputs"
             )
     elif status == "needs_input":
         if not missing_inputs:
             errors.append("routing plan: needs_input status requires a missing input")
-        if approvals or conflicts:
+        if approval_gates or conflicts:
             errors.append(
-                "routing plan: needs_input status cannot contain approvals or conflicts"
+                "routing plan: needs_input status cannot contain approval gates or conflicts"
             )
     elif status == "unroutable":
-        if selections or approvals or missing_inputs:
+        if selections or approval_gates or missing_inputs:
             errors.append(
-                "routing plan: unroutable status cannot contain selections, approvals, or missing inputs"
+                "routing plan: unroutable status cannot contain selections, approval gates, or missing inputs"
             )
         if not conflicts:
             errors.append("routing plan: unroutable status requires a conflict or reason")
+
+    gate_ids = [
+        gate.get("gate_id")
+        for gate in approval_gates
+        if isinstance(gate, dict) and isinstance(gate.get("gate_id"), str)
+    ]
+    if len(gate_ids) != len(set(gate_ids)):
+        errors.append("routing plan: approval gate IDs must be unique")
+    for gate in approval_gates:
+        if not isinstance(gate, dict):
+            continue
+        if gate.get("scope_fingerprint") != plan.get("scope_fingerprint"):
+            errors.append(
+                "routing plan: every approval gate must bind to the current scope fingerprint"
+            )
+        if gate.get("status") in {"approved", "rejected"} and not gate.get("evidence"):
+            errors.append(
+                "routing plan: approved or rejected gates require decision evidence"
+            )
+
+
+def validate_workflow_registry(registry: dict, errors: list[str]) -> None:
+    workflows = registry.get("workflows")
+    if not isinstance(workflows, list):
+        return
+    workflow_ids = [
+        workflow.get("id")
+        for workflow in workflows
+        if isinstance(workflow, dict) and isinstance(workflow.get("id"), str)
+    ]
+    if len(workflow_ids) != len(set(workflow_ids)):
+        errors.append("task workflow registry: workflow IDs must be unique")
+    task_classes: list[str] = []
+    for workflow in workflows:
+        if isinstance(workflow, dict) and isinstance(workflow.get("task_classes"), list):
+            task_classes.extend(
+                item for item in workflow["task_classes"] if isinstance(item, str)
+            )
+    if len(task_classes) != len(set(task_classes)):
+        errors.append(
+            "task workflow registry: each task class must resolve to exactly one workflow"
+        )
+
+
+def validate_workflow_selection(
+    envelope: dict, plan: dict, registry: dict, errors: list[str]
+) -> None:
+    selection = plan.get("workflow_selection")
+    workflows = registry.get("workflows")
+    if not isinstance(selection, dict) or not isinstance(workflows, list):
+        return
+    matching = [
+        workflow
+        for workflow in workflows
+        if isinstance(workflow, dict)
+        and workflow.get("id") == selection.get("workflow_id")
+        and workflow.get("version") == selection.get("version")
+    ]
+    if len(matching) != 1:
+        errors.append(
+            "routing plan: workflow selection must resolve to exactly one registered ID and version"
+        )
+        return
+    task_classes = matching[0].get("task_classes", [])
+    if envelope.get("task_class") not in task_classes:
+        errors.append(
+            "routing plan: selected workflow must declare the Task Envelope task class"
+        )
+    approval_policy = matching[0].get("approval_policy")
+    assessment = plan.get("assessment")
+    risk_level = assessment.get("risk_level") if isinstance(assessment, dict) else None
+    approval_gates = plan.get("approval_gates")
+    selections = plan.get("selections")
+    requires_approval = approval_policy == "always-before-implementation" or risk_level in {
+        "G1",
+        "G2",
+        "G3",
+    }
+    has_implementation_gate = isinstance(approval_gates, list) and any(
+        isinstance(gate, dict) and gate.get("kind") == "implementation"
+        for gate in approval_gates
+    )
+    if (
+        requires_approval
+        and isinstance(selections, list)
+        and selections
+        and isinstance(approval_gates, list)
+        and not has_implementation_gate
+    ):
+        errors.append(
+            "routing plan: selected workflow and risk require an implementation approval gate"
+        )
+
+
+def validate_skill_bindings(plan: dict, errors: list[str]) -> None:
+    selections = plan.get("selections")
+    if not isinstance(selections, list):
+        return
+    for selection_index, selection in enumerate(selections):
+        if not isinstance(selection, dict):
+            continue
+        capabilities = selection.get("capability_ids")
+        skills = selection.get("skills")
+        if not isinstance(capabilities, list) or not isinstance(skills, list):
+            continue
+        for skill_index, skill in enumerate(skills):
+            if not isinstance(skill, dict):
+                continue
+            if skill.get("capability_id") not in capabilities:
+                errors.append(
+                    "routing plan: "
+                    f"selections[{selection_index}].skills[{skill_index}] must bind to a selected capability"
+                )
 
 
 def validate_overlay(overlay: dict, errors: list[str]) -> None:
@@ -94,6 +225,10 @@ def validate(root: Path) -> list[str]:
             load_object(root / "examples" / "task-envelope.json", errors),
             load_object(root / "schemas" / "task-envelope.schema.json", errors),
         ),
+        "task workflow registry": (
+            load_object(root / "config" / "task-workflows.json", errors),
+            load_object(root / "schemas" / "task-workflow-registry.schema.json", errors),
+        ),
         "routing plan": (
             load_object(root / "examples" / "routing-plan.json", errors),
             load_object(root / "schemas" / "routing-plan.schema.json", errors),
@@ -108,6 +243,7 @@ def validate(root: Path) -> list[str]:
 
     config = documents["source configuration"][0]
     envelope = documents["task envelope"][0]
+    workflow_registry = documents["task workflow registry"][0]
     plan = documents["routing plan"][0]
     overlay = documents["project overlay"][0]
     sources = config.get("sources", [])
@@ -121,6 +257,9 @@ def validate(root: Path) -> list[str]:
     if plan.get("task_id") != envelope.get("task_id"):
         errors.append("routing plan: task_id must match the Task Envelope")
     validate_plan_state(plan, errors)
+    validate_workflow_registry(workflow_registry, errors)
+    validate_workflow_selection(envelope, plan, workflow_registry, errors)
+    validate_skill_bindings(plan, errors)
     validate_overlay(overlay, errors)
 
     plan_source = plan.get("source")

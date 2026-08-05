@@ -41,11 +41,29 @@ class RoutingValidationTests(unittest.TestCase):
             "route_id": "feature",
             "capability_ids": ["delivery"],
             "workflows": ["WORKFLOW.md"],
-            "skills": [],
+            "skills": [
+                {
+                    "skill_id": "ios-change-delivery",
+                    "capability_id": "delivery",
+                    "source_path": "skills/ios-change-delivery/SKILL.md",
+                    "reuse_scope": "domain",
+                }
+            ],
             "tools": [],
             "evaluators": ["EVALUATOR.md"],
             "permissions": ["repository:write"],
             "reason": "The task and repository signals match.",
+        }
+
+    def gate(self, status: str = "pending") -> dict:
+        return {
+            "gate_id": "implementation-approval",
+            "kind": "implementation",
+            "required_role": "task-owner",
+            "status": status,
+            "scope": ["Approved implementation plan"],
+            "scope_fingerprint": "sha256:2ed9cbe87610cd731e5ac65a1759db52b43746554e47f7ab57ab7efeea951c88",
+            "evidence": [] if status == "pending" else ["Owner decision record"],
         }
 
     def overlay_domain(self) -> dict:
@@ -75,7 +93,7 @@ class RoutingValidationTests(unittest.TestCase):
             {
                 "status": "routed",
                 "selections": [self.selection()],
-                "approvals": [],
+                "approval_gates": [self.gate("approved")],
                 "conflicts": [],
                 "missing_inputs": [],
             }
@@ -87,28 +105,28 @@ class RoutingValidationTests(unittest.TestCase):
             "unroutable with selection": {
                 "status": "unroutable",
                 "selections": [self.selection()],
-                "approvals": [],
+                "approval_gates": [],
                 "conflicts": ["No compatible Pack."],
                 "missing_inputs": [],
             },
             "routed with conflict": {
                 "status": "routed",
                 "selections": [self.selection()],
-                "approvals": [],
+                "approval_gates": [],
                 "conflicts": ["Unresolved conflict."],
                 "missing_inputs": [],
             },
             "needs approval without approval": {
                 "status": "needs_approval",
                 "selections": [self.selection()],
-                "approvals": [],
+                "approval_gates": [],
                 "conflicts": [],
                 "missing_inputs": [],
             },
             "needs input without missing input": {
                 "status": "needs_input",
                 "selections": [],
-                "approvals": [],
+                "approval_gates": [],
                 "conflicts": [],
                 "missing_inputs": [],
             },
@@ -134,7 +152,7 @@ class RoutingValidationTests(unittest.TestCase):
             {
                 "status": "routed",
                 "selections": [selection],
-                "approvals": [],
+                "approval_gates": [],
                 "conflicts": [],
                 "missing_inputs": [],
             }
@@ -150,13 +168,111 @@ class RoutingValidationTests(unittest.TestCase):
             {
                 "status": "routed",
                 "selections": [selection],
-                "approvals": [],
+                "approval_gates": [],
                 "conflicts": [],
                 "missing_inputs": [],
             }
         )
         errors = self.save_plan(path, plan)
         self.assertTrue(any("required pattern" in error for error in errors))
+
+    def test_pending_approval_gate_requires_needs_approval_status(self) -> None:
+        path, plan = self.plan()
+        plan.update(
+            {
+                "status": "needs_approval",
+                "selections": [self.selection()],
+                "approval_gates": [self.gate()],
+                "conflicts": [],
+                "missing_inputs": [],
+            }
+        )
+        self.assertEqual(self.save_plan(path, plan), [])
+
+        plan["status"] = "routed"
+        errors = self.save_plan(path, plan)
+        self.assertTrue(any("requires every gate approved" in error for error in errors))
+
+    def test_mutating_workflow_requires_implementation_approval(self) -> None:
+        path, plan = self.plan()
+        plan.update(
+            {
+                "status": "routed",
+                "selections": [self.selection()],
+                "approval_gates": [],
+                "conflicts": [],
+                "missing_inputs": [],
+            }
+        )
+        errors = self.save_plan(path, plan)
+        self.assertTrue(any("require an implementation approval gate" in error for error in errors))
+
+    def test_approved_gate_requires_evidence(self) -> None:
+        path, plan = self.plan()
+        gate = self.gate("approved")
+        gate["evidence"] = []
+        plan.update(
+            {
+                "status": "routed",
+                "selections": [self.selection()],
+                "approval_gates": [gate],
+                "conflicts": [],
+                "missing_inputs": [],
+            }
+        )
+        errors = self.save_plan(path, plan)
+        self.assertTrue(any("require decision evidence" in error for error in errors))
+
+    def test_approval_gate_must_bind_to_current_scope(self) -> None:
+        path, plan = self.plan()
+        gate = self.gate("approved")
+        gate["scope_fingerprint"] = f"sha256:{'b' * 64}"
+        plan.update(
+            {
+                "status": "routed",
+                "selections": [self.selection()],
+                "approval_gates": [gate],
+                "conflicts": [],
+                "missing_inputs": [],
+            }
+        )
+        errors = self.save_plan(path, plan)
+        self.assertTrue(any("bind to the current scope fingerprint" in error for error in errors))
+
+    def test_workflow_must_be_registered_for_task_class(self) -> None:
+        path, plan = self.plan()
+        plan["workflow_selection"]["workflow_id"] = "task.feature-delivery"
+        errors = self.save_plan(path, plan)
+        self.assertTrue(any("must declare the Task Envelope task class" in error for error in errors))
+
+    def test_workflow_registry_task_classes_are_unambiguous(self) -> None:
+        registry_path = self.root / "config" / "task-workflows.json"
+        registry = json.loads(registry_path.read_text(encoding="utf-8"))
+        registry["workflows"][0]["task_classes"].append("defect")
+        registry_path.write_text(json.dumps(registry, indent=2) + "\n", encoding="utf-8")
+        errors = MODULE.validate(self.root)
+        self.assertTrue(any("exactly one workflow" in error for error in errors))
+
+    def test_skill_binding_must_be_domain_reusable_and_capability_bound(self) -> None:
+        path, plan = self.plan()
+        selection = self.selection()
+        selection["skills"][0]["reuse_scope"] = "task"
+        plan.update(
+            {
+                "status": "routed",
+                "selections": [selection],
+                "approval_gates": [],
+                "conflicts": [],
+                "missing_inputs": [],
+            }
+        )
+        errors = self.save_plan(path, plan)
+        self.assertTrue(any("reuse_scope" in error for error in errors))
+
+        selection["skills"][0]["reuse_scope"] = "domain"
+        selection["skills"][0]["capability_id"] = "login-timeout-spinner-fix"
+        errors = self.save_plan(path, plan)
+        self.assertTrue(any("must bind to a selected capability" in error for error in errors))
 
     def test_plan_must_reference_same_task(self) -> None:
         path, plan = self.plan()

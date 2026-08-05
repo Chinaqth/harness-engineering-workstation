@@ -18,7 +18,7 @@ Harness Kernel
 
 | Layer | Owns | Must not own |
 | --- | --- | --- |
-| Harness Kernel | Cross-domain workflow, risk, permissions, evidence, task state, routing protocol | Department implementation details |
+| Harness Kernel | Registered task workflows, cross-domain lifecycle, risk, permissions, approvals, evidence, task state, routing protocol | Department implementation details |
 | Domain Pack | Domain identity, routes, capabilities, workflows, rules, Skills, tools, evaluators | Product-specific architecture or secrets |
 | Project overlay | Enabled Pack versions, local ownership, commands, architecture, exceptions that strengthen controls | Organization-wide defaults or copied Pack bodies |
 | Task contract | Current intent, scope, constraints, evidence, selected capabilities | Durable organizational policy |
@@ -37,13 +37,15 @@ Git is authoritative. Runtime copies may be installed under `~/.harness/domains/
 
 This release defines contracts and validators, not an operating production Router. A future conforming routing subsystem will combine judgment and deterministic resolution:
 
-1. An agent interprets natural-language intent and produces a Task Envelope.
-2. The resolver reads the registry and considers only active, enabled, compatible Packs.
-3. Route conditions identify candidate capabilities.
-4. Dependency, policy, permission, and project-overlay checks filter candidates.
-5. The resolver emits a traceable Routing Plan containing selected Domains, capabilities, workflows, Skills, tools, evaluators, permissions, approvals, and immutable source provenance.
+1. An agent interprets natural-language intent and produces a Task Envelope containing concrete task facts.
+2. The resolver selects exactly one registered Kernel task workflow for the lifecycle.
+3. The resolver records a preliminary impact and G0–G3 assessment.
+4. The resolver reads the Domain registry and considers only active, enabled, compatible Packs.
+5. Route conditions identify candidate capabilities and Domain-declared reusable Skill bindings.
+6. Dependency, policy, permission, approval, and project-overlay checks filter candidates.
+7. The resolver emits a traceable Routing Plan containing workflow provenance, assessment, selected Domains, capabilities, Domain workflows, Skills, tools, evaluators, permissions, approval gates, and immutable source provenance.
 
-A Skill may help construct or inspect routing data, but a Skill alone is not the Router. Registry resolution, lifecycle filtering, dependency checking, and provenance must remain deterministic and auditable.
+A Skill may help construct or inspect routing data, but a Skill alone is not the Router. Registry resolution, lifecycle filtering, dependency checking, approval state, and provenance must remain deterministic and auditable. A concrete task must not cause the Router to invent a task-specific Skill.
 
 ## Precedence and Conflicts
 

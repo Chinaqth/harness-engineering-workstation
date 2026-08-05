@@ -1,29 +1,53 @@
 {
   "schema_version": "1.0",
-  "task_id": "example-biometric-login",
-  "intent": "Add biometric login to the iOS application.",
-  "task_type": "feature",
+  "task_id": "example-android-login-timeout",
+  "intent": "Stop the Android login screen from spinning indefinitely after a network timeout.",
+  "task_class": "defect",
+  "task_type": "android-application-change",
+  "operation": "modify",
   "deliverables": [
-    "Biometric login implementation",
-    "Fallback and lockout behavior",
-    "Verification evidence"
+    "Evidence-backed diagnosis",
+    "Approved repair plan",
+    "Verification evidence for timeout and retry behavior"
   ],
   "constraints": [
-    "Preserve the existing password fallback",
-    "Do not expose biometric data to application code"
+    "Preserve the existing authentication service contract",
+    "Do not add a dependency without separate approval"
   ],
   "repository_signals": [
-    "swift",
-    "ios",
+    "kotlin",
+    "android",
+    "viewmodel",
     "authentication"
+  ],
+  "affected_surfaces": [
+    "Android login user interface",
+    "client-side timeout and retry state"
+  ],
+  "current_behavior": [
+    "The loading state remains visible indefinitely after a network timeout"
+  ],
+  "expected_behavior": [
+    "A timeout ends the loading state",
+    "The user receives recoverable feedback and can retry"
+  ],
+  "non_goals": [
+    "Change the authentication API contract",
+    "Change organization-wide timeout policy"
+  ],
+  "permission_hints": [
+    "Read-only diagnosis before approval",
+    "Task-scoped Android source modification after approval"
+  ],
+  "external_effects": [
   ],
   "required_evidence": [
     "unit tests",
-    "device journey",
-    "security review"
+    "timeout reproduction",
+    "retry user journey"
   ],
   "risk_hints": [
-    "authentication",
-    "sensitive user journey"
+    "authentication journey",
+    "cross-layer client state"
   ]
 }

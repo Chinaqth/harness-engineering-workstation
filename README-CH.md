@@ -43,7 +43,7 @@
 | Domain Pack | 独立私有仓库 `harness-engineering-domain-packs` | 可复用的职能路由、能力、流程、规则、Skill、工具和评估器 |
 | 具体产品项目 | 各产品仓库 | 架构、命令、启用的 Pack 版本、本地负责人、约束和任务记录 |
 
-当前版本只定义路由协议和验证契约，并没有交付生产级 Router。未来符合协议的 Resolver 会先把自然语言任务整理为 Task Envelope，再结合不可变的 Domain 注册表版本和项目 Overlay 解析可用能力，最后输出可追溯的 Routing Plan。只有被选中的专业内容才会被加载；缺失能力、输入、冲突和审批需求必须保留为明确状态。
+当前版本只定义路由协议和验证契约，并没有交付生产级 Router。未来符合协议的 Resolver 会先把自然语言任务整理为 Task Envelope，选择且只选择一个已注册的 Kernel 任务工作流，评估影响与风险，再结合不可变的 Domain 注册表版本和项目 Overlay 解析可用专业能力，最后输出可追溯的 Routing Plan。只有被选中的专业内容才会被加载；缺失能力、输入、冲突和结构化审批门必须保留为明确状态。具体功能和 Bug 症状属于任务上下文，不能被包装成任务特有的 Skill。
 
 详细说明见 [企业 Domain 架构](docs/ENTERPRISE_DOMAIN_ARCHITECTURE.md) 与 [任务到能力的路由协议](docs/ROUTING.md)。
 
@@ -151,6 +151,7 @@ Archiver -> 持久知识和下一轮系统改进
 | `docs/ENTERPRISE_DOMAIN_ARCHITECTURE.md` | 底座、Domain Pack、项目 Overlay 和任务契约边界 | 扩展到多职能企业场景时 |
 | `docs/ROUTING.md` | 从 Task Envelope 到 Routing Plan 的协议 | 将任务路由到专业能力时 |
 | `config/domain-pack-sources.json` | Domain Pack 权威来源和运行时位置 | 配置 Domain 发现时 |
+| `config/task-workflows.json` | 已注册的 Kernel 任务工作流和确定性任务类别映射 | 对任务生命周期进行分类时 |
 
 ### 工作执行和持久状态
 
@@ -176,7 +177,7 @@ Archiver -> 持久知识和下一轮系统改进
 | `scripts/validate_change.py` | 验证变更制品与 `acceptance.json` 语义 |
 | `scripts/knowledge-garden.py` | 检查失效链接和过期活动变更 |
 | `scripts/validate_routing.py` | 验证 Domain 来源、Task Envelope 和 Routing Plan 示例 |
-| `schemas/` | Task Envelope、Routing Plan 与项目 Overlay 的机器可读契约 |
+| `schemas/` | 任务工作流注册表、Task Envelope、Routing Plan 与项目 Overlay 的机器可读契约 |
 | `examples/` | 路由输入和结果的可执行示例 |
 | `tests/` | 验证检查器的正确和拒绝路径 |
 | `.github/workflows/harness-check.yml` | 在推送和 Pull Request 时运行完整检查 |
@@ -204,12 +205,12 @@ G0 可以记录在任务或 Pull Request 中。G1 需要 `requirements.md`、`ta
 ## 快速开始
 
 1. 阅读 [AGENTS.md](AGENTS.md)、[CORE.md](rules/CORE.md) 和当前项目上下文。
-2. 将目标整理为 Task Envelope，并通过项目 Overlay 解析启用的 Domain 能力。
-3. 将任务评估为 G0–G3。
+2. 将具体任务事实整理为 Task Envelope，并选择一个已注册的 Kernel 任务工作流。
+3. 将任务评估为 G0–G3，再通过项目 Overlay 解析启用的 Domain 能力及其声明的通用 Skill。
 4. 对于 G1 及以上任务，将 `changes/_template/` 复制到带日期的变更目录，并根据风险保留必要制品。
 5. 在实现前定义可观察的验收标准。
-6. 声明自治预算和人工审批点。
-7. 每次只实现一个受控工作单元，并持续更新 `progress.md`。
+6. 声明自治预算和绑定明确范围的人工审批门；由通用 Domain Skill 贡献专业评估和方案。
+7. 仅在必要审批门通过后实现受控工作单元，并持续更新 `progress.md`。
 8. 运行：
 
    ```bash
@@ -235,7 +236,8 @@ G0 可以记录在任务或 Pull Request 中。G1 需要 `requirements.md`、`ta
 ```text
 AGENTS.md
   -> docs/ + rules/
-  -> Task Envelope + Domain 注册表 + 项目 Overlay
+  -> Task Envelope + 任务工作流注册表
+  -> Domain 注册表 + 项目 Overlay
   -> Routing Plan + 被选中的 Domain Pack 内容
   -> changes/<change-id>/
   -> 具体实现和项目测试

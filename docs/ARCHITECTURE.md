@@ -27,6 +27,16 @@ Conversation is a transient interface, not the source of truth. Material work is
 | `progress.md` | Cross-session handoff and resume point | Current operator |
 | `contract.md` | Generator–Evaluator boundary, evidence standard, and verdict authority | Planner and Evaluator |
 
+Two routing artifacts precede and constrain those execution artifacts:
+
+| Artifact | Purpose | Primary writer |
+| --- | --- | --- |
+| `task-envelope.json` | Preserve normalized concrete task facts, requested operation, constraints, and evidence needs | Intake or Planner |
+| `routing-plan.json` | Preserve workflow provenance, assessment, Domain capability and Skill bindings, permissions, and approval gates | Conforming Router and Planner |
+
+Material routed work stores these records with the task change record or in an equivalently durable
+system linked by immutable IDs. Chat-only routing is not sufficient evidence.
+
 The artifacts form a closed loop:
 
 ```text
@@ -36,6 +46,19 @@ Intent -> Plan -> Generate -> Observe -> Evaluate -> Decide
 ```
 
 The Generator may propose that a criterion passes. The Evaluator owns the independent verdict for G2 and G3 work. Neither role may silently weaken acceptance criteria after implementation begins.
+
+## Two-Dimensional Routing
+
+Routing composes two independent decisions before implementation:
+
+1. The Kernel selects exactly one registered task workflow, such as `task.defect-remediation`, to
+   govern lifecycle, risk, approval, state, and evidence.
+2. The Domain resolver selects one or more registered professional capabilities and their declared
+   reusable Skills, tools, permissions, and evaluators.
+
+Concrete product features and defect symptoms remain task context. They are not Skill identities.
+A generic Domain Skill may contribute professional assessment and proposal work before approval and
+resume implementation afterward, while the Kernel owns approval state and scope.
 
 ## Information Layers
 
@@ -50,7 +73,7 @@ Read L0 by default. Enter L1 according to the task, load L2 only while working o
 
 ## Control Plane and Project Plane
 
-- **Kernel control plane (this repository):** Organization defaults, cross-domain workflow, routing protocol, templates, Skills, maturity models, and audit standards.
+- **Kernel control plane (this repository):** Organization defaults, registered task workflows, cross-domain lifecycle, routing protocol, approval state, templates, Skills, maturity models, and audit standards.
 - **Domain plane (`harness-engineering-domain-packs`):** Versioned professional functions, route metadata, capability contracts, domain workflows, rules, Skills, and evaluators.
 - **Project plane (product repositories):** Project architecture, Domain Pack overlays, project rules, tests, and concrete change records.
 - **Synchronization:** The control plane publishes versions. Projects explicitly adopt a version and record deviations; updates never silently overwrite project-specific policy.

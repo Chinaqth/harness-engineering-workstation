@@ -17,6 +17,8 @@ required=(
   "workflows/3-plus-1.md"
   "changes/README.md"
   "config/domain-pack-sources.json"
+  "config/task-workflows.json"
+  "schemas/task-workflow-registry.schema.json"
   "schemas/task-envelope.schema.json"
   "schemas/routing-plan.schema.json"
   "schemas/project-domain-overlay.schema.json"

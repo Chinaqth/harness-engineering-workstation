@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0",
+  "workflows": [
+    {
+      "id": "task.feature-delivery",
+      "version": "1.0.0",
+      "description": "Govern delivery of new or materially changed product behavior.",
+      "task_classes": ["feature"],
+      "governing_workflow": "workflows/3-plus-1.md",
+      "stages": ["assess", "propose", "approve", "implement", "verify", "evaluate", "deliver", "institutionalize"],
+      "approval_policy": "always-before-implementation"
+    },
+    {
+      "id": "task.defect-remediation",
+      "version": "1.0.0",
+      "description": "Govern evidence-led diagnosis and repair of behavior that differs from its accepted contract.",
+      "task_classes": ["defect"],
+      "governing_workflow": "workflows/3-plus-1.md",
+      "stages": ["assess", "propose", "approve", "implement", "verify", "evaluate", "deliver", "institutionalize"],
+      "approval_policy": "always-before-implementation"
+    },
+    {
+      "id": "task.product-definition",
+      "version": "1.0.0",
+      "description": "Govern clarification and validation of product intent, outcomes, scope, and acceptance.",
+      "task_classes": ["product-definition"],
+      "governing_workflow": "workflows/3-plus-1.md",
+      "stages": ["assess", "propose", "approve", "evaluate", "deliver", "institutionalize"],
+      "approval_policy": "always-before-implementation"
+    },
+    {
+      "id": "task.design-change",
+      "version": "1.0.0",
+      "description": "Govern creation or modification of an experience or interface specification.",
+      "task_classes": ["design-change"],
+      "governing_workflow": "workflows/3-plus-1.md",
+      "stages": ["assess", "propose", "approve", "implement", "verify", "evaluate", "deliver", "institutionalize"],
+      "approval_policy": "always-before-implementation"
+    },
+    {
+      "id": "task.refactoring",
+      "version": "1.0.0",
+      "description": "Govern internal structural change whose accepted external behavior is preserved.",
+      "task_classes": ["refactoring"],
+      "governing_workflow": "workflows/3-plus-1.md",
+      "stages": ["assess", "propose", "approve", "implement", "verify", "evaluate", "deliver", "institutionalize"],
+      "approval_policy": "always-before-implementation"
+    },
+    {
+      "id": "task.investigation",
+      "version": "1.0.0",
+      "description": "Govern read-only or bounded investigation whose primary output is evidence and a recommendation.",
+      "task_classes": ["investigation"],
+      "governing_workflow": "workflows/3-plus-1.md",
+      "stages": ["assess", "propose", "evaluate", "deliver", "institutionalize"],
+      "approval_policy": "risk-proportional"
+    },
+    {
+      "id": "task.operational-change",
+      "version": "1.0.0",
+      "description": "Govern changes with operational, production, publication, or external-system effects.",
+      "task_classes": ["operational-change"],
+      "governing_workflow": "workflows/3-plus-1.md",
+      "stages": ["assess", "propose", "approve", "implement", "verify", "evaluate", "deliver", "institutionalize"],
+      "approval_policy": "always-before-implementation"
+    }
+  ]
+}

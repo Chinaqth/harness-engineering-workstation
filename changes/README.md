@@ -22,4 +22,8 @@ Risk-proportional requirements:
 
 Use ISO dates for `Review-By`. Active changes past that date fail knowledge gardening until refreshed, completed, or cancelled.
 
+When a task is routed through professional capabilities, retain its schema-valid Task Envelope and
+Routing Plan with the change record or link to an equivalently durable record by immutable ID. These
+routing artifacts do not replace the risk-proportional execution files above.
+
 Run `python3 scripts/validate_change.py` before evaluation. Move completed changes to `changes/archive/<year>/` only after acceptance state is terminal and durable conclusions have been institutionalized.

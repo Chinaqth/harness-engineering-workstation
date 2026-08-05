@@ -1,17 +1,38 @@
 {
   "schema_version": "1.0",
-  "task_id": "example-biometric-login",
+  "task_id": "example-android-login-timeout",
   "source": {
     "source_id": "enterprise-domain-packs",
     "repository": "git@github.com:Chinaqth/harness-engineering-domain-packs.git",
     "revision": "a4ef0e468e675f2f4d339876f7e590af68b4f561",
     "registry": "registry/domains.json"
   },
+  "workflow_selection": {
+    "workflow_id": "task.defect-remediation",
+    "version": "1.0.0",
+    "registry": "config/task-workflows.json",
+    "reason": "The request describes an observable deviation from accepted login timeout behavior."
+  },
+  "assessment": {
+    "risk_level": "G1",
+    "impact_surfaces": [
+      "Android login user interface",
+      "client-side timeout and retry state"
+    ],
+    "affected_units": 1,
+    "change_points": 0,
+    "domain_count": 1,
+    "reversibility": "unknown",
+    "data_sensitivity": "sensitive",
+    "external_effects": [],
+    "rationale": "Authentication is a sensitive journey, but exact change points and reversibility require Android professional assessment."
+  },
+  "scope_fingerprint": "sha256:2ed9cbe87610cd731e5ac65a1759db52b43746554e47f7ab57ab7efeea951c88",
   "status": "unroutable",
   "selections": [],
-  "approvals": [],
+  "approval_gates": [],
   "conflicts": [
-    "No active Domain Pack currently provides the required iOS and security capabilities."
+    "No registered active Domain Pack provides the required Android application-engineering capability."
   ],
   "missing_inputs": []
 }

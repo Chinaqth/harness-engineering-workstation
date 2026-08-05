@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "change_id": "20260805-task-workflow-routing",
+  "risk": "G2",
+  "status": "evaluating",
+  "criteria": [
+    {"id":"AC-01","description":"A routing plan selects one registered Kernel task workflow independently from Domain capabilities.","status":"passing","evidence":["validation.md#workflow-and-domain-separation"]},
+    {"id":"AC-02","description":"The Task Envelope separates concrete task facts from reusable routing concepts.","status":"passing","evidence":["validation.md#task-facts-and-stable-skills"]},
+    {"id":"AC-03","description":"The Routing Plan records structured risk assessment and approval gates.","status":"passing","evidence":["validation.md#assessment-and-approval-gates"]},
+    {"id":"AC-04","description":"Validation rejects missing workflow provenance, contradictory approval state, and problem-specific Skill identifiers.","status":"passing","evidence":["validation.md#negative-invariants"]},
+    {"id":"AC-05","description":"Documentation defines the lifecycle and professional capability boundaries.","status":"passing","evidence":["validation.md#documentation-consistency"]},
+    {"id":"AC-06","description":"Android examples keep concrete task facts in the envelope, fail closed without an active registered capability, and illustrate only a future generic Skill binding.","status":"passing","evidence":["validation.md#android-registration-boundary"]},
+    {"id":"AC-07","description":"All relevant automated checks pass.","status":"passing","evidence":["validation.md#automated-checks"]}
+  ]
+}
