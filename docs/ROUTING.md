@@ -165,6 +165,27 @@ A product repository may create `.harness/domains.json` conforming to
 
 The overlay does not copy Pack contents, invent capabilities, or override Kernel red lines.
 
+## Cross-Repository Compatibility Gate
+
+The source configuration pins an immutable Domain Packs commit and declares the Kernel protocol
+version required from active Packs. Before a pinned source is adopted or used for routing, run:
+
+```bash
+python3 scripts/validate_domain_source.py . \
+  --domain-root /path/to/authorized/harness-engineering-domain-packs
+```
+
+The validator reads Registry, Manifest, routes, capabilities, owners, workflows, Skills, and
+evaluators directly from the pinned Git commit. It does not trust mutable working-tree content and
+does not fetch or modify the checkout. It fails when repository identity, commit availability,
+protocol compatibility, lifecycle identity, capability dependencies, or artifact references are
+inconsistent.
+
+`scripts/harness-check.sh` uses `HARNESS_DOMAIN_PACKS_CHECKOUT` when set, otherwise it discovers a
+sibling `harness-domain-packs` checkout. If neither is available, it prints an explicit skip because
+Kernel-only CI cannot prove cross-repository compatibility without authorized source access. A
+release or source-pin update must provide the checkout; a skip is not release evidence.
+
 ## Android Defect Example
 
 `examples/task-envelope.json` describes a concrete Android login timeout defect. The Kernel can

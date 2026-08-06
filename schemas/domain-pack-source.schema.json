@@ -12,12 +12,13 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "repository", "ref", "registry"],
+        "required": ["id", "repository", "ref", "registry", "required_kernel_protocol_version"],
         "properties": {
           "id": { "type": "string", "minLength": 1 },
           "repository": { "type": "string", "minLength": 1 },
           "ref": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
-          "registry": { "type": "string", "minLength": 1 }
+          "registry": { "type": "string", "minLength": 1 },
+          "required_kernel_protocol_version": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" }
         }
       }
     },

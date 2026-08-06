@@ -177,6 +177,7 @@ Archiver -> 持久知识和下一轮系统改进
 | `scripts/validate_change.py` | 验证变更制品与 `acceptance.json` 语义 |
 | `scripts/knowledge-garden.py` | 检查失效链接和过期活动变更 |
 | `scripts/validate_routing.py` | 验证 Domain 来源、Task Envelope 和 Routing Plan 示例 |
+| `scripts/validate_domain_source.py` | 通过授权 checkout 验证仓库身份、固定 revision、协议兼容性和 Domain 制品引用 |
 | `schemas/` | 任务工作流注册表、Task Envelope、Routing Plan 与项目 Overlay 的机器可读契约 |
 | `examples/` | 路由输入和结果的可执行示例 |
 | `tests/` | 验证检查器的正确和拒绝路径 |

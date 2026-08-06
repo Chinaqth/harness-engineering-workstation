@@ -24,6 +24,7 @@ required=(
   "schemas/project-domain-overlay.schema.json"
   "schemas/domain-pack-source.schema.json"
   "examples/project-domain-overlay.json"
+  "scripts/validate_domain_source.py"
 )
 
 for path in "${required[@]}"; do
@@ -64,6 +65,22 @@ fi
 
 if ! python3 "$root/scripts/validate_routing.py" "$root"; then
   failures=$((failures + 1))
+fi
+
+domain_checkout="${HARNESS_DOMAIN_PACKS_CHECKOUT:-}"
+if [[ -z "$domain_checkout" ]]; then
+  sibling_checkout="$(cd "$root/.." && pwd)/harness-domain-packs"
+  if [[ -d "$sibling_checkout/.git" ]]; then
+    domain_checkout="$sibling_checkout"
+  fi
+fi
+if [[ -n "$domain_checkout" ]]; then
+  if ! python3 "$root/scripts/validate_domain_source.py" "$root" \
+    --domain-root "$domain_checkout"; then
+    failures=$((failures + 1))
+  fi
+else
+  printf 'SKIP cross-repository Domain compatibility: set HARNESS_DOMAIN_PACKS_CHECKOUT to an authorized checkout\n'
 fi
 
 if ! python3 -m unittest discover -s "$root/tests"; then

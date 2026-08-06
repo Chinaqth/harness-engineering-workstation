@@ -177,6 +177,7 @@ Risk is determined by impact surface, reversibility, data sensitivity, and exter
 | `scripts/validate_change.py` | Validate change artifacts and `acceptance.json` semantics |
 | `scripts/knowledge-garden.py` | Detect broken local links and stale active changes |
 | `scripts/validate_routing.py` | Validate Domain source, Task Envelope, and Routing Plan examples |
+| `scripts/validate_domain_source.py` | Validate repository identity, pinned revision, protocol compatibility, and Domain artifact references against an authorized checkout |
 | `schemas/` | Machine-readable task-workflow registry, Task Envelope, Routing Plan, and project-overlay contracts |
 | `examples/` | Executable examples of routing inputs and outcomes |
 | `tests/` | Prove validator behavior, including rejection paths |
