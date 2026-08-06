@@ -9,26 +9,28 @@
 - [x] Add positive and rejection-path tests.
 - [x] Document compatibility and migration rules.
 - [x] Run full verification and prepare independent evaluation evidence.
-- [ ] Obtain an independent G2 evaluator verdict.
+- [x] Obtain an independent G2 evaluator verdict.
 
 ## Verification Matrix
 
 | Criterion | Method | Result |
 | --- | --- | --- |
-| AC-01 | Manifest schema and consistency validator | Passing generator evidence in `validation.md` |
-| AC-02 | Schema/example version comparison tests | Passing generator evidence in `validation.md` |
-| AC-03 | Domain source schema and example validation | Passing generator evidence in `validation.md` |
-| AC-04 | Negative version drift and unsupported-tuple tests | Passing generator evidence in `validation.md` |
-| AC-05 | Real pinned Domain checkout validation | Passed against `fdf4de7...` |
-| AC-06 | Documentation and migration table inspection | `docs/PROTOCOL_VERSIONING.md` |
-| AC-07 | Focused unit tests and `harness-check.sh` | Passed with 35 tests |
+| AC-01 | Manifest schema and consistency validator | Independently passed; see `evaluation.md` |
+| AC-02 | Schema/example version comparison tests | Independently passed; see `evaluation.md` |
+| AC-03 | Domain source schema and example validation | Independently passed; see `evaluation.md` |
+| AC-04 | Negative version drift and unsupported-tuple tests | Independently passed; see `evaluation.md` |
+| AC-05 | Real pinned Domain checkout validation | Independently passed against `fdf4de7...` |
+| AC-06 | Documentation and migration table inspection | Independently passed; see `evaluation.md` |
+| AC-07 | Focused unit tests and `harness-check.sh` | Independently passed with 35 tests |
 
 ## Evaluator Verdict
 
-- Verdict: pending
-- Evaluator: independent G2 evaluator required
-- Date: pending
-- Evidence: pending
+- Verdict: pass
+- Evaluator: Independent Agent `/root/independent_g2_evaluator`
+- Evaluated revisions: Kernel `5723515fdac9d27c76c1a2a2009fa8aba17993ec`; Domain Packs
+  `fdf4de700a4c9075c0ea2551bb79359bb3bd2fb6`
+- Date: 2026-08-06
+- Evidence: `evaluation.md`
 
 ## Residual Risks
 

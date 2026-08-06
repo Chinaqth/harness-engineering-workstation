@@ -2,14 +2,14 @@
 
 - Change ID: 20260806-protocol-version-separation
 - Updated: 2026-08-06
-- Current phase: evaluating
+- Current phase: done
 - Environment: local macOS workspace with authorized pinned Domain checkout
 
 ## Current State
 
-Version separation, compatibility enforcement, migration documentation, and generator verification
-are complete. The G2 change remains `evaluating` pending user confirmation and an independent
-Evaluator verdict.
+Version separation, compatibility enforcement, migration documentation, generator verification,
+and independent evaluation are complete. The independent G2 verdict is `PASS` for Kernel revision
+`5723515` and Domain Packs revision `fdf4de7`.
 
 ## Completed and Verified
 
@@ -23,18 +23,23 @@ Evaluator verdict.
 - Real pinned Domain compatibility passes at `fdf4de7...`.
 - The complete Harness gate passes with 35 tests.
 - Seven change records validate, knowledge gardening passes, and `git diff --check` passes.
+- Independent evaluation reproduced AC-01 through AC-07, including negative paths and rollback, with
+  no P0 or P1 finding.
 
 ## Open Tasks
 
-- Obtain user confirmation and an independent G2 evaluator verdict before final completion.
+None within this change.
 
 ## Residual Risks
 
 - External prototype producers must migrate Task Envelope, Routing Plan, and Domain source documents
   to `2.0`; no automatic migration tool exists.
 - CI without an authorized Domain checkout cannot provide release-grade cross-repository evidence.
+- Kernel revision `5723515` was published to `main` before the independent verdict under explicit
+  user authorization. The independent evaluation subsequently passed; future G2 publication should
+  normally follow the verdict.
 
 ## Resume Here
 
-Begin independent evaluation from `contract.md` and `validation.md`. Do not start Workflow-generation
-work from this change record.
+This change is complete. Treat Workflow-generation work as a separate change with its own scope and
+acceptance record.

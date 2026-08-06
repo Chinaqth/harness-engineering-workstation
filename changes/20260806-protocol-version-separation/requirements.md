@@ -3,7 +3,7 @@
 - ID: 20260806-protocol-version-separation
 - Owner: harness-kernel
 - Risk: G2
-- Status: evaluating
+- Status: done
 - Review-By: 2026-08-20
 
 ## Problem
@@ -61,7 +61,9 @@ adopt explicit `2.0` document versions.
   tests, documentation, and this change record.
 - Tools and permissions: Local read/write and repository-provided checks; read-only pinned Domain
   checkout inspection.
-- External side effects: None; no commit, push, publication, or Domain mutation.
+- External side effects: No Domain mutation. The user explicitly authorized committing and pushing
+  Kernel revision `5723515` to `main` before the independent verdict; this publication-before-verdict
+  sequencing deviation is preserved in the evaluation record.
 - Cost: Local computation only.
 - Checkpoint interval: After contract migration and after full verification.
 - Required evidence: Version-consistency tests, cross-repository validation, complete Harness gate,
