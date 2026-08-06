@@ -80,6 +80,11 @@ Read L0 by default. Enter L1 according to the task, load L2 only while working o
 
 The detailed boundary, lifecycle, precedence, and runtime distribution model is defined in [ENTERPRISE_DOMAIN_ARCHITECTURE.md](ENTERPRISE_DOMAIN_ARCHITECTURE.md). The task-to-capability protocol is defined in [ROUTING.md](ROUTING.md).
 
+Protocol and document contracts are versioned independently through
+`config/protocol-versions.json`; identical-looking version strings never imply compatibility. The
+current identities, supported Kernel/Domain tuples, bump rules, and migration procedure are defined
+in [PROTOCOL_VERSIONING.md](PROTOCOL_VERSIONING.md).
+
 ## Scaling Principles
 
 - Organize rules as organization defaults, domain rules, and project rules. Rules become more specific closer to the project but cannot weaken organizational red lines.

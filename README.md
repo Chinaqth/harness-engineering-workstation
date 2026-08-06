@@ -150,7 +150,9 @@ Risk is determined by impact surface, reversibility, data sensitivity, and exter
 | `docs/MATURITY_MODEL.md` | L0–L4 capability stages and exit criteria | Auditing adoption or planning improvements |
 | `docs/ENTERPRISE_DOMAIN_ARCHITECTURE.md` | Kernel, Domain Pack, project-overlay, and task-contract boundaries | Scaling across enterprise functions |
 | `docs/ROUTING.md` | Task Envelope to Routing Plan protocol | Routing work to professional capabilities |
+| `docs/PROTOCOL_VERSIONING.md` | Independent contract identities, supported tuples, bump rules, and migration | Changing schemas or Kernel/Domain compatibility |
 | `config/domain-pack-sources.json` | Authoritative Domain Pack source and runtime locations | Configuring Domain discovery |
+| `config/protocol-versions.json` | Canonical Kernel, document-contract, and Domain compatibility versions | Validating or evolving protocol boundaries |
 | `config/task-workflows.json` | Registered Kernel task workflows and deterministic task-class mappings | Classifying the task lifecycle |
 
 ### Work execution and durable state
@@ -178,6 +180,7 @@ Risk is determined by impact surface, reversibility, data sensitivity, and exter
 | `scripts/knowledge-garden.py` | Detect broken local links and stale active changes |
 | `scripts/validate_routing.py` | Validate Domain source, Task Envelope, and Routing Plan examples |
 | `scripts/validate_domain_source.py` | Validate repository identity, pinned revision, protocol compatibility, and Domain artifact references against an authorized checkout |
+| `scripts/validate_protocol_versions.py` | Reject drift between the canonical version manifest, schemas, examples, source requirements, and compatibility tuples |
 | `schemas/` | Machine-readable task-workflow registry, Task Envelope, Routing Plan, and project-overlay contracts |
 | `examples/` | Executable examples of routing inputs and outcomes |
 | `tests/` | Prove validator behavior, including rejection paths |

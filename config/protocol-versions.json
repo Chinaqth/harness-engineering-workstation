@@ -1,0 +1,21 @@
+{
+  "manifest_schema_version": "1.0",
+  "kernel_protocol_version": "1.0",
+  "contracts": {
+    "domain_pack_source": "2.0",
+    "task_envelope": "2.0",
+    "routing_plan": "2.0",
+    "task_workflow_registry": "1.0",
+    "project_domain_overlay": "1.0",
+    "domain_pack": "1.0",
+    "domain_registry": "1.0"
+  },
+  "domain_compatibility": [
+    {
+      "kernel_protocol_version": "1.0",
+      "domain_pack_contract_version": "1.0",
+      "domain_registry_version": "1.0",
+      "status": "supported"
+    }
+  ]
+}

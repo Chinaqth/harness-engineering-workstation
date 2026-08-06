@@ -13,18 +13,22 @@ required=(
   "docs/OBSERVABILITY.md"
   "docs/ENTERPRISE_DOMAIN_ARCHITECTURE.md"
   "docs/ROUTING.md"
+  "docs/PROTOCOL_VERSIONING.md"
   "rules/CORE.md"
   "workflows/3-plus-1.md"
   "changes/README.md"
   "config/domain-pack-sources.json"
+  "config/protocol-versions.json"
   "config/task-workflows.json"
   "schemas/task-workflow-registry.schema.json"
   "schemas/task-envelope.schema.json"
   "schemas/routing-plan.schema.json"
   "schemas/project-domain-overlay.schema.json"
   "schemas/domain-pack-source.schema.json"
+  "schemas/protocol-versions.schema.json"
   "examples/project-domain-overlay.json"
   "scripts/validate_domain_source.py"
+  "scripts/validate_protocol_versions.py"
 )
 
 for path in "${required[@]}"; do
@@ -60,6 +64,10 @@ if ! python3 "$root/scripts/validate_change.py" "$root"; then
 fi
 
 if ! python3 "$root/scripts/knowledge-garden.py" "$root"; then
+  failures=$((failures + 1))
+fi
+
+if ! python3 "$root/scripts/validate_protocol_versions.py" "$root"; then
   failures=$((failures + 1))
 fi
 

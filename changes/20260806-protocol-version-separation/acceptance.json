@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "change_id": "20260806-protocol-version-separation",
+  "risk": "G2",
+  "status": "evaluating",
+  "criteria": [
+    {"id":"AC-01","description":"A canonical manifest independently identifies Kernel and contract versions.","status":"passing","evidence":["validation.md#canonical-identities"]},
+    {"id":"AC-02","description":"Breaking Kernel contracts report 2.0 while unchanged contracts remain 1.0.","status":"passing","evidence":["validation.md#contract-migration"]},
+    {"id":"AC-03","description":"The Domain source declares required Kernel, Domain Pack, and Registry versions.","status":"passing","evidence":["validation.md#domain-compatibility"]},
+    {"id":"AC-04","description":"Validation rejects version drift and unsupported compatibility tuples.","status":"passing","evidence":["validation.md#rejection-evidence"]},
+    {"id":"AC-05","description":"Pinned Domain documents match the supported compatibility tuple.","status":"passing","evidence":["validation.md#domain-compatibility"]},
+    {"id":"AC-06","description":"Compatibility and migration rules are documented.","status":"passing","evidence":["docs/PROTOCOL_VERSIONING.md"]},
+    {"id":"AC-07","description":"Focused and complete repository checks pass.","status":"passing","evidence":["validation.md#commands-and-results"]}
+  ]
+}

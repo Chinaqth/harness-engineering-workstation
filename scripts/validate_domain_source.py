@@ -111,8 +111,11 @@ def validate_domain_documents(
     errors: list[str],
 ) -> None:
     entries = registry.get("domains")
-    if registry.get("schema_version") != "1.0":
-        errors.append("Domain registry: schema_version must be 1.0")
+    expected_registry_version = source.get("required_domain_registry_version")
+    if registry.get("schema_version") != expected_registry_version:
+        errors.append(
+            f"Domain registry: schema_version must be {expected_registry_version}"
+        )
     if not isinstance(entries, list):
         errors.append("Domain registry: domains must be an array")
         return
@@ -152,6 +155,17 @@ def validate_domain_documents(
         owners = revision_json(
             domain_root, revision, f"{domain_path}/owners.json", errors
         )
+        expected_pack_version = source.get("required_domain_pack_contract_version")
+        for label, document in (
+            ("domain.json", manifest),
+            ("routes.json", routes),
+            ("capabilities.json", capabilities),
+            ("owners.json", owners),
+        ):
+            if document.get("schema_version") != expected_pack_version:
+                errors.append(
+                    f"{domain_id}: {label} schema_version must be {expected_pack_version}"
+                )
         for key in ("id", "version", "status", "owner"):
             if manifest.get(key) != entry.get(key):
                 errors.append(f"{domain_id}: Registry and Manifest disagree on {key}")

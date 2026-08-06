@@ -5,7 +5,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "task_id", "source", "workflow_selection", "assessment", "scope_fingerprint", "status", "selections", "approval_gates", "conflicts", "missing_inputs"],
   "properties": {
-    "schema_version": { "const": "1.0" },
+    "schema_version": { "const": "2.0" },
     "task_id": { "type": "string", "minLength": 1 },
     "source": {
       "type": "object",

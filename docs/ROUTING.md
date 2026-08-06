@@ -7,6 +7,10 @@ does not ship a production natural-language classifier, resolver, or orchestrati
 implementation must conform to these contracts and fail closed when workflow provenance, Domain
 capabilities, permissions, approvals, or evidence are incomplete.
 
+Task Envelope and Routing Plan currently use contract version `2.0`; the Kernel protocol and Domain
+contracts have separate identities. See `config/protocol-versions.json` and
+`docs/PROTOCOL_VERSIONING.md`. A shared numeric label must not be used as evidence of compatibility.
+
 ## Two Independent Routing Questions
 
 A concrete task is not a Skill. A conforming Router answers two different questions:

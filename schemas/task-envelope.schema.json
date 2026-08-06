@@ -5,7 +5,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "task_id", "intent", "task_class", "task_type", "operation", "deliverables", "constraints", "repository_signals", "affected_surfaces", "required_evidence"],
   "properties": {
-    "schema_version": { "const": "1.0" },
+    "schema_version": { "const": "2.0" },
     "task_id": { "type": "string", "minLength": 1 },
     "intent": { "type": "string", "minLength": 1 },
     "task_class": { "type": "string", "minLength": 1 },

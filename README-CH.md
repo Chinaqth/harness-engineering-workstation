@@ -150,7 +150,9 @@ Archiver -> 持久知识和下一轮系统改进
 | `docs/MATURITY_MODEL.md` | L0–L4 能力等级和退出标准 | 审计采纳情况或规划改进时 |
 | `docs/ENTERPRISE_DOMAIN_ARCHITECTURE.md` | 底座、Domain Pack、项目 Overlay 和任务契约边界 | 扩展到多职能企业场景时 |
 | `docs/ROUTING.md` | 从 Task Envelope 到 Routing Plan 的协议 | 将任务路由到专业能力时 |
+| `docs/PROTOCOL_VERSIONING.md` | 独立契约版本、兼容组合、升级规则和迁移方式 | 修改 Schema 或 Kernel/Domain 兼容边界时 |
 | `config/domain-pack-sources.json` | Domain Pack 权威来源和运行时位置 | 配置 Domain 发现时 |
+| `config/protocol-versions.json` | Kernel、文档契约和 Domain 兼容版本的权威清单 | 校验或演进协议边界时 |
 | `config/task-workflows.json` | 已注册的 Kernel 任务工作流和确定性任务类别映射 | 对任务生命周期进行分类时 |
 
 ### 工作执行和持久状态
@@ -178,6 +180,7 @@ Archiver -> 持久知识和下一轮系统改进
 | `scripts/knowledge-garden.py` | 检查失效链接和过期活动变更 |
 | `scripts/validate_routing.py` | 验证 Domain 来源、Task Envelope 和 Routing Plan 示例 |
 | `scripts/validate_domain_source.py` | 通过授权 checkout 验证仓库身份、固定 revision、协议兼容性和 Domain 制品引用 |
+| `scripts/validate_protocol_versions.py` | 检查版本清单、Schema、示例、Domain 来源要求和兼容组合是否发生漂移 |
 | `schemas/` | 任务工作流注册表、Task Envelope、Routing Plan 与项目 Overlay 的机器可读契约 |
 | `examples/` | 路由输入和结果的可执行示例 |
 | `tests/` | 验证检查器的正确和拒绝路径 |

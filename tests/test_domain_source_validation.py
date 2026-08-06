@@ -151,7 +151,7 @@ class DomainSourceValidationTests(unittest.TestCase):
         self.write_json(
             self.kernel / "config" / "domain-pack-sources.json",
             {
-                "schema_version": "1.0",
+                "schema_version": "2.0",
                 "sources": [
                     {
                         "id": "fixture",
@@ -159,6 +159,8 @@ class DomainSourceValidationTests(unittest.TestCase):
                         "ref": revision,
                         "registry": "registry/domains.json",
                         "required_kernel_protocol_version": protocol,
+                        "required_domain_pack_contract_version": "1.0",
+                        "required_domain_registry_version": "1.0",
                     }
                 ],
                 "runtime": {
