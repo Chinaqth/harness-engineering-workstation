@@ -28,6 +28,7 @@ required=(
   "schemas/protocol-versions.schema.json"
   "examples/project-domain-overlay.json"
   "scripts/validate_domain_source.py"
+  "scripts/sync_domain_pin.py"
   "scripts/validate_protocol_versions.py"
 )
 
@@ -86,6 +87,24 @@ if [[ -n "$domain_checkout" ]]; then
   if ! python3 "$root/scripts/validate_domain_source.py" "$root" \
     --domain-root "$domain_checkout"; then
     failures=$((failures + 1))
+  fi
+  pin="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["sources"][0]["ref"])' \
+    "$root/config/domain-pack-sources.json")"
+  remote_head="$(git -C "$domain_checkout" rev-parse --verify --quiet 'refs/remotes/origin/HEAD^{commit}' \
+    || git -C "$domain_checkout" rev-parse --verify --quiet 'origin/main^{commit}' || true)"
+  if [[ -n "$remote_head" && "$pin" != "$remote_head" ]]; then
+    counts="$(git -C "$domain_checkout" rev-list --left-right --count "$pin...$remote_head" 2>/dev/null || printf '?\t?')"
+    ahead="${counts%%[[:space:]]*}"
+    behind="${counts##*[[:space:]]}"
+    if [[ "$behind" != "0" ]]; then
+      printf 'WARN Domain pin %.12s is %s commit(s) behind the remote default branch %.12s' \
+        "$pin" "$behind" "$remote_head"
+      printf ' (local refs may be stale); run scripts/sync_domain_pin.py\n'
+    else
+      printf 'WARN Domain pin %.12s is not on the recorded remote default branch %.12s' \
+        "$pin" "$remote_head"
+      printf ' (%s commit(s) ahead; unpushed work or stale local refs)\n' "$ahead"
+    fi
   fi
 else
   printf 'SKIP cross-repository Domain compatibility: set HARNESS_DOMAIN_PACKS_CHECKOUT to an authorized checkout\n'

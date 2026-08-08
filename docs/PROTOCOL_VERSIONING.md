@@ -39,6 +39,21 @@ Kernel protocol 1.0
 manifest. `scripts/validate_domain_source.py` then proves that the pinned Git revision actually
 contains documents matching those requirements.
 
+## Updating the Pinned Revision
+
+After landing changes in the Domain Packs repository, run:
+
+```bash
+python3 scripts/sync_domain_pin.py . \
+  --domain-root /path/to/authorized/harness-engineering-domain-packs
+```
+
+The script resolves the remote default branch head (or an explicit `--ref`), proves the candidate
+revision with the cross-repository validator, and only then updates
+`config/domain-pack-sources.json` and the Routing Plan example that tracks the same source. A
+failed candidate leaves both files untouched. `scripts/harness-check.sh` warns when the pin
+appears behind the remote default branch, so forgotten updates surface at the next check.
+
 Similar-looking version strings do not imply compatibility. A tuple is usable only when the
 manifest records it as `supported`; `deprecated` is visible but not valid for new source adoption.
 

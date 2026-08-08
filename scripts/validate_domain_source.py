@@ -280,7 +280,17 @@ def validate_domain_documents(
                     )
 
 
-def validate(root: Path, domain_root: Path, source_id: str | None = None) -> list[str]:
+def validate(
+    root: Path,
+    domain_root: Path,
+    source_id: str | None = None,
+    revision: str | None = None,
+) -> list[str]:
+    """Validate the configured source, optionally against a candidate revision.
+
+    When ``revision`` is given it replaces the configured ``ref`` for this run,
+    which lets callers prove a candidate commit before updating the pin.
+    """
     root = root.resolve()
     domain_root = domain_root.resolve()
     errors: list[str] = []
@@ -303,16 +313,17 @@ def validate(root: Path, domain_root: Path, source_id: str | None = None) -> lis
             "Domain checkout origin does not match the configured source repository"
         )
 
-    revision = source.get("ref")
+    if revision is None:
+        revision = source.get("ref")
     if not isinstance(revision, str):
         errors.append("configured Domain source ref must be a string")
         return errors
     resolved = git(domain_root, "rev-parse", f"{revision}^{{commit}}")
     if resolved.returncode != 0:
-        errors.append(f"configured Domain revision is absent from checkout: {revision}")
+        errors.append(f"Domain revision is absent from checkout: {revision}")
         return errors
     if resolved.stdout.strip() != revision:
-        errors.append("configured Domain revision must resolve to its exact immutable commit")
+        errors.append("Domain revision must resolve to its exact immutable commit")
         return errors
 
     registry_path = safe_relative_path(
@@ -330,8 +341,14 @@ def main() -> int:
     parser.add_argument("root", nargs="?", default=".", help="Harness Kernel root")
     parser.add_argument("--domain-root", required=True, help="Authorized local Domain Packs checkout")
     parser.add_argument("--source-id", help="Configured source ID when more than one source exists")
+    parser.add_argument(
+        "--revision",
+        help="Validate this exact commit instead of the configured ref",
+    )
     args = parser.parse_args()
-    errors = validate(Path(args.root), Path(args.domain_root), args.source_id)
+    errors = validate(
+        Path(args.root), Path(args.domain_root), args.source_id, revision=args.revision
+    )
     if errors:
         for error in errors:
             print(f"ERROR: {error}")

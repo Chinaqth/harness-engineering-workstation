@@ -35,7 +35,7 @@ Use another language only when the user explicitly requests it or when preservin
 | Understand the overall design | `docs/ARCHITECTURE.md` |
 | Route a task to enterprise functions | `docs/ENTERPRISE_DOMAIN_ARCHITECTURE.md`, `docs/ROUTING.md` |
 | Change protocol or contract versions | `docs/PROTOCOL_VERSIONING.md`, `docs/GOVERNANCE.md`, then create a G2 change proposal |
-| Configure Domain Pack sources | `config/domain-pack-sources.json` |
+| Configure Domain Pack sources | `config/domain-pack-sources.json`, `scripts/sync_domain_pin.py` |
 | Plan a complex change | `workflows/3-plus-1.md`, `changes/README.md` |
 | Decide permissions and approvals | `docs/GOVERNANCE.md`, `docs/AUTONOMY_POLICY.md`, `rules/CORE.md` |
 | Make a system observable to an agent | `docs/OBSERVABILITY.md` |
