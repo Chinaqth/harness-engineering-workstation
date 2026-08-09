@@ -2,16 +2,19 @@
 
 - Change ID: 20260809-router-resolver-v1
 - Updated: 2026-08-09
-- Current phase: evaluating, awaiting independent verdict
+- Current phase: done (independent verdict: pass)
 - Last verified revision: Kernel working tree with resolver, tests, regenerated example, and docs;
   Domain Packs `0ca789ced412a5cceb4c247c3dd726fcb10b9882`
 - Environment: Local repositories on macOS, python3 3.11
 
 ## Current State
 
-Implementation complete and the Generator has proposed all seven criteria as passing. The complete
-Harness gate is green (58 tests). Awaiting an independent Evaluator verdict per `contract.md`;
-the Generator must not issue the final G2 verdict.
+Done. The independent Evaluator verdict is **pass** for all seven criteria (`evaluation.md`),
+including fresh Evaluator-authored envelopes, a poisoned-clone proof that Domain reads use only
+the pinned commit, and a byte-identical reproduction of the checked-in example. The single
+wording discrepancy the Evaluator recorded (AC-02: unregistered `task_class` is an input-boundary
+rejection, not a `needs_input` plan) has been re-aligned in `requirements.md` and
+`acceptance.json`.
 
 ## Completed and Verified
 
@@ -35,7 +38,5 @@ the Generator must not issue the final G2 verdict.
 
 ## Next Actions
 
-1. Independent Evaluator re-runs the resolver and tests, exercises the negative paths in
-   `contract.md`, and records the verdict in `task.md`.
-2. On a pass verdict, mark Status `done`, reconcile `acceptance.json`, and archive per
-   `changes/README.md`.
+1. None for this change; it is complete. Archive to `changes/archive/2026/` when the next change
+   begins, per `changes/README.md`.

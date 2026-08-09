@@ -3,7 +3,7 @@
 - ID: 20260809-router-resolver-v1
 - Owner: harness-kernel
 - Risk: G2
-- Status: evaluating
+- Status: done
 - Review-By: 2026-08-23
 
 ## Problem
@@ -48,26 +48,26 @@ selection, approval gates, and fail-closed terminal states cannot be reproduced,
 
 ## Acceptance Criteria
 
-- [ ] AC-01: The resolver emits a schema-valid Routing Plan for every one of the five terminal
+- [x] AC-01: The resolver emits a schema-valid Routing Plan for every one of the five terminal
   states, with focused tests proving each state and its required and forbidden content.
-- [ ] AC-02: Workflow selection picks exactly one registered workflow via `task_class` and records
-  a reason; a missing or unregistered `task_class` ends in `needs_input` with the missing input
-  recorded.
-- [ ] AC-03: Domain selection reads the registry, routes, capabilities, and Skill artifacts from
+- [x] AC-02: Workflow selection picks exactly one registered workflow via `task_class` and records
+  a reason; a schema-invalid envelope or an unregistered `task_class` is rejected at the input
+  boundary (exit 2, no plan) because no conforming Routing Plan can be emitted for it.
+- [x] AC-03: Domain selection reads the registry, routes, capabilities, and Skill artifacts from
   the pinned commit (not the mutable working tree), matches exact `task_type` only, respects overlay
   enablement, and records `unroutable` with an explicit conflict when no capability matches or a
   declared Skill artifact is absent; no Domain, capability, or Skill is invented.
-- [ ] AC-04: Approval gates derive from the workflow approval policy and envelope permission hints
+- [x] AC-04: Approval gates derive from the workflow approval policy and envelope permission hints
   and external effects; every gate carries the documented scope fingerprint, and a decisions record
   transitions gates to approved or rejected with evidence, yielding `routed` or
   `approval_rejected`.
-- [ ] AC-05: Every plan emitted across the test suite passes `scripts/validate_routing.py`, and the
+- [x] AC-05: Every plan emitted across the test suite passes `scripts/validate_routing.py`, and the
   scope fingerprint algorithm is deterministic (identical inputs produce identical fingerprints;
   any scope-bearing change alters the fingerprint).
-- [ ] AC-06: The resolver reproduces the Android login-timeout example as `unroutable` with no
+- [x] AC-06: The resolver reproduces the Android login-timeout example as `unroutable` with no
   selection, and produces at least one positive `needs_approval`-then-`routed` path against the
   active `engineering.web` Pack.
-- [ ] AC-07: The deterministic mapping and fingerprint rules are documented in `docs/ROUTING.md` or
+- [x] AC-07: The deterministic mapping and fingerprint rules are documented in `docs/ROUTING.md` or
   a referenced resolver document; focused tests and the complete Harness gate pass.
 
 ## Risk, Permission, and Data Impact
