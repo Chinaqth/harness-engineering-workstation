@@ -25,7 +25,8 @@
 
 ## Residual Risks
 
-- The Domain Packs fix commit `0ca789c` is local; until the owner pushes it, other clones cannot
-  resolve the pinned revision and the drift warning compares against the stale remote head.
+- Resolved 2026-08-09: Domain Packs fix commit `0ca789c` is now on the remote default branch
+  (verified with `git ls-remote`: `refs/heads/main` = `0ca789ced412a5cceb4c247c3dd726fcb10b9882`);
+  other clones can resolve the pinned revision.
 - HarmonyOS Pack activation quality (evaluation gates, research ledger) remains governed by the
   Domain repository's own G2 completion record.
