@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Resolve a Task Envelope into one fail-closed Routing Plan.
+"""Resolve a Task Envelope into one governed Routing Plan.
 
-Deterministic Router/Resolver v1 (change 20260809-router-resolver-v1).
+Deterministic Router/Resolver v2 (change 20260809-governed-model-fallback).
 
 Inputs:
 - A schema-valid Task Envelope (contract 2.0);
@@ -11,8 +11,9 @@ Inputs:
   exclusively from the pinned Git commit of an authorized Domain checkout;
 - an optional decisions record applying approval-gate decisions.
 
-The resolver never synthesizes a Domain, capability, or Skill. Any gap ends in
-a fail-closed terminal state. An envelope that fails schema validation or whose
+The resolver never synthesizes a Domain, capability, or Skill. Missing optional
+professional assets produce an explicit model-native fallback. An envelope that
+fails schema validation or whose
 task_class matches no registered workflow is rejected at the input boundary
 (exit 2) because no conforming Routing Plan can be emitted for it.
 
@@ -153,18 +154,19 @@ def resolve_domains(
     resolver: DomainResolver,
     registry_path: str,
     overlay: dict | None,
-) -> tuple[list[dict], list[str], list[str]]:
-    """Return (selections, conflicts, missing_inputs) from pinned-commit data."""
+) -> tuple[list[dict], list[str], list[str], list[str]]:
+    """Return selections, hard conflicts, missing inputs, and soft fallbacks."""
     selections: list[dict] = []
     selection_dependencies: list[list[str]] = []
     conflicts: list[str] = []
     missing: list[str] = []
+    fallbacks: list[str] = []
     task_type = envelope.get("task_type")
 
     registry = resolver.read_json(registry_path)
     entries = registry.get("domains")
     if not isinstance(entries, list):
-        return [], [f"Domain registry at {registry_path} has no domains array"], []
+        return [], [f"Domain registry at {registry_path} has no domains array"], [], []
 
     overlay_domains: dict[str, dict] = {}
     if overlay is not None:
@@ -257,11 +259,11 @@ def resolve_domains(
             for skill_id in capability.get("skills", []):
                 source_path = f"skills/{skill_id}/SKILL.md"
                 if not resolver.exists(f"{domain_path}/{source_path}"):
-                    conflicts.append(
-                        f"{domain_id}: capability '{capability['id']}' binds Skill "
-                        f"'{skill_id}' but {source_path} is absent at the pinned revision."
+                    fallbacks.append(
+                        f"Optional Skill {domain_id}/{skill_id} is unavailable at the pinned "
+                        "revision; execute its declared capability through the Kernel workflow "
+                        "with model reasoning, permitted retrieval, and task evidence."
                     )
-                    broken = True
                     continue
                 skills.append(
                     {
@@ -321,20 +323,18 @@ def resolve_domains(
         for selection in selections
         for capability_id in selection["capability_ids"]
     }
-    surviving: list[dict] = []
     for selection, dependencies in zip(selections, selection_dependencies):
         unsatisfied = sorted(
             {dep for dep in dependencies if dep not in selected_qualified}
         )
         if unsatisfied:
-            conflicts.append(
-                f"{selection['domain_id']}: capability dependencies not satisfied "
-                f"within the selected capabilities: {', '.join(unsatisfied)}."
+            fallbacks.append(
+                f"Soft capability dependencies for {selection['domain_id']}/"
+                f"{selection['route_id']} are not selected: {', '.join(unsatisfied)}; "
+                "cover these professional concerns through model reasoning and explicit evidence."
             )
-        else:
-            surviving.append(selection)
 
-    return surviving, conflicts, missing
+    return selections, conflicts, missing, sorted(set(fallbacks))
 
 
 def build_gates(
@@ -397,7 +397,9 @@ def build_gates(
     return gates
 
 
-def scope_fingerprint(envelope: dict, workflow: dict, selections: list[dict]) -> str:
+def scope_fingerprint(
+    envelope: dict, workflow: dict, selections: list[dict], fallbacks: list[str]
+) -> str:
     scope = {
         "task_id": envelope.get("task_id"),
         "operation": envelope.get("operation"),
@@ -418,6 +420,7 @@ def scope_fingerprint(envelope: dict, workflow: dict, selections: list[dict]) ->
             }
             for selection in selections
         ],
+        "fallbacks": sorted(fallbacks),
     }
     return canonical_fingerprint(scope)
 
@@ -545,7 +548,7 @@ def main() -> int:
         return fail_input(errors)
 
     plan: dict = {
-        "schema_version": "2.0",
+        "schema_version": "3.0",
         "task_id": envelope["task_id"],
         "source": {
             "source_id": source.get("id", ""),
@@ -564,6 +567,8 @@ def main() -> int:
         },
         "assessment": {},
         "scope_fingerprint": "",
+        "execution_mode": "model_native",
+        "fallbacks": [],
         "status": "",
         "selections": [],
         "approval_gates": [],
@@ -604,7 +609,7 @@ def main() -> int:
                 ]
             )
         resolver = DomainResolver(domain_root, source.get("ref", ""))
-        selections, conflicts, missing = resolve_domains(
+        selections, conflicts, missing, fallbacks = resolve_domains(
             envelope, resolver, source.get("registry", ""), overlay
         )
         if resolver.errors:
@@ -613,20 +618,26 @@ def main() -> int:
             )
         plan["missing_inputs"].extend(missing)
         if not plan["missing_inputs"] and not conflicts and not selections:
-            conflicts.append(
-                f"No registered active enabled Domain Pack provides a capability for "
-                f"task_type '{envelope.get('task_type')}'."
+            fallbacks.append(
+                f"No active enabled Domain capability matches task_type "
+                f"'{envelope.get('task_type')}'; execute model-native under the selected "
+                "Kernel workflow, approvals, permissions, constraints, and evidence requirements."
             )
         if conflicts:
             plan["conflicts"] = conflicts
         else:
             plan["selections"] = selections
+        plan["fallbacks"] = sorted(set(fallbacks))
+
+    plan["execution_mode"] = (
+        "domain_augmented" if plan["selections"] else "model_native"
+    )
 
     plan["assessment"] = derive_assessment(envelope, len(plan["selections"]))
     plan["scope_fingerprint"] = scope_fingerprint(
-        envelope, workflow, plan["selections"]
+        envelope, workflow, plan["selections"], plan["fallbacks"]
     )
-    if plan["selections"] and not plan["missing_inputs"] and not plan["conflicts"]:
+    if not plan["missing_inputs"] and not plan["conflicts"]:
         plan["approval_gates"] = build_gates(
             envelope, workflow, plan["assessment"], plan["scope_fingerprint"]
         )

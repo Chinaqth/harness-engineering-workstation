@@ -1,4 +1,4 @@
-# Progress and Handoff
+# 进度与交接
 
 - Change ID:
 - Updated:
@@ -6,18 +6,18 @@
 - Last verified revision:
 - Environment:
 
-## Current State
+## 当前状态
 
-## Completed and Verified
+## 已完成并验证
 
-## Open Tasks
+## 待办任务
 
-## Blockers and Decisions Needed
+## 阻塞项与待决策事项
 
-## Evidence
+## 证据
 
-## Residual Risks
+## 残余风险
 
-## Resume Here
+## 从这里继续
 
-State the next smallest safe action and the exact command, file, or workflow entry point.
+写明下一个最小安全动作，以及准确的命令、文件或工作流入口。

@@ -122,9 +122,10 @@ def validate(root: Path) -> list[str]:
             source.get("required_domain_pack_contract_version"),
             source.get("required_domain_registry_version"),
         )
-        if source_tuple != current_tuple:
+        if source_tuple[1:] != current_tuple[1:]:
             errors.append(
-                f"domain source[{index}]: required versions must equal the current manifest tuple"
+                f"domain source[{index}]: required Domain contract versions must equal "
+                "the current manifest Domain contracts"
             )
         if source_tuple not in supported_tuples:
             errors.append(

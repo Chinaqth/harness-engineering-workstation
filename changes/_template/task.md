@@ -1,24 +1,24 @@
-# Implementation Tasks
+# 实施任务
 
-## Plan
+## 计划
 
-- [ ] Establish a baseline for current behavior
-- [ ] Implement the smallest reversible change
-- [ ] Add or update tests
-- [ ] Run verification
-- [ ] Update documentation and decision records
+- [ ] 建立当前行为基线
+- [ ] 实施最小且可逆的变更
+- [ ] 添加或更新测试
+- [ ] 运行验证
+- [ ] 更新文档和决策记录
 
-## Verification Matrix
+## 验证矩阵
 
-| Acceptance criterion | Verification method | Result or evidence |
+| 验收标准 | 验证方法 | 结果或证据 |
 | --- | --- | --- |
 |  |  |  |
 
-## Evaluator Verdict
+## Evaluator 结论
 
-- Verdict: pending
-- Evaluator:
-- Date:
-- Evidence:
+- 结论：pending
+- Evaluator：
+- 日期：
+- 证据：
 
-## Residual Risks
+## 残余风险

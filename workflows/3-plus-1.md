@@ -13,6 +13,10 @@ Outputs:
 - `contract.md`: Generator–Evaluator responsibilities and evidence standard;
 - `decision.md` when the change requires an important trade-off.
 
+Create these artifacts under the explicitly identified target project's
+`<project-root>/changes/<change-id>/`, whether or not that project uses Git. Human-readable change
+Markdown defaults to Chinese; machine-readable contract keys and status values remain English.
+
 Artifact depth is risk-proportional:
 
 | Risk | Required record |
@@ -31,11 +35,16 @@ After the objective is clear and before implementation begins:
 2. Select exactly one registered Kernel task workflow; do not use a professional Domain as the task lifecycle.
 3. Record the preliminary impact, reversibility, data sensitivity, external effects, and G0–G3 assessment.
 4. Read the project Domain overlay and configured Domain registry.
-5. Select only active, compatible capabilities and resolve their dependencies and Domain-declared reusable Skill bindings.
+5. Select all active, compatible capabilities and reusable Skill bindings that are available. Treat
+   Domain Pack 1.0 `dependencies` and missing Skill artifacts as soft professional gaps recorded in
+   fallback evidence; never invent an asset.
 6. Record the resulting Routing Plan, including task workflow provenance, assessment, Pack versions, Domain workflows, Skills, tools, evaluators, permissions, structured approval gates, reasons, and conflicts.
-7. Load only the selected Domain content.
+7. Load all selected Domain content. If none is available, or an optional professional asset is
+   missing, continue model-native under the Kernel workflow and record compensating evidence.
 
-If the result is `needs_input`, `needs_approval`, `approval_rejected`, or `unroutable`, resolve that state before implementation. Do not invent a capability or bypass a missing approval.
+Resolve `needs_input`, `needs_approval`, `approval_rejected`, or `unroutable` before implementation.
+The absence of a Domain, Capability, or Skill alone is not `unroutable`; it activates governed
+model-native fallback. Do not invent a capability or bypass a missing approval.
 
 ### Professional Assessment and Proposal
 

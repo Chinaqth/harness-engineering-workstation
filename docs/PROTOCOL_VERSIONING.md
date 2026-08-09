@@ -10,31 +10,34 @@ for current identities and supported Kernel/Domain combinations.
 
 | Identity | Version | Meaning |
 | --- | --- | --- |
-| Kernel protocol | `1.0` | Cross-domain orchestration, authorization, routing, and evidence semantics |
+| Kernel protocol | `2.0` | Cross-domain orchestration, authorization, governed model fallback, routing, and evidence semantics |
 | Domain Pack source | `2.0` | Source repository, immutable revision, Registry location, and required compatibility versions |
 | Task Envelope | `2.0` | Concrete task facts, Kernel task class, Domain-facing task type, operation, and evidence needs |
-| Routing Plan | `2.0` | Workflow selection, assessment, Domain bindings, approval gates, state, and provenance |
+| Routing Plan | `3.0` | Workflow selection, execution mode, fallback evidence, Domain bindings, approval gates, state, and provenance |
 | Task Workflow Registry | `1.0` | Registered Kernel task workflows, stages, and approval policy |
 | Project Domain Overlay | `1.0` | Project-enabled Domain versions, local mappings, and stricter constraints |
 | Domain Pack contract | `1.0` | Domain Manifest, routes, capabilities, owners, workflows, Skills, and evaluators |
 | Domain Registry | `1.0` | Registered Domain identities, versions, lifecycle, ownership, and paths |
 
-The Kernel protocol remains `1.0` because the Domain interoperability semantics used by the pinned
-active Pack remain compatible. The Task Envelope, Routing Plan, and Domain source contracts are
-`2.0` because their existing required fields are incompatible with their original document shapes.
+Kernel protocol 2.0 remains compatible with Domain Pack contract 1.0 by interpreting its untyped
+`dependencies` as soft professional concerns. Routing Plan 3.0 is a breaking plan contract because
+it requires `execution_mode` and `fallbacks` and permits governed execution with zero Domain
+selections.
 
 ## Compatibility Tuple
 
 Domain interoperability is accepted only through an explicit tuple:
 
 ```text
-Kernel protocol 1.0
+Kernel protocol 2.0
   + Domain Pack contract 1.0
   + Domain Registry 1.0
   = supported
 ```
 
-`config/domain-pack-sources.json` repeats the required tuple for each immutable source.
+`config/domain-pack-sources.json` records each immutable source's own declared tuple. The current
+Kernel/Domain tuple and the source-declared tuple must both appear as supported combinations; the
+source's Kernel declaration need not be rewritten when a backward-compatible Kernel is adopted.
 `scripts/validate_protocol_versions.py` proves that the source requirements match the canonical
 manifest. `scripts/validate_domain_source.py` then proves that the pinned Git revision actually
 contains documents matching those requirements.
@@ -101,6 +104,21 @@ the Domain Pack **contract** version `1.0` that defines their machine-readable s
 
 There is no automatic migration tool in this release. Inputs with the previous labels and missing
 required fields must fail closed and be regenerated or explicitly migrated by their owner.
+
+## Routing Plan 2.0 → 3.0
+
+| Area | 2.0 producer behavior | 3.0 producer behavior |
+| --- | --- | --- |
+| Execution basis | At least one Domain selection required | Kernel workflow is the baseline; Domain selection is optional enhancement |
+| New fields | None | Emit `execution_mode` and `fallbacks` |
+| Missing Domain | `unroutable` | `model_native` with an explicit fallback reason |
+| Missing Skill | Hard conflict | Soft fallback; use model reasoning and compensating evidence |
+| Capability dependency | Must already be selected | Domain Pack 1.0 dependency is a soft concern recorded as fallback |
+| Hard failure | Capability/artifact gaps broadly fail closed | Structural, compatibility, policy, permission, safety, necessary-input, and explicit hard requirements fail closed |
+
+Routing Plan 2.0 consumers must upgrade before consuming 3.0 plans. Regenerate plans with the v2
+resolver; do not relabel an old document without adding the new semantics and recomputing its scope
+fingerprint.
 
 ## Validation Commands
 

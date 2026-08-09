@@ -57,6 +57,9 @@ done < <(
     \( -name '*.md' -o -name '*.yml' -o -name '*.yaml' \) \
     -not -name 'README-CH.md' \
     -not -name '*.[a-z][a-z]-[A-Z][A-Z].md' \
+    -not -path '*/changes/*.md' \
+    -not -path '*/changes/*/*.md' \
+    -not -path '*/changes/archive/*/*.md' \
     -not -path '*/.git/*'
 )
 

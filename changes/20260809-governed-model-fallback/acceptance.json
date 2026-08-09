@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "change_id": "20260809-governed-model-fallback",
+  "risk": "G2",
+  "status": "done",
+  "criteria": [
+    {"id":"AC-01","description":"协议明确 Skill 是增强资产而非执行许可证，并定义模型原生 fallback、软依赖和硬依赖。","status":"passing","evidence":["docs/ROUTING.md#stable-skill-principle","docs/ROUTING.md#deterministic-resolver-v2"]},
+    {"id":"AC-02","description":"Resolver 与 Routing Plan 能表达零 Domain 选择或专业资产降级的可继续状态，并保留适用审批门。","status":"passing","evidence":["schemas/routing-plan.schema.json","scripts/resolve_route.py","examples/routing-plan.json"]},
+    {"id":"AC-03","description":"缺少可选专业资产时任务继续，真正的硬阻断仍然 fail closed。","status":"passing","evidence":["tests/test_resolve_route.py","tests/test_routing_validation.py"]},
+    {"id":"AC-04","description":"change 记录属于目标项目根目录并支持非 Git 项目。","status":"passing","evidence":["scripts/init_change.py","tests/test_init_change.py","changes/README.md#记录归属"]},
+    {"id":"AC-05","description":"新的 change 解释性 Markdown 默认使用中文，相关政策、模板和校验一致。","status":"passing","evidence":["AGENTS.md#language-policy","rules/CORE.md#language-standard","changes/_template","scripts/harness-check.sh"]},
+    {"id":"AC-06","description":"HmTest 旧记录具有无损迁移方案，且本变更不修改其源代码。","status":"passing","evidence":["changes/20260809-governed-model-fallback/migration.md"]},
+    {"id":"AC-07","description":"协议版本、Schema、示例、文档和自动化检查一致且完整 Harness 检查通过。","status":"passing","evidence":["config/protocol-versions.json","docs/PROTOCOL_VERSIONING.md#routing-plan-20--30","progress.md#验证证据"]},
+    {"id":"AC-08","description":"独立 Evaluator 复现 fallback 与硬阻断边界并给出最终结论。","status":"passing","evidence":["changes/20260809-governed-model-fallback/evaluation.md"]}
+  ]
+}

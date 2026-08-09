@@ -34,8 +34,11 @@ Two routing artifacts precede and constrain those execution artifacts:
 | `task-envelope.json` | Preserve normalized concrete task facts, requested operation, constraints, and evidence needs | Intake or Planner |
 | `routing-plan.json` | Preserve workflow provenance, assessment, Domain capability and Skill bindings, permissions, and approval gates | Conforming Router and Planner |
 
-Material routed work stores these records with the task change record or in an equivalently durable
-system linked by immutable IDs. Chat-only routing is not sufficient evidence.
+Material routed work stores these records under the explicitly identified target project's
+`<project-root>/changes/<change-id>/`, whether or not the project uses Git, or in an equivalently
+durable system linked by immutable IDs. Control-plane repositories must not absorb another
+project's concrete task record merely because they provide the workflow. Chat-only routing is not
+sufficient evidence.
 
 The artifacts form a closed loop:
 

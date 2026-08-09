@@ -57,7 +57,10 @@ class ProtocolVersionValidationTests(unittest.TestCase):
     def test_current_tuple_must_be_supported(self) -> None:
         path = self.root / "config" / "protocol-versions.json"
         manifest = self.load(path)
-        manifest["domain_compatibility"][0]["status"] = "deprecated"
+        current = manifest["kernel_protocol_version"]
+        for item in manifest["domain_compatibility"]:
+            if item["kernel_protocol_version"] == current:
+                item["status"] = "deprecated"
         self.save(path, manifest)
         errors = MODULE.validate(self.root)
         self.assertTrue(any("must be explicitly supported" in error for error in errors))
@@ -68,7 +71,7 @@ class ProtocolVersionValidationTests(unittest.TestCase):
         source["sources"][0]["required_domain_pack_contract_version"] = "2.0"
         self.save(path, source)
         errors = MODULE.validate(self.root)
-        self.assertTrue(any("must equal the current manifest tuple" in error for error in errors))
+        self.assertTrue(any("must equal the current manifest Domain contracts" in error for error in errors))
 
     def test_compatibility_tuples_must_be_unique(self) -> None:
         path = self.root / "config" / "protocol-versions.json"

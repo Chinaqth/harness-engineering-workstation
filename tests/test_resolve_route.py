@@ -262,14 +262,16 @@ class ResolveRouteTests(unittest.TestCase):
         self.assertEqual(gates[0]["status"], "pending")
         self.assertEqual(gates[0]["scope_fingerprint"], plan["scope_fingerprint"])
 
-    def test_unroutable_when_no_capability_matches(self) -> None:
+    def test_model_native_fallback_when_no_capability_matches(self) -> None:
         plan = self.parse_plan(
             self.run_resolver(self.envelope(task_type="android-application-change"))
         )
-        self.assertEqual(plan["status"], "unroutable")
+        self.assertEqual(plan["status"], "needs_approval")
         self.assertEqual(plan["selections"], [])
-        self.assertEqual(plan["approval_gates"], [])
-        self.assertTrue(plan["conflicts"])
+        self.assertEqual(plan["execution_mode"], "model_native")
+        self.assertTrue(plan["approval_gates"])
+        self.assertTrue(plan["fallbacks"])
+        self.assertEqual(plan["conflicts"], [])
 
     def test_needs_input_for_defect_without_expected_behavior(self) -> None:
         envelope = self.envelope()
@@ -291,7 +293,7 @@ class ResolveRouteTests(unittest.TestCase):
         result = self.run_resolver(envelope)
         self.assertEqual(result.returncode, 2)
 
-    def test_missing_skill_artifact_fails_closed(self) -> None:
+    def test_missing_optional_skill_uses_governed_fallback(self) -> None:
         (self.domain / "domains" / "engineering" / "web" / "skills" / "web-delivery" / "SKILL.md").unlink()
         subprocess.run(
             ["git", "-C", str(self.domain), "add", "."], check=True, capture_output=True
@@ -315,8 +317,11 @@ class ResolveRouteTests(unittest.TestCase):
         config["sources"][0]["ref"] = new_revision
         write_json(self.kernel / "config" / "domain-pack-sources.json", config)
         plan = self.parse_plan(self.run_resolver(self.envelope()))
-        self.assertEqual(plan["status"], "unroutable")
-        self.assertTrue(any("SKILL.md" in c for c in plan["conflicts"]))
+        self.assertEqual(plan["status"], "needs_approval")
+        self.assertEqual(plan["execution_mode"], "domain_augmented")
+        self.assertEqual(plan["selections"][0]["skills"], [])
+        self.assertTrue(any("Optional Skill" in item for item in plan["fallbacks"]))
+        self.assertEqual(plan["conflicts"], [])
 
     def test_g0_investigation_routes_without_gates(self) -> None:
         plan = self.parse_plan(
@@ -401,7 +406,7 @@ class ResolveRouteTests(unittest.TestCase):
         )
         self.assertNotEqual(first["scope_fingerprint"], changed["scope_fingerprint"])
 
-    def test_overlay_disabled_domain_is_unroutable(self) -> None:
+    def test_overlay_disabled_domain_uses_model_native_fallback(self) -> None:
         overlay = {
             "schema_version": "1.0",
             "domains": [
@@ -422,7 +427,8 @@ class ResolveRouteTests(unittest.TestCase):
         plan = self.parse_plan(
             self.run_resolver(self.envelope(), "--overlay", str(overlay_path))
         )
-        self.assertEqual(plan["status"], "unroutable")
+        self.assertEqual(plan["status"], "needs_approval")
+        self.assertEqual(plan["execution_mode"], "model_native")
 
     def test_overlay_version_mismatch_records_conflict(self) -> None:
         overlay = {
@@ -448,7 +454,7 @@ class ResolveRouteTests(unittest.TestCase):
         self.assertEqual(plan["status"], "unroutable")
         self.assertTrue(any("version" in c for c in plan["conflicts"]))
 
-    def test_unsatisfied_capability_dependency_fails_closed(self) -> None:
+    def test_unsatisfied_soft_capability_dependency_records_fallback(self) -> None:
         caps_path = (
             self.domain / "domains" / "engineering" / "web" / "capabilities.json"
         )
@@ -477,8 +483,9 @@ class ResolveRouteTests(unittest.TestCase):
         config["sources"][0]["ref"] = new_revision
         write_json(self.kernel / "config" / "domain-pack-sources.json", config)
         plan = self.parse_plan(self.run_resolver(self.envelope()))
-        self.assertEqual(plan["status"], "unroutable")
-        self.assertTrue(any("dependencies" in c for c in plan["conflicts"]))
+        self.assertEqual(plan["status"], "needs_approval")
+        self.assertTrue(any("Soft capability dependencies" in item for item in plan["fallbacks"]))
+        self.assertEqual(plan["conflicts"], [])
 
     def test_route_priority_tie_requires_disambiguation(self) -> None:
         routes_path = self.domain / "domains" / "engineering" / "web" / "routes.json"
@@ -580,7 +587,8 @@ class RealRegistryIntegrationTests(unittest.TestCase):
         )
         plan = self.run_resolver(envelope)
         self.assertEqual(plan, EXPECTED_ANDROID_PLAN)
-        self.assertEqual(plan["status"], "unroutable")
+        self.assertEqual(plan["status"], "needs_approval")
+        self.assertEqual(plan["execution_mode"], "model_native")
 
     def test_web_frontend_task_routes_against_engineering_web(self) -> None:
         envelope = {

@@ -34,9 +34,11 @@ def validate_plan_state(plan: dict, errors: list[str]) -> None:
     approval_gates = plan.get("approval_gates")
     conflicts = plan.get("conflicts")
     missing_inputs = plan.get("missing_inputs")
+    execution_mode = plan.get("execution_mode")
+    fallbacks = plan.get("fallbacks")
     if not all(
         isinstance(value, list)
-        for value in (selections, approval_gates, conflicts, missing_inputs)
+        for value in (selections, approval_gates, conflicts, missing_inputs, fallbacks)
     ):
         return
 
@@ -46,16 +48,23 @@ def validate_plan_state(plan: dict, errors: list[str]) -> None:
     pending = "pending" in gate_statuses
     rejected = "rejected" in gate_statuses
 
+    if execution_mode == "domain_augmented" and not selections:
+        errors.append("routing plan: domain_augmented mode requires a Domain selection")
+    if execution_mode == "model_native" and selections:
+        errors.append("routing plan: model_native mode cannot contain Domain selections")
+    if (
+        execution_mode == "model_native"
+        and status not in {"needs_input", "unroutable"}
+        and not fallbacks
+    ):
+        errors.append("routing plan: model_native mode requires an explicit fallback reason")
+
     if status == "routed":
-        if not selections:
-            errors.append("routing plan: routed status requires at least one selection")
         if pending or rejected or conflicts or missing_inputs:
             errors.append(
                 "routing plan: routed status requires every gate approved and no conflicts or missing inputs"
             )
     elif status == "needs_approval":
-        if not selections:
-            errors.append("routing plan: needs_approval status requires a candidate selection")
         if not pending:
             errors.append("routing plan: needs_approval status requires a pending approval gate")
         if rejected or conflicts or missing_inputs:
@@ -63,8 +72,6 @@ def validate_plan_state(plan: dict, errors: list[str]) -> None:
                 "routing plan: needs_approval status cannot contain rejected gates, conflicts, or missing inputs"
             )
     elif status == "approval_rejected":
-        if not selections:
-            errors.append("routing plan: approval_rejected status requires a candidate selection")
         if not rejected:
             errors.append("routing plan: approval_rejected status requires a rejected gate")
         if conflicts or missing_inputs:
@@ -169,8 +176,6 @@ def validate_workflow_selection(
     )
     if (
         requires_approval
-        and isinstance(selections, list)
-        and selections
         and isinstance(approval_gates, list)
         and not has_implementation_gate
     ):

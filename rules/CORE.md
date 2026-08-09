@@ -4,7 +4,8 @@ These rules apply to every adopting project.
 
 ## Language Standard
 
-- Write new documentation, Skills, agent instructions, rules, templates, change records, pull request descriptions, and commit messages in English by default.
+- Write new documentation, Skills, agent instructions, rules, pull request descriptions, and commit messages in English by default.
+- Write human-readable Markdown under `changes/**` in Chinese by default. Keep machine-readable field names, schemas, status values, and code identifiers in English; explanatory JSON strings may be Chinese.
 - Use a different language only when explicitly requested or when preserving an authoritative source.
 - Preserve non-English sources verbatim with an explicit locale suffix; write derived operational guidance in English.
 - Keep terminology consistent and avoid mixed-language documents.

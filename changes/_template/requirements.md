@@ -1,4 +1,4 @@
-# Change Requirements
+# 变更需求
 
 - ID:
 - Owner:
@@ -6,28 +6,28 @@
 - Status: draft
 - Review-By: YYYY-MM-DD
 
-## Problem
+## 问题
 
-## Goals
+## 目标
 
-## Non-goals
+## 非目标
 
-## Constraints and Sources of Truth
+## 约束与事实来源
 
-## Acceptance Criteria
+## 验收标准
 
 - [ ]
 
-## Risk, Permission, and Data Impact
+## 风险、权限与数据影响
 
-## Autonomy Budgets
+## 自主权预算
 
-- Scope:
-- Tools and permissions:
-- External side effects:
-- Cost:
-- Checkpoint interval:
-- Required evidence:
-- Escalation conditions:
+- 范围：
+- 工具与权限：
+- 外部副作用：
+- 成本：
+- 检查点间隔：
+- 必要证据：
+- 升级条件：
 
-## Rollback Plan
+## 回滚方案

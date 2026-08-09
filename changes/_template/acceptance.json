@@ -6,7 +6,7 @@
   "criteria": [
     {
       "id": "AC-01",
-      "description": "Describe one observable outcome.",
+      "description": "描述一个可观察的结果。",
       "status": "pending",
       "evidence": []
     }

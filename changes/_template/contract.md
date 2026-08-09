@@ -1,25 +1,25 @@
-# Generator–Evaluator Contract
+# Generator–Evaluator 契约
 
-## Scope and Critical Journey
+## 范围与关键旅程
 
-## Generator Responsibilities
+## Generator 责任
 
-- Implement only the approved scope.
-- Preserve or strengthen acceptance criteria.
-- Record reproducible evidence and known limitations.
-- Keep `acceptance.json` and `progress.md` current.
+- 只实施已批准范围。
+- 保持或加强验收标准。
+- 记录可复现证据和已知限制。
+- 持续更新 `acceptance.json` 和 `progress.md`。
 
-## Evaluator Responsibilities
+## Evaluator 责任
 
-- Evaluate independently from implementation claims.
-- Reproduce the critical user-visible journey in an isolated environment.
-- Inspect security, permissions, compatibility, rollback, and evidence quality.
-- Record a pass, fail, or blocked verdict with evidence.
+- 独立于实现声明进行评估。
+- 在隔离环境中复现关键用户旅程。
+- 检查安全、权限、兼容性、回滚和证据质量。
+- 用证据记录 pass、fail 或 blocked 结论。
 
-## Evidence Standard
+## 证据标准
 
-## Independence and Separation of Duties
+## 独立性与职责分离
 
-## Verdict Authority
+## 结论权
 
-## Escalation and Dispute Resolution
+## 升级与争议处理

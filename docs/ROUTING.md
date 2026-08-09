@@ -9,7 +9,7 @@ provenance, Domain capabilities, permissions, approvals, or evidence are incompl
 ship a natural-language classifier, an Intake component, or an orchestration service; Task
 Envelopes are authored outside the resolver and lifecycle execution remains operator-driven.
 
-Task Envelope and Routing Plan currently use contract version `2.0`; the Kernel protocol and Domain
+Task Envelope uses contract version `2.0` and Routing Plan uses `3.0`; the Kernel protocol and Domain
 contracts have separate identities. See `config/protocol-versions.json` and
 `docs/PROTOCOL_VERSIONING.md`. A shared numeric label must not be used as evidence of compatibility.
 
@@ -37,9 +37,11 @@ generic Domain Skill such as `android-change-delivery`. It must not create or se
 `fix-login-timeout-spinner`. The generic Skill investigates the concrete problem using task and
 project context.
 
-A Routing Plan therefore records each Skill as a Domain-scoped binding to one selected capability
-and its versioned source path. A resolver must verify the binding against the selected Pack; it must
-not synthesize a Skill to force a successful route.
+A Routing Plan records each available Skill as a Domain-scoped binding to one selected capability
+and its versioned source path. A resolver must not synthesize a Skill. If an optional Skill is absent,
+the plan records a fallback and the model covers the capability through Kernel governance, permitted
+retrieval, project context, and explicit evidence. Skill availability enhances execution; it does
+not license execution.
 
 ## Inputs
 
@@ -69,7 +71,8 @@ Receive task
   -> resolve immutable Domain registry revision
   -> find schema-valid active enabled Domain candidates
   -> match route signals and task types
-  -> resolve capability dependencies and Domain-declared Skill bindings
+  -> resolve available capability dependencies and Domain-declared Skill bindings
+  -> record model-native fallback for unavailable optional professional assets
   -> apply policy and permission filters
   -> identify conflicts, missing input, and approval gates
   -> emit one traceable Routing Plan
@@ -106,7 +109,8 @@ Every Routing Plan records:
 - Selection reasons;
 - Structured approval gates bound to explicit scope;
 - A current scope fingerprint shared by every approval gate;
-- Unresolved conflicts or missing inputs.
+- Unresolved conflicts or missing inputs;
+- Execution mode (`domain_augmented` or `model_native`) and explicit fallback reasons.
 
 The number of Domain selections does not determine the task workflow. A defect may require several
 Domains, while feature and defect workflows may both use the same generic Domain delivery Skill.
@@ -130,11 +134,11 @@ affected approval gate returns to `pending`.
 
 | Status | Required | Forbidden |
 | --- | --- | --- |
-| `routed` | At least one complete Domain selection; every required gate present and every present gate approved with evidence | Pending or rejected gates, conflicts, missing inputs |
-| `needs_approval` | Candidate Domain selection and at least one pending gate | Rejected gates, conflicts, missing inputs |
-| `approval_rejected` | Candidate Domain selection and at least one rejected gate with evidence | Conflicts, missing inputs |
+| `routed` | Kernel workflow selected; every required gate present and every present gate approved with evidence | Pending or rejected gates, conflicts, missing inputs |
+| `needs_approval` | Executable Domain-augmented or model-native plan and at least one pending gate | Rejected gates, conflicts, missing inputs |
+| `approval_rejected` | Executable plan and at least one rejected gate with evidence | Conflicts, missing inputs |
 | `needs_input` | At least one missing input | Approval gates, conflicts |
-| `unroutable` | At least one conflict or missing-capability reason | Domain selections, approval gates, missing inputs |
+| `unroutable` | At least one hard structural, compatibility, policy, permission, or safety conflict | Approval gates, missing inputs |
 
 Workflow selection and assessment remain required even when Domain routing is unsuccessful. This
 preserves why the task was classified and where resolution stopped.
@@ -192,7 +196,7 @@ sibling `harness-domain-packs` checkout. If neither is available, it prints an e
 Kernel-only CI cannot prove cross-repository compatibility without authorized source access. A
 release or source-pin update must provide the checkout; a skip is not release evidence.
 
-## Deterministic Resolver v1
+## Deterministic Resolver v2
 
 `scripts/resolve_route.py` implements the conceptual routing sequence deterministically:
 
@@ -223,15 +227,19 @@ a schema-valid plan.
   `applicability.task_types`. Within one Domain the highest-priority matching route wins; an
   equal-priority tie is a missing input requiring disambiguation, not a guess.
 - **Artifact verification:** capability `workflows`, `skills`, and `evaluators` references resolve
-  relative to the Pack's `workflows/`, `skills/<id>/SKILL.md`, and `evaluators/` directories at the
-  pinned commit; any absent artifact is a conflict. The mutable working tree is never read.
-- **Dependencies:** a bare dependency qualifies as `<domain_id>/<capability_id>` and must be
-  satisfied within the capabilities selected for this plan; v1 does not auto-include additional
-  Domains, so an unsatisfied dependency is a conflict.
+  at the pinned commit. Missing workflows/evaluators and malformed capability references are hard
+  conflicts. A missing Skill is a soft gap recorded in `fallbacks`; the mutable working tree is
+  never read.
+- **Dependencies:** under Domain Pack contract 1.0, `dependencies` are soft professional concerns.
+  Unsatisfied dependencies are recorded in `fallbacks`; the resolver neither auto-selects another
+  Domain nor blocks model-native coverage. A future contract may declare explicit hard dependencies.
+- **No match:** no active matching Domain is not a routing failure. The plan uses `model_native`,
+  records the reason in `fallbacks`, and retains Kernel approval, permission, and evidence controls.
 - **Defect input:** a `defect` envelope without `expected_behavior` is a missing input because the
   accepted contract deviation cannot be defined.
-- **Conflict rule:** any conflict during Domain resolution discards all selections and yields
-  `unroutable` with every conflict recorded; partial routing is never emitted.
+- **Conflict rule:** hard structural, compatibility, policy, permission, or safety conflicts yield
+  `unroutable`. Missing optional professional assets never bypass controls and never alone cause
+  abandonment.
 
 ### Deterministic Assessment Mapping
 
@@ -278,8 +286,9 @@ evidence. All gates approved yields `routed`; any rejection yields `approval_rej
 
 `examples/task-envelope.json` describes a concrete Android login timeout defect. The Kernel can
 select `task.defect-remediation` and record its preliminary assessment. The current Domain registry
-does not contain an active Android capability, so the conforming example is `unroutable` and makes
-no Domain or Skill selection.
+does not contain an active Android capability, so the conforming example uses `model_native`,
+records an explicit fallback, and retains its Kernel implementation approval gate without
+inventing a Domain or Skill.
 
 After a registered, independently completed, and activated Android Pack exists, a resolver may select a broad
 Android application-engineering capability and its declared generic delivery Skill. The timeout,

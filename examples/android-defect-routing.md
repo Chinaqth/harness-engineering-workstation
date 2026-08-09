@@ -7,9 +7,9 @@ to preserve recoverable retry behavior. Login, timeout, spinner, and retry are f
 
 ## Current Conforming Result
 
-The Kernel selects `task.defect-remediation`. Domain routing then stops with `unroutable` because no
-registered active Domain Pack provides Android application-engineering capability. No Domain,
-capability, or Skill is invented to force a route.
+The Kernel selects `task.defect-remediation`. No registered active Domain Pack provides Android
+application-engineering capability, so routing selects `model_native`, records an explicit
+fallback, and retains the implementation approval gate. No Domain, capability, or Skill is invented.
 
 ## Illustrative Future Binding After Domain Activation
 
@@ -31,5 +31,5 @@ the required approval gate, then resume within approved scope. A Skill named
 practice.
 
 If investigation crosses a service, security, product, or design authority boundary, the Routing
-Plan must add a registered capability or record the missing capability or input. The Android Skill
-must not silently assume that authority.
+Plan must add a registered capability or stop for the missing authority or input. Model-native
+fallback and any future Android Skill must not silently assume that authority.

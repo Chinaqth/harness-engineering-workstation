@@ -4,15 +4,21 @@ This file is an index, not an encyclopedia. Load only the documents relevant to 
 
 ## Language Policy
 
-English is the default language for all new or modified repository content, including:
+English is the default language for new or modified repository content, except for the project
+change-flow records described below. English remains required for:
 
 - Documentation and architecture records;
 - `SKILL.md` files, skill references, and skill UI metadata;
 - `AGENTS.md` files and other agent instructions;
-- Rules, workflows, templates, change proposals, and evaluation reports;
+- Rules and workflows outside `changes/`;
 - Pull request descriptions, commit messages, and code comments.
 
-Use another language only when the user explicitly requests it or when preserving an authoritative source verbatim. `README-CH.md` is the explicitly requested Chinese companion to the English primary README. Preserve other non-English source material in `docs/reference/` with a locale suffix such as `.zh-CN.md`, and write derived guidance in English. Do not mix languages within the same generated document unless a translation example requires it.
+Human-readable Markdown under `changes/**` defaults to Chinese, including requirements, tasks,
+progress, contracts, decisions, and evaluations. Machine-readable field names, schemas, status
+values, and code identifiers remain English; explanatory JSON strings may be Chinese. A user's
+explicit language request takes precedence. `README-CH.md` is the explicitly requested Chinese
+companion to the English primary README. Preserve other non-English source material in
+`docs/reference/` with a locale suffix such as `.zh-CN.md`, and write derived guidance in English.
 
 ## Working Principles
 

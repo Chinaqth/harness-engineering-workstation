@@ -160,7 +160,7 @@ Risk is determined by impact surface, reversibility, data sensitivity, and exter
 | Path | Responsibility | Primary owner |
 | --- | --- | --- |
 | `workflows/3-plus-1.md` | Standard plan, implement, evaluate, and institutionalize lifecycle | Workflow owner |
-| `changes/README.md` | Change-record rules, states, and risk-proportional requirements | Planner |
+| `changes/README.md` | Chinese-language change ownership, state, and risk rules | Planner |
 | `changes/_template/requirements.md` | Problem, scope, criteria, risk, budgets, and rollback | Planner and Owner |
 | `changes/_template/task.md` | Work decomposition, verification matrix, and verdict | Planner, Generator, Evaluator |
 | `changes/_template/acceptance.json` | Machine-readable acceptance state and evidence pointers | Generator proposes; Evaluator verifies |
@@ -211,7 +211,9 @@ G0 can live in a pull request or task description. G1 requires `requirements.md`
 1. Read [AGENTS.md](AGENTS.md), [CORE.md](rules/CORE.md), and the relevant project context.
 2. Normalize concrete task facts into a Task Envelope and select one registered Kernel task workflow.
 3. Assess the work as G0–G3, then resolve enabled Domain capabilities and their declared reusable Skills through the project overlay.
-4. For G1 or higher, copy `changes/_template/` into a dated change directory and remove artifacts not required by the risk level.
+4. For G1 or higher, run `scripts/init_change.py <id> --project-root <absolute-project-root>` so
+   the record is created in the target project even when it has no Git repository; write its
+   human-readable change Markdown in Chinese by default.
 5. Define observable acceptance criteria before implementation.
 6. Declare autonomy budgets and scope-bound approval gates; use generic Domain Skills to contribute professional assessment and proposals.
 7. Implement one bounded unit only after required gates are approved, and keep `progress.md` current.

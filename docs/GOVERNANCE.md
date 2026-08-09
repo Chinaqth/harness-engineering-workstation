@@ -44,7 +44,8 @@ For G2 and G3 work, the Generator may update implementation state and attach evi
 
 When changing `rules/`, audit scoring, or approval boundaries:
 
-1. Create a complete G2 change record under `changes/<id>/`.
+1. Create a complete G2 change record under the target project's `<project-root>/changes/<id>/`,
+   independent of whether the project has a Git repository.
 2. Document motivation, applicability, migration, and failure modes.
 3. Describe compatibility impact, autonomy budgets, evaluation contract, and rollback.
 4. Validate machine-readable acceptance state and obtain an independent verdict.

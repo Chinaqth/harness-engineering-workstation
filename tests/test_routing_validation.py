@@ -92,6 +92,8 @@ class RoutingValidationTests(unittest.TestCase):
         plan.update(
             {
                 "status": "routed",
+                "execution_mode": "domain_augmented",
+                "fallbacks": [],
                 "selections": [self.selection()],
                 "approval_gates": [self.gate(plan, "approved")],
                 "conflicts": [],
@@ -181,6 +183,8 @@ class RoutingValidationTests(unittest.TestCase):
         plan.update(
             {
                 "status": "needs_approval",
+                "execution_mode": "domain_augmented",
+                "fallbacks": [],
                 "selections": [self.selection()],
                 "approval_gates": [self.gate(plan)],
                 "conflicts": [],

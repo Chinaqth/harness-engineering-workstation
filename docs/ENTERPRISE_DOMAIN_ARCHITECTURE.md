@@ -29,7 +29,8 @@ The strictest applicable safety rule wins. A Domain Pack or project overlay may 
 
 - `harness-engineering-workstation` is the Kernel and routing-protocol source.
 - `harness-engineering-domain-packs` is the Domain registry and Domain Pack source.
-- Product repositories own `.harness/domains.json` overlays and task change records.
+- Product projects own `.harness/domains.json` overlays where applicable and always own their task
+  change records at `<project-root>/changes/`, including projects without Git repositories.
 
 Git is authoritative. Runtime copies may be installed under `~/.harness/domains/`, while globally discoverable Skills may be published under `~/.agents/skills/`. Runtime installation is a projection of versioned source, not another source of truth.
 

@@ -1,5 +1,5 @@
 {
-  "schema_version": "2.0",
+  "schema_version": "3.0",
   "task_id": "example-android-login-timeout",
   "source": {
     "source_id": "enterprise-domain-packs",
@@ -15,10 +15,7 @@
   },
   "assessment": {
     "risk_level": "G1",
-    "impact_surfaces": [
-      "Android login user interface",
-      "client-side timeout and retry state"
-    ],
+    "impact_surfaces": ["Android login user interface", "client-side timeout and retry state"],
     "affected_units": 2,
     "change_points": 0,
     "domain_count": 0,
@@ -27,12 +24,24 @@
     "external_effects": [],
     "rationale": "Preliminary Kernel assessment from envelope facts: operation=modify, surfaces=2, external_effects=0, risk_hints=2. Domain professional assessment may refine this level."
   },
-  "scope_fingerprint": "sha256:90d5b29d32b45ca72472b204f81da67735c5d5798623f324d2d953466a0ab0ea",
-  "status": "unroutable",
-  "selections": [],
-  "approval_gates": [],
-  "conflicts": [
-    "No registered active enabled Domain Pack provides a capability for task_type 'android-application-change'."
+  "scope_fingerprint": "sha256:0e2bf2a0c85739c89b1883c3cd8ccfab46646368544334c622d04d0d7e76b4dd",
+  "execution_mode": "model_native",
+  "fallbacks": [
+    "No active enabled Domain capability matches task_type 'android-application-change'; execute model-native under the selected Kernel workflow, approvals, permissions, constraints, and evidence requirements."
   ],
+  "status": "needs_approval",
+  "selections": [],
+  "approval_gates": [
+    {
+      "gate_id": "implementation-approval",
+      "kind": "implementation",
+      "required_role": "Owner",
+      "status": "pending",
+      "scope": ["operation: modify", "Android login user interface", "client-side timeout and retry state"],
+      "scope_fingerprint": "sha256:0e2bf2a0c85739c89b1883c3cd8ccfab46646368544334c622d04d0d7e76b4dd",
+      "evidence": []
+    }
+  ],
+  "conflicts": [],
   "missing_inputs": []
 }

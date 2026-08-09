@@ -3,9 +3,9 @@
   "title": "Harness Routing Plan",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "task_id", "source", "workflow_selection", "assessment", "scope_fingerprint", "status", "selections", "approval_gates", "conflicts", "missing_inputs"],
+  "required": ["schema_version", "task_id", "source", "workflow_selection", "assessment", "scope_fingerprint", "execution_mode", "fallbacks", "status", "selections", "approval_gates", "conflicts", "missing_inputs"],
   "properties": {
-    "schema_version": { "const": "2.0" },
+    "schema_version": { "const": "3.0" },
     "task_id": { "type": "string", "minLength": 1 },
     "source": {
       "type": "object",
@@ -46,6 +46,8 @@
       }
     },
     "scope_fingerprint": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "execution_mode": { "enum": ["model_native", "domain_augmented"] },
+    "fallbacks": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
     "status": { "enum": ["routed", "needs_input", "needs_approval", "approval_rejected", "unroutable"] },
     "selections": {
       "type": "array",

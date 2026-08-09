@@ -1,78 +1,77 @@
-# Session Handoff — Routing Runtime Roadmap
+# Session Handoff — Governed Model Fallback and Pilot Outcome
 
 - Date: 2026-08-09
-- Audience: a fresh session continuing this work without prior chat history
-- State: working tree clean; all commits pushed to `origin/main`
+- Audience: a fresh session continuing without prior chat history
+- Kernel state: structural change implemented and independently evaluated `pass`; commit pending
+- Domain Packs state: clean at `0ca789ced412a5cceb4c247c3dd726fcb10b9882`
 
-## Background
-
-`docs/reference/workflow-domain-skill-routing-discussion.zh-CN.md` records the target
-architecture: two-dimensional routing (exactly one Kernel Task Workflow × zero or more Domain
-Capabilities), stable reusable Skills only, and a Kernel-owned Harness loop. The agreed
-implementation roadmap:
+## Roadmap Status
 
 | Step | Content | Status |
 | --- | --- | --- |
-| 0 | Hygiene: push Domain pin commit, fix language-policy failure, commit discussion doc | **Done** (`59fe47a`) |
-| 1 | Deterministic Router/Resolver v1 (G2 change `20260809-router-resolver-v1`) | **Done, independent verdict: pass** (`dd17030`, `d3edfa3`, `0217391`) |
-| 2 | End-to-end pilot on a real project task (human-in-the-loop lifecycle) | **Next — blocked on user input** |
-| 3 | Register additional Domain Packs (per pilot evidence) | Not started |
+| 0 | Hygiene and Domain pin | Done (`59fe47a`) |
+| 1 | Deterministic Router/Resolver v1 | Done (`0217391`) |
+| 2 | HmTest end-to-end HarmonyOS pilot | Done in the HmTest project; Owner manually verified interaction |
+| 2a | Correct model-fallback and project-record semantics | Done, independent verdict `pass`; commit pending |
+| 3 | Register additional Domain Packs from evidence | Not started |
 | 4 | Workflow orchestrator; NL Intake classifier last | Not started |
 
-## What Exists Now
+## Current Kernel Behavior
 
-- `scripts/resolve_route.py` — deterministic resolver: schema-valid Task Envelope (2.0) in,
-  exactly one schema-valid fail-closed Routing Plan (2.0) out. Terminal states: `routed`,
-  `needs_approval`, `approval_rejected`, `needs_input`, `unroutable`. Reads Domain data only from
-  the pinned commit (`git show`/`cat-file`), never the working tree. Matching is exact
-  `task_type` only. Rules and fingerprint algorithm are documented in `docs/ROUTING.md`
-  ("Deterministic Resolver v1").
-- `tests/test_resolve_route.py` — 18 tests, including integration against the pinned production
-  registry. Full suite: 58 tests OK; `scripts/harness-check.sh` green.
-- Active Domain Packs at pinned revision `0ca789ced412a5cceb4c247c3dd726fcb10b9882`
-  (checkout: `~/harness-domain-packs`, treat as read-only): `engineering.harmonyos`,
-  `engineering.web`. No Android/Backend/Quality packs — such tasks resolve `unroutable` by design.
-- G2 governance loop is proven end to end: proposal → owner approval → implementation →
-  independent evaluation (`changes/20260809-router-resolver-v1/evaluation.md`) → close.
+- Kernel protocol is `2.0`; Routing Plan is `3.0`.
+- `scripts/resolve_route.py` always selects one Kernel task workflow and uses
+  `execution_mode: domain_augmented` when professional assets resolve or `model_native` when they
+  do not.
+- Missing optional Skills and Domain Pack 1.0 capability dependencies are explicit soft fallbacks,
+  not execution licenses or abandonment triggers.
+- Necessary inputs, approvals, permissions, safety boundaries, structural errors, and compatibility
+  conflicts remain fail-closed.
+- Routing Plans record `fallbacks`; approval gates remain independent of Domain selection count.
+- Domain data is still read only from the immutable pinned commit.
 
-## Step 2: Pilot Procedure (next action)
+## Project Change Records
 
-Blocked on two user inputs: **(a) a pilot project repository** (candidates mentioned:
-`th-harness-cli`, `harmony-skill`, `zyc_project`) and **(b) one concrete small task** (defect or
-feature) that matches a registered capability — e.g. `task_type: web-frontend-implementation` for
-`engineering.web`, or a HarmonyOS ArkTS/ArkUI task for `engineering.harmonyos`.
+- Concrete task records belong to the target project's `<project-root>/changes/`, including projects
+  without Git.
+- Use `scripts/init_change.py <id> --project-root <absolute-project-root>`; the command does not infer
+  ownership from Git and refuses to overwrite an existing record.
+- Human-readable Markdown under `changes/**` defaults to Chinese. Machine-readable keys, schemas,
+  status values, and code identifiers remain English.
+- Harness `changes/` contains only Kernel/Domain architecture records. The obsolete HmTest copy was
+  removed after its authoritative record was validated in the HmTest project.
 
-Execution flow once inputs arrive:
+## HmTest Pilot Outcome
 
-1. Author a Task Envelope for the task (schema: `schemas/task-envelope.schema.json`; example:
-   `examples/task-envelope.json`). `task_type` must exactly match a registry-declared value —
-   see the Pack's `routes.json`/`domain.json` under `~/harness-domain-packs/domains/`.
-2. Resolve: `python3 scripts/resolve_route.py <envelope>.json --domain-root ~/harness-domain-packs
-   -o routing-plan.json` (add `--overlay` if the project has `.harness/domains.json`).
-3. Review the plan with the owner; record the decision in a decisions record
-   (`docs/ROUTING.md` → "Decisions Record") and re-run with `--decisions` to reach `routed`.
-4. Execute within the approved scope: load the selected Domain Skill
-   (`skills/<id>/SKILL.md` inside the Pack) in planning-then-implementation mode; the Kernel
-   workflow stages and approval gates govern the lifecycle (operator-driven; no orchestrator yet).
-5. Create the pilot's own change record under `changes/` (G-level per risk; keep envelope + plan
-   with the record per `changes/README.md`).
-6. Independent Evaluator verdict for G2/G3; the Generator must not self-verdict.
-7. Institutionalize: record what the pilot reveals about orchestrator requirements — that evidence
-   is the input for the Step 4 proposal.
+- Authoritative record:
+  `/Users/minikukala/DevEcoStudioProjects/hmtest/changes/20260809-hmtest-v1-v2-migration/`
+- `Index.ets` migrated from `@Component`/`@State` to `@ComponentV2`/`@Local`.
+- Pre- and post-change debug builds succeeded; no V1 decorators remain in the declared scan scope.
+- Owner manually verified the `Hello World` → click → `Welcome` interaction.
+- Automated compatibility checking was unavailable because DevEco Studio 6.1.1.300 is below the
+  command's required 26.0.0.810. Automated device inspection was unavailable because the bundled
+  `hdc` executable was not digitally signed. These limits remain recorded separately from the
+  accepted manual evidence.
+
+## Verification
+
+- Independent evaluation:
+  `changes/20260809-governed-model-fallback/evaluation.md` — `pass`.
+- Focused suite: 44 tests OK.
+- Full Harness gate: 61 tests OK before final cleanup; rerun immediately before commit.
+- HmTest project change validation: pass.
 
 ## Standing Constraints
 
-- Language policy: new repo content in English (see `AGENTS.md`).
-- Do not invent Domains, capabilities, or Skills; fail closed instead.
-- Do not modify `~/harness-domain-packs` from Kernel work; Domain changes are separate changes in
-  that repository, then pinned via `scripts/sync_domain_pin.py`.
-- No commit/push without explicit user authorization; publication requires owner approval.
-- Run `bash scripts/harness-check.sh` before declaring any work complete.
+- Do not invent Domains, capabilities, or Skills.
+- Missing professional assets activate governed fallback; they do not remove approval, permission,
+  safety, or evidence requirements.
+- Do not modify Domain Packs from Kernel work; Domain changes require their own project record.
+- Do not push or publish without explicit authorization.
+- Run `bash scripts/harness-check.sh` before declaring Kernel work complete.
 
-## Key References
+## Next Actions
 
-- Routing protocol + resolver rules: `docs/ROUTING.md`
-- Resolver change record (full evidence trail): `changes/20260809-router-resolver-v1/`
-- Architecture: `docs/ARCHITECTURE.md`, `docs/ENTERPRISE_DOMAIN_ARCHITECTURE.md`
-- Domain registry/task-type inventory: `~/harness-domain-packs/registry/domains.json` and each
-  Pack's `routes.json`
+1. Run the final Harness gate after cleanup.
+2. Review the staged scope and commit the Kernel structural change when authorized.
+3. Leave Domain Packs unchanged unless future pilot evidence requires a separate Domain change.
+4. Use the completed pilot evidence when proposing the workflow orchestrator.
