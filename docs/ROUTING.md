@@ -2,10 +2,12 @@
 
 ## Release Boundary
 
-This repository defines machine-readable routing contracts, invariants, and validation examples. It
-does not ship a production natural-language classifier, resolver, or orchestration service. A future
-implementation must conform to these contracts and fail closed when workflow provenance, Domain
-capabilities, permissions, approvals, or evidence are incomplete.
+This repository defines machine-readable routing contracts, invariants, and validation examples.
+It ships a deterministic resolver (`scripts/resolve_route.py`, change
+`20260809-router-resolver-v1`) that conforms to these contracts and fails closed when workflow
+provenance, Domain capabilities, permissions, approvals, or evidence are incomplete. It does not
+ship a natural-language classifier, an Intake component, or an orchestration service; Task
+Envelopes are authored outside the resolver and lifecycle execution remains operator-driven.
 
 Task Envelope and Routing Plan currently use contract version `2.0`; the Kernel protocol and Domain
 contracts have separate identities. See `config/protocol-versions.json` and
@@ -189,6 +191,88 @@ inconsistent.
 sibling `harness-domain-packs` checkout. If neither is available, it prints an explicit skip because
 Kernel-only CI cannot prove cross-repository compatibility without authorized source access. A
 release or source-pin update must provide the checkout; a skip is not release evidence.
+
+## Deterministic Resolver v1
+
+`scripts/resolve_route.py` implements the conceptual routing sequence deterministically:
+
+```bash
+python3 scripts/resolve_route.py envelope.json \
+  [--root .] [--domain-root /path/to/authorized/harness-engineering-domain-packs] \
+  [--overlay .harness/domains.json] [--decisions decisions.json] [-o plan.json]
+```
+
+The Domain checkout defaults to `HARNESS_DOMAIN_PACKS_CHECKOUT`, then a sibling
+`harness-domain-packs` directory. Exit code 0 emits exactly one Routing Plan; exit code 2 rejects
+the input without emitting a plan.
+
+### Input Boundary
+
+A plan cannot be emitted, and the resolver exits 2, when the Task Envelope fails schema validation
+or its `task_class` matches no registered Kernel workflow. Emitting a plan there would require
+inventing an unregistered workflow ID. Every other gap becomes a fail-closed terminal state inside
+a schema-valid plan.
+
+### Deterministic Matching Rules
+
+- **Workflow:** exactly one registered workflow declaring the envelope `task_class`.
+- **Domain candidates:** registry entries with `status: active`; when an overlay is supplied, only
+  entries it lists with `enabled: true` and a version equal to the pinned registry version are
+  candidates (a version mismatch is recorded as a conflict).
+- **Route match:** exact envelope `task_type` against route `task_types`, after checking the Domain
+  `applicability.task_types`. Within one Domain the highest-priority matching route wins; an
+  equal-priority tie is a missing input requiring disambiguation, not a guess.
+- **Artifact verification:** capability `workflows`, `skills`, and `evaluators` references resolve
+  relative to the Pack's `workflows/`, `skills/<id>/SKILL.md`, and `evaluators/` directories at the
+  pinned commit; any absent artifact is a conflict. The mutable working tree is never read.
+- **Dependencies:** a bare dependency qualifies as `<domain_id>/<capability_id>` and must be
+  satisfied within the capabilities selected for this plan; v1 does not auto-include additional
+  Domains, so an unsatisfied dependency is a conflict.
+- **Defect input:** a `defect` envelope without `expected_behavior` is a missing input because the
+  accepted contract deviation cannot be defined.
+- **Conflict rule:** any conflict during Domain resolution discards all selections and yields
+  `unroutable` with every conflict recorded; partial routing is never emitted.
+
+### Deterministic Assessment Mapping
+
+| Field | Rule |
+| --- | --- |
+| `impact_surfaces` / `affected_units` | The envelope `affected_surfaces` and its count |
+| `change_points` | Always `0` before Domain professional assessment |
+| `domain_count` | Number of selections in the emitted plan |
+| `reversibility` | `inspect` → `high`; `remove` → `low`; otherwise `unknown` |
+| `data_sensitivity` | A risk hint containing authentication, credential, password, token, biometric, payment, personal, pii, health, or regulated → `sensitive`; other hints → `internal`; no hints → `unknown` |
+| `risk_level` | Destructive keyword in permission hints or external effects → `G3`; non-empty external effects or `publish`/`operate` → `G2`; `inspect` without external effects → `G0`; otherwise `G1` |
+
+### Approval Gates and Scope Fingerprint
+
+Gates derive from the selected workflow's approval policy and the assessment: an implementation
+gate when the policy is `always-before-implementation` or the risk is G1–G3, an external-effect
+gate per non-empty external effects, and a permission gate for permission hints containing
+production, deploy, publish, or release. Every gate requires the Owner role and starts `pending`.
+
+The scope fingerprint is `sha256:` of the canonical JSON (sorted keys, compact separators, ASCII)
+of: `task_id`, `operation`, `affected_surfaces`, `constraints`, `non_goals`, `deliverables`,
+`external_effects`, `workflow_id`, `workflow_version`, and each selection's `domain_id`, `version`,
+`route_id`, sorted `capability_ids`, and sorted Skill IDs. Identical inputs always produce
+identical fingerprints; any scope-bearing change alters the fingerprint.
+
+### Decisions Record
+
+`--decisions` applies recorded gate decisions to a `needs_approval` plan:
+
+```json
+{
+  "schema_version": "1.0",
+  "scope_fingerprint": "sha256:<current plan fingerprint>",
+  "decisions": [
+    {"gate_id": "implementation-approval", "decision": "approved", "evidence": ["..."]}
+  ]
+}
+```
+
+A fingerprint mismatch rejects the record as stale (exit 2). Every decision requires non-empty
+evidence. All gates approved yields `routed`; any rejection yields `approval_rejected`.
 
 ## Android Defect Example
 

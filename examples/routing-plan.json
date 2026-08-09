@@ -11,7 +11,7 @@
     "workflow_id": "task.defect-remediation",
     "version": "1.0.0",
     "registry": "config/task-workflows.json",
-    "reason": "The request describes an observable deviation from accepted login timeout behavior."
+    "reason": "task_class 'defect' is declared by registered workflow 'task.defect-remediation'."
   },
   "assessment": {
     "risk_level": "G1",
@@ -19,20 +19,20 @@
       "Android login user interface",
       "client-side timeout and retry state"
     ],
-    "affected_units": 1,
+    "affected_units": 2,
     "change_points": 0,
-    "domain_count": 1,
+    "domain_count": 0,
     "reversibility": "unknown",
     "data_sensitivity": "sensitive",
     "external_effects": [],
-    "rationale": "Authentication is a sensitive journey, but exact change points and reversibility require Android professional assessment."
+    "rationale": "Preliminary Kernel assessment from envelope facts: operation=modify, surfaces=2, external_effects=0, risk_hints=2. Domain professional assessment may refine this level."
   },
-  "scope_fingerprint": "sha256:2ed9cbe87610cd731e5ac65a1759db52b43746554e47f7ab57ab7efeea951c88",
+  "scope_fingerprint": "sha256:90d5b29d32b45ca72472b204f81da67735c5d5798623f324d2d953466a0ab0ea",
   "status": "unroutable",
   "selections": [],
   "approval_gates": [],
   "conflicts": [
-    "No registered active Domain Pack provides the required Android application-engineering capability."
+    "No registered active enabled Domain Pack provides a capability for task_type 'android-application-change'."
   ],
   "missing_inputs": []
 }

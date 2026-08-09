@@ -55,14 +55,14 @@ class RoutingValidationTests(unittest.TestCase):
             "reason": "The task and repository signals match.",
         }
 
-    def gate(self, status: str = "pending") -> dict:
+    def gate(self, plan: dict, status: str = "pending") -> dict:
         return {
             "gate_id": "implementation-approval",
             "kind": "implementation",
             "required_role": "task-owner",
             "status": status,
             "scope": ["Approved implementation plan"],
-            "scope_fingerprint": "sha256:2ed9cbe87610cd731e5ac65a1759db52b43746554e47f7ab57ab7efeea951c88",
+            "scope_fingerprint": plan["scope_fingerprint"],
             "evidence": [] if status == "pending" else ["Owner decision record"],
         }
 
@@ -93,7 +93,7 @@ class RoutingValidationTests(unittest.TestCase):
             {
                 "status": "routed",
                 "selections": [self.selection()],
-                "approval_gates": [self.gate("approved")],
+                "approval_gates": [self.gate(plan, "approved")],
                 "conflicts": [],
                 "missing_inputs": [],
             }
@@ -182,7 +182,7 @@ class RoutingValidationTests(unittest.TestCase):
             {
                 "status": "needs_approval",
                 "selections": [self.selection()],
-                "approval_gates": [self.gate()],
+                "approval_gates": [self.gate(plan)],
                 "conflicts": [],
                 "missing_inputs": [],
             }
@@ -209,7 +209,7 @@ class RoutingValidationTests(unittest.TestCase):
 
     def test_approved_gate_requires_evidence(self) -> None:
         path, plan = self.plan()
-        gate = self.gate("approved")
+        gate = self.gate(plan, "approved")
         gate["evidence"] = []
         plan.update(
             {
@@ -225,7 +225,7 @@ class RoutingValidationTests(unittest.TestCase):
 
     def test_approval_gate_must_bind_to_current_scope(self) -> None:
         path, plan = self.plan()
-        gate = self.gate("approved")
+        gate = self.gate(plan, "approved")
         gate["scope_fingerprint"] = f"sha256:{'b' * 64}"
         plan.update(
             {

@@ -2,14 +2,14 @@
   "schema_version": "1.0",
   "change_id": "20260809-router-resolver-v1",
   "risk": "G2",
-  "status": "approved",
+  "status": "evaluating",
   "criteria": [
-    {"id":"AC-01","description":"Resolver emits a schema-valid Routing Plan for each of the five terminal states with required and forbidden content proven by tests.","status":"pending","evidence":[]},
-    {"id":"AC-02","description":"Exactly one registered workflow is selected via task_class with a recorded reason; missing or unregistered task_class ends in needs_input.","status":"pending","evidence":[]},
-    {"id":"AC-03","description":"Domain resolution reads the pinned commit, matches exact task_type, respects the overlay, fails closed on absent capability or Skill artifact, and invents nothing.","status":"pending","evidence":[]},
-    {"id":"AC-04","description":"Approval gates derive from workflow policy and envelope hints, carry the documented scope fingerprint, and transitions via a decisions record yield routed or approval_rejected.","status":"pending","evidence":[]},
-    {"id":"AC-05","description":"Every emitted plan passes validate_routing.py and the fingerprint algorithm is deterministic and scope-sensitive.","status":"pending","evidence":[]},
-    {"id":"AC-06","description":"Android example resolves as unroutable with no selection; a positive needs_approval-then-routed path exists against engineering.web.","status":"pending","evidence":[]},
-    {"id":"AC-07","description":"Deterministic mapping and fingerprint rules are documented; focused tests and the complete Harness gate pass.","status":"pending","evidence":[]}
+    {"id":"AC-01","description":"Resolver emits a schema-valid Routing Plan for each of the five terminal states with required and forbidden content proven by tests.","status":"passing","evidence":["tests/test_resolve_route.py","task.md#verification-matrix"]},
+    {"id":"AC-02","description":"Exactly one registered workflow is selected via task_class with a recorded reason; missing or unregistered task_class ends in needs_input.","status":"passing","evidence":["tests/test_resolve_route.py","task.md#verification-matrix"]},
+    {"id":"AC-03","description":"Domain resolution reads the pinned commit, matches exact task_type, respects the overlay, fails closed on absent capability or Skill artifact, and invents nothing.","status":"passing","evidence":["tests/test_resolve_route.py","task.md#verification-matrix"]},
+    {"id":"AC-04","description":"Approval gates derive from workflow policy and envelope hints, carry the documented scope fingerprint, and transitions via a decisions record yield routed or approval_rejected.","status":"passing","evidence":["tests/test_resolve_route.py","docs/ROUTING.md#decisions-record"]},
+    {"id":"AC-05","description":"Every emitted plan passes validate_routing.py and the fingerprint algorithm is deterministic and scope-sensitive.","status":"passing","evidence":["tests/test_resolve_route.py","scripts/validate_routing.py"]},
+    {"id":"AC-06","description":"Android example resolves as unroutable with no selection; a positive needs_approval-then-routed path exists against engineering.web.","status":"passing","evidence":["tests/test_resolve_route.py#RealRegistryIntegrationTests","examples/routing-plan.json"]},
+    {"id":"AC-07","description":"Deterministic mapping and fingerprint rules are documented; focused tests and the complete Harness gate pass.","status":"passing","evidence":["docs/ROUTING.md#deterministic-resolver-v1","task.md#verification-matrix"]}
   ]
 }

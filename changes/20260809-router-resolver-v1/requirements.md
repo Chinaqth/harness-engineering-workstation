@@ -3,7 +3,7 @@
 - ID: 20260809-router-resolver-v1
 - Owner: harness-kernel
 - Risk: G2
-- Status: approved
+- Status: evaluating
 - Review-By: 2026-08-23
 
 ## Problem
