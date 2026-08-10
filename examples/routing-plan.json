@@ -4,7 +4,7 @@
   "source": {
     "source_id": "enterprise-domain-packs",
     "repository": "git@github.com:Chinaqth/harness-engineering-domain-packs.git",
-    "revision": "0ca789ced412a5cceb4c247c3dd726fcb10b9882",
+    "revision": "6a30f691d954b10d55f2bae7b315ff24776efd5c",
     "registry": "registry/domains.json"
   },
   "workflow_selection": {
@@ -15,7 +15,10 @@
   },
   "assessment": {
     "risk_level": "G1",
-    "impact_surfaces": ["Android login user interface", "client-side timeout and retry state"],
+    "impact_surfaces": [
+      "Android login user interface",
+      "client-side timeout and retry state"
+    ],
     "affected_units": 2,
     "change_points": 0,
     "domain_count": 0,
@@ -37,7 +40,11 @@
       "kind": "implementation",
       "required_role": "Owner",
       "status": "pending",
-      "scope": ["operation: modify", "Android login user interface", "client-side timeout and retry state"],
+      "scope": [
+        "operation: modify",
+        "Android login user interface",
+        "client-side timeout and retry state"
+      ],
       "scope_fingerprint": "sha256:0e2bf2a0c85739c89b1883c3cd8ccfab46646368544334c622d04d0d7e76b4dd",
       "evidence": []
     }
