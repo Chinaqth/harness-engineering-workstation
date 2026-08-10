@@ -15,16 +15,16 @@
       "description": "Machine-readable routing contracts and examples completely represent the documented audit contract.",
       "status": "passing",
       "evidence": [
-        "changes/20260726-enterprise-domain-routing/evaluation-20260726.md",
+        "changes/archive/2026/20260726-enterprise-domain-routing/evaluation-20260726.md",
         "schemas/routing-plan.schema.json now includes permissions and immutable-source provenance",
         "schemas/project-domain-overlay.schema.json now includes mappings and disabled capabilities",
-        "changes/20260726-enterprise-domain-routing/remediation-evidence-20260726.md",
+        "changes/archive/2026/20260726-enterprise-domain-routing/remediation-evidence-20260726.md",
         "Routing Plan selections now use the canonical Domain ID pattern",
-        "changes/20260726-enterprise-domain-routing/evaluation-20260726-v3.md",
+        "changes/archive/2026/20260726-enterprise-domain-routing/evaluation-20260726-v3.md",
         "Third evaluation found project-overlay identity and uniqueness gaps",
         "schemas/project-domain-overlay.schema.json enforces canonical Domain IDs",
         "scripts/validate_routing.py rejects duplicate Domain overlay entries",
-        "changes/20260726-enterprise-domain-routing/evaluation-20260726-v4.md"
+        "changes/archive/2026/20260726-enterprise-domain-routing/evaluation-20260726-v4.md"
       ]
     },
     {
@@ -32,15 +32,15 @@
       "description": "Validation rejects internally inconsistent routing and incomplete active Domain artifacts.",
       "status": "passing",
       "evidence": [
-        "changes/20260726-enterprise-domain-routing/evaluation-20260726.md",
+        "changes/archive/2026/20260726-enterprise-domain-routing/evaluation-20260726.md",
         "tests/test_routing_validation.py covers the reproduced contradictory states",
         "Domain Pack tests/test_registry_validation.py covers schema-invalid active Packs",
-        "changes/20260726-enterprise-domain-routing/remediation-evidence-20260726.md",
+        "changes/archive/2026/20260726-enterprise-domain-routing/remediation-evidence-20260726.md",
         "tests/test_routing_validation.py rejects Domain-schema-invalid identifiers",
-        "changes/20260726-enterprise-domain-routing/evaluation-20260726-v3.md",
+        "changes/archive/2026/20260726-enterprise-domain-routing/evaluation-20260726-v3.md",
         "Third evaluation found contradictory duplicate overlays were accepted",
         "tests/test_routing_validation.py covers invalid and duplicate overlay Domain IDs",
-        "changes/20260726-enterprise-domain-routing/evaluation-20260726-v4.md"
+        "changes/archive/2026/20260726-enterprise-domain-routing/evaluation-20260726-v4.md"
       ]
     },
     {
@@ -48,12 +48,12 @@
       "description": "Entry, governance, workflow, and bilingual operating guides describe Domain routing without implying a production Router exists.",
       "status": "passing",
       "evidence": [
-        "changes/20260726-enterprise-domain-routing/evaluation-20260726.md",
+        "changes/archive/2026/20260726-enterprise-domain-routing/evaluation-20260726.md",
         "README.md, README-CH.md, and docs/ROUTING.md explicitly state the protocol-only boundary",
-        "changes/20260726-enterprise-domain-routing/remediation-evidence-20260726.md",
+        "changes/archive/2026/20260726-enterprise-domain-routing/remediation-evidence-20260726.md",
         "Domain Pack architecture, governance, Skill, and registration reference use future/protocol-only wording",
         "Third independent evaluation satisfied AC-04",
-        "changes/20260726-enterprise-domain-routing/evaluation-20260726-v4.md"
+        "changes/archive/2026/20260726-enterprise-domain-routing/evaluation-20260726-v4.md"
       ]
     },
     {
@@ -65,12 +65,12 @@
         "git@github.com:Chinaqth/harness-engineering-domain-packs.git initialized at c5bf2de",
         "Previous independent verdict: FAIL",
         "Remediation requires fresh independent evaluation",
-        "changes/20260726-enterprise-domain-routing/evaluation-20260726.md",
-        "changes/20260726-enterprise-domain-routing/rollback-rehearsal-20260726.md",
-        "changes/20260726-enterprise-domain-routing/evaluation-20260726-v2.md",
-        "changes/20260726-enterprise-domain-routing/rollback-rehearsal-20260726-v2.md",
-        "changes/20260726-enterprise-domain-routing/evaluation-20260726-v3.md",
-        "changes/20260726-enterprise-domain-routing/evaluation-20260726-v4.md",
+        "changes/archive/2026/20260726-enterprise-domain-routing/evaluation-20260726.md",
+        "changes/archive/2026/20260726-enterprise-domain-routing/rollback-rehearsal-20260726.md",
+        "changes/archive/2026/20260726-enterprise-domain-routing/evaluation-20260726-v2.md",
+        "changes/archive/2026/20260726-enterprise-domain-routing/rollback-rehearsal-20260726-v2.md",
+        "changes/archive/2026/20260726-enterprise-domain-routing/evaluation-20260726-v3.md",
+        "changes/archive/2026/20260726-enterprise-domain-routing/evaluation-20260726-v4.md",
         "Final independent verdict: PASS"
       ]
     }
