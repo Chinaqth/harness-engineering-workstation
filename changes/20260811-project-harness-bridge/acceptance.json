@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "change_id": "20260811-project-harness-bridge",
+  "risk": "G2",
+  "status": "done",
+  "criteria": [
+    {
+      "id": "AC-01",
+      "description": "Bridge schema permits exactly contract_code and enabled as required fields.",
+      "status": "passing",
+      "evidence": ["schemas/project-harness-bridge.schema.json", "tests/test_project_harness_bridge.py"]
+    },
+    {
+      "id": "AC-02",
+      "description": "Adapters compare contract_code exactly before evaluating enabled as boolean true.",
+      "status": "passing",
+      "evidence": ["../th-harness-cli/src/install.js", "../th-harness-cli/test/cli.test.js"]
+    },
+    {
+      "id": "AC-03",
+      "description": "Absent, malformed, mismatched, or disabled bridges do not activate Harness.",
+      "status": "passing",
+      "evidence": ["docs/PROJECT_ACTIVATION.md", "../th-harness-cli/src/install.js"]
+    },
+    {
+      "id": "AC-04",
+      "description": "Codex, Kimi, and Hermes adapters use the same bridge contract.",
+      "status": "passing",
+      "evidence": ["../th-harness-cli/src/install.js", "../th-harness-cli/test/cli.test.js"]
+    },
+    {
+      "id": "AC-05",
+      "description": "Kernel and CLI checks pass and an independent G2 verdict is recorded.",
+      "status": "passing",
+      "evidence": ["task.md#verification-matrix", "evaluation.md"]
+    }
+  ]
+}

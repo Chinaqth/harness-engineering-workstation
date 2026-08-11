@@ -39,6 +39,7 @@ companion to the English primary README. Preserve other non-English source mater
 | Task | Required reading |
 | --- | --- |
 | Understand the overall design | `docs/ARCHITECTURE.md` |
+| Understand project opt-in | `docs/PROJECT_ACTIVATION.md` |
 | Route a task to enterprise functions | `docs/ENTERPRISE_DOMAIN_ARCHITECTURE.md`, `docs/ROUTING.md` |
 | Change protocol or contract versions | `docs/PROTOCOL_VERSIONING.md`, `docs/GOVERNANCE.md`, then create a G2 change proposal |
 | Configure Domain Pack sources | `config/domain-pack-sources.json`, `scripts/sync_domain_pin.py` |

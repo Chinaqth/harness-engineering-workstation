@@ -66,13 +66,18 @@ resume implementation afterward, while the Kernel owns approval state and scope.
 ## Information Layers
 
 ```text
-L0 Entry point: AGENTS.md
+L-1 Project gate: .harness.json
+  └─ L0 Entry point: AGENTS.md
   └─ L1 Domain policies: architecture / governance / workflows / rules
        └─ L2 Task context: changes/<change-id>/
             └─ L3 Deep references: docs/reference/ and skill references
 ```
 
-Read L0 by default. Enter L1 according to the task, load L2 only while working on that change, and consult L3 only when detailed knowledge or evidence is required.
+Platform adapters evaluate the project gate first and load L0 only when the bridge activates
+Harness. The exact two-field bridge contract and fail-closed evaluation order are defined in
+[PROJECT_ACTIVATION.md](PROJECT_ACTIVATION.md). After activation, enter L1 according to the task,
+load L2 only while working on that change, and consult L3 only when detailed knowledge or evidence
+is required.
 
 ## Control Plane and Project Plane
 

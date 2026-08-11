@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://harness.local/schemas/project-harness-bridge.schema.json",
+  "title": "Project Harness Bridge",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract_code", "enabled"],
+  "properties": {
+    "contract_code": {
+      "const": "harness-engineering"
+    },
+    "enabled": {
+      "type": "boolean"
+    }
+  }
+}
