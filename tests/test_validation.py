@@ -81,6 +81,20 @@ class KnowledgeGardenTests(unittest.TestCase):
             self.assertEqual(len(errors), 1)
             self.assertIn("broken local link", errors[0])
 
+    def test_done_change_is_not_subject_to_freshness_check(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            change = root / "changes" / "sample"
+            change.mkdir(parents=True)
+            (change / "requirements.md").write_text(
+                "- Status: done\n- Review-By: 2020-01-01\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                knowledge_garden.stale_changes(root, knowledge_garden.dt.date(2026, 8, 28)),
+                [],
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

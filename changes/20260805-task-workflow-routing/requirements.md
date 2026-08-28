@@ -4,7 +4,7 @@
 - Owner: harness-kernel
 - Risk: G2
 - Status: evaluating
-- Review-By: 2026-08-19
+- Review-By: 2026-09-11
 
 ## Problem
 

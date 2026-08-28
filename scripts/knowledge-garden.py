@@ -12,6 +12,7 @@ from urllib.parse import unquote
 
 LINK = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
 REVIEW_BY = re.compile(r"(?mi)^-\s*Review-By:\s*(\d{4}-\d{2}-\d{2})\s*$")
+STATUS = re.compile(r"(?mi)^-\s*Status:\s*([a-z][a-z0-9_-]*)\s*$")
 
 
 def broken_links(root: Path) -> list[str]:
@@ -58,6 +59,9 @@ def stale_changes(root: Path, today: dt.date) -> list[str]:
             errors.append(f"{directory}: active change has no requirements.md")
             continue
         content = requirements.read_text(encoding="utf-8")
+        status_match = STATUS.search(content)
+        if status_match and status_match.group(1) == "done":
+            continue
         match = REVIEW_BY.search(content)
         if not match:
             errors.append(f"{requirements}: active change has no valid Review-By date")
