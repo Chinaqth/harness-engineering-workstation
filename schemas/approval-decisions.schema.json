@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Harness Approval Decisions",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "scope_fingerprint", "decisions"],
+  "properties": {
+    "schema_version": { "const": "2.0" },
+    "scope_fingerprint": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "presented_execution_plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact", "sha256", "evidence"],
+      "properties": {
+        "artifact": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["evidence_type", "issuer", "channel", "reference", "recorded_at", "plan_sha256"],
+            "properties": {
+              "evidence_type": { "const": "user-visible-markdown" },
+              "issuer": { "enum": ["platform-adapter", "human-owner"] },
+              "channel": { "type": "string", "minLength": 1 },
+              "reference": { "type": "string", "pattern": "^[a-z][a-z0-9+.-]*:.+$" },
+              "recorded_at": { "type": "string", "minLength": 1 },
+              "plan_sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+            }
+          }
+        }
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["gate_id", "decision", "evidence"],
+        "properties": {
+          "gate_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+          "decision": { "enum": ["approved", "rejected"] },
+          "evidence": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["evidence_type", "actor_role", "actor_id", "channel", "reference", "recorded_at", "scope_fingerprint"],
+              "properties": {
+                "evidence_type": { "const": "explicit-user-decision" },
+                "actor_role": { "type": "string", "minLength": 1 },
+                "actor_id": { "type": "string", "pattern": "^user:[A-Za-z0-9._:@/-]+$" },
+                "channel": { "type": "string", "minLength": 1 },
+                "reference": { "type": "string", "pattern": "^[a-z][a-z0-9+.-]*:.+$" },
+                "recorded_at": { "type": "string", "minLength": 1 },
+                "scope_fingerprint": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

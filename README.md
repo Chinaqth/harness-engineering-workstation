@@ -215,17 +215,18 @@ G0 can live in a pull request or task description. G1 requires `requirements.md`
    the record is created in the target project even when it has no Git repository; write its
    human-readable change Markdown in Chinese by default.
 5. Define observable acceptance criteria before implementation.
-6. Declare autonomy budgets and scope-bound approval gates; use generic Domain Skills to contribute professional assessment and proposals.
-7. Implement one bounded unit only after required gates are approved, and keep `progress.md` current.
-8. Run:
+6. Declare autonomy budgets and scope-bound approval gates; use generic Domain Skills to contribute professional assessment and a concrete target-project `task.md`.
+7. For Domain-augmented mutating work, show the complete current `task.md` to the user and pause. Bind its digest and resume only after explicit confirmation; revise and show it again when requested.
+8. Implement one bounded unit only after required gates are approved, and keep `progress.md` current.
+9. Run:
 
    ```bash
    ./scripts/harness-check.sh
    ```
 
-9. Use `skills/end-to-end-evaluator` for material user-visible behavior.
-10. Record the verdict, residual risks, and rollback guidance.
-11. Archive the change and promote durable cross-domain lessons to the Kernel, professional practice to the Domain Pack, and project facts to the project repository.
+10. Use `skills/end-to-end-evaluator` for material user-visible behavior.
+11. Record the verdict, residual risks, and rollback guidance.
+12. Archive the change and promote durable cross-domain lessons to the Kernel, professional practice to the Domain Pack, and project facts to the project repository.
 
 ## Scenario Playbooks
 

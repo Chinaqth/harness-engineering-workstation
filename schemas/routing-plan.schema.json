@@ -3,9 +3,9 @@
   "title": "Harness Routing Plan",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "task_id", "source", "workflow_selection", "assessment", "scope_fingerprint", "execution_mode", "fallbacks", "status", "selections", "approval_gates", "conflicts", "missing_inputs"],
+  "required": ["schema_version", "task_id", "source", "workflow_selection", "assessment", "scope_fingerprint", "execution_mode", "execution_plan", "fallbacks", "status", "selections", "approval_gates", "conflicts", "missing_inputs"],
   "properties": {
-    "schema_version": { "const": "3.0" },
+    "schema_version": { "const": "4.0" },
     "task_id": { "type": "string", "minLength": 1 },
     "source": {
       "type": "object",
@@ -47,6 +47,37 @@
     },
     "scope_fingerprint": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
     "execution_mode": { "enum": ["model_native", "domain_augmented"] },
+    "execution_plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "status", "artifact", "sha256", "domain_ids", "presentation_evidence"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "status": { "enum": ["not-required", "missing", "draft", "presented"] },
+        "artifact": {
+          "anyOf": [
+            { "type": "string", "minLength": 1 },
+            { "type": "null" }
+          ]
+        },
+        "sha256": {
+          "anyOf": [
+            { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+            { "type": "null" }
+          ]
+        },
+        "domain_ids": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*(\\.[a-z0-9][a-z0-9-]*)+$" },
+          "uniqueItems": true
+        },
+        "presentation_evidence": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        }
+      }
+    },
     "fallbacks": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
     "status": { "enum": ["routed", "needs_input", "needs_approval", "approval_rejected", "unroutable"] },
     "selections": {

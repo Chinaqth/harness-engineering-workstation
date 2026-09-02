@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "change_id": "20260902-plan-confirmation-checkpoint",
+  "risk": "G2",
+  "status": "done",
+  "criteria": [
+    {
+      "id": "AC-01",
+      "description": "文档明确区分 Routing Plan 与 Domain Execution Plan，且审批对象是具体专业实施计划。",
+      "status": "passing",
+      "evidence": ["docs/ROUTING.md; workflows/3-plus-1.md; docs/ARCHITECTURE.md"]
+    },
+    {
+      "id": "AC-02",
+      "description": "Domain-augmented 修改性任务在缺少当前 task.md 摘要时不能获得 implementation approval。",
+      "status": "passing",
+      "evidence": ["tests/test_resolve_route.py::test_domain_implementation_decision_requires_execution_plan"]
+    },
+    {
+      "id": "AC-03",
+      "description": "执行者必须完整展示当前 task.md 并暂停，沉默、写入文件或摘要展示均不构成批准。",
+      "status": "passing",
+      "evidence": ["schemas/approval-decisions.schema.json; tests/test_resolve_route.py::test_agent_self_report_strings_cannot_satisfy_plan_confirmation"]
+    },
+    {
+      "id": "AC-04",
+      "description": "计划修改会改变摘要与审批范围，旧批准被确定性拒绝为 stale。",
+      "status": "passing",
+      "evidence": ["tests/test_resolve_route.py::test_execution_plan_change_invalidates_prior_decision"]
+    },
+    {
+      "id": "AC-05",
+      "description": "用户明确确认当前展示计划后才能记录审批并恢复 Domain 修改性实施。",
+      "status": "passing",
+      "evidence": ["tests/test_resolve_route.py::test_decisions_record_transitions_to_routed; tests/test_resolve_route.py::test_decision_evidence_must_match_required_role_and_scope"]
+    },
+    {
+      "id": "AC-06",
+      "description": "HarmonyOS 与 Web Domain 保留各自专业计划内容责任，Kernel 只强制控制循环。",
+      "status": "passing",
+      "evidence": ["harness-engineering-domain-packs/tests/test_plan_confirmation.py"]
+    },
+    {
+      "id": "AC-07",
+      "description": "多 Domain 路由形成一份可追踪每项专业贡献的整合计划。",
+      "status": "passing",
+      "evidence": ["tests/test_routing_validation.py::test_integrated_execution_plan_can_cover_multiple_domains; changes/_template/task.md"]
+    },
+    {
+      "id": "AC-08",
+      "description": "只读 investigation 和 model-native 路径保持风险比例行为。",
+      "status": "passing",
+      "evidence": ["tests/test_resolve_route.py::test_g0_investigation_routes_without_gates; tests/test_resolve_route.py::test_model_native_fallback_when_no_capability_matches"]
+    },
+    {
+      "id": "AC-09",
+      "description": "Schema、Resolver、Validator、迁移、示例和测试一致并覆盖拒绝路径。",
+      "status": "passing",
+      "evidence": ["Workstation harness-check.sh PASS with 74 tests on 2026-09-02; docs/PROTOCOL_VERSIONING.md"]
+    },
+    {
+      "id": "AC-10",
+      "description": "Workstation 与 Domain Pack 完整检查通过，并获得独立 G2 Evaluator 结论。",
+      "status": "passing",
+      "evidence": ["evaluation.md: final independent G2 PASS; Workstation 74 tests; Domain 50 tests"]
+    },
+    {
+      "id": "AC-11",
+      "description": "权威 revision 和 pin 就绪后，CLI Runtime Bundle 可生成并通过校验。",
+      "status": "passing",
+      "evidence": ["CLI clean-source rebuild byte-identical to candidate bundle; verify 874 Runtime files; npm check 21/21 tests"]
+    }
+  ]
+}

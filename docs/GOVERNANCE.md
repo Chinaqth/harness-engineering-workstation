@@ -33,8 +33,14 @@ An approval is a decision over an explicit scope, not an unlimited conversationa
 machine-readable approval gate identifies the decision kind, required role, decision state, scope,
 scope fingerprint, and evidence. Approved and rejected gates require evidence; silence is pending.
 
+For Domain-augmented mutating work, implementation approval is a decision over the selected
+Domain's concrete execution plan, not over the Routing Plan. The plan must be persisted as the
+target project's `changes/<change-id>/task.md`, displayed completely to the user as Markdown, and
+bound by digest to the approval scope. Merely creating the file, sending a link, displaying a
+summary, or continuing without a response does not satisfy the gate.
+
 If implementation changes the approved scope, permissions, external effects, selected capabilities,
-or material plan, the affected approval is stale and must return to pending. Domain Skills may
+or material plan, including the bound `task.md` digest, the affected approval is stale and must return to pending. Domain Skills may
 prepare professional assessments and proposals but cannot approve their own work, expand their own
 authority, or bypass the Kernel gate.
 

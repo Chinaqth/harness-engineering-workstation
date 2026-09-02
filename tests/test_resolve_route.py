@@ -52,6 +52,7 @@ class ResolveRouteTests(unittest.TestCase):
         for schema in (
             "task-envelope.schema.json",
             "project-domain-overlay.schema.json",
+            "approval-decisions.schema.json",
         ):
             (self.kernel / "schemas" / schema).write_text(
                 (ROOT / "schemas" / schema).read_text(encoding="utf-8"),
@@ -235,6 +236,44 @@ class ResolveRouteTests(unittest.TestCase):
             text=True,
         )
 
+    def execution_plan(self, content: str = "# Domain execution plan\n\n1. Repair the login state.\n") -> Path:
+        path = self.base / "project" / "changes" / "test-task" / "task.md"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+        return path
+
+    @staticmethod
+    def presented_plan(plan: dict) -> dict:
+        execution_plan = plan["execution_plan"]
+        return {
+            "artifact": execution_plan["artifact"],
+            "sha256": execution_plan["sha256"],
+            "evidence": [
+                {
+                    "evidence_type": "user-visible-markdown",
+                    "issuer": "platform-adapter",
+                    "channel": "test",
+                    "reference": "message:plan-presentation",
+                    "recorded_at": "2026-09-02T00:00:00Z",
+                    "plan_sha256": execution_plan["sha256"],
+                }
+            ],
+        }
+
+    @staticmethod
+    def decision_evidence(plan: dict, reference: str = "message:owner-decision") -> list[dict]:
+        return [
+            {
+                "evidence_type": "explicit-user-decision",
+                "actor_role": "Owner",
+                "actor_id": "user:test-owner",
+                "channel": "test",
+                "reference": reference,
+                "recorded_at": "2026-09-02T00:00:01Z",
+                "scope_fingerprint": plan["scope_fingerprint"],
+            }
+        ]
+
     def parse_plan(self, result: subprocess.CompletedProcess[str]) -> dict:
         self.assertEqual(result.returncode, 0, result.stderr)
         plan = json.loads(result.stdout)
@@ -261,6 +300,8 @@ class ResolveRouteTests(unittest.TestCase):
         self.assertEqual(gates[0]["kind"], "implementation")
         self.assertEqual(gates[0]["status"], "pending")
         self.assertEqual(gates[0]["scope_fingerprint"], plan["scope_fingerprint"])
+        self.assertTrue(plan["execution_plan"]["required"])
+        self.assertEqual(plan["execution_plan"]["status"], "missing")
 
     def test_model_native_fallback_when_no_capability_matches(self) -> None:
         plan = self.parse_plan(
@@ -272,6 +313,7 @@ class ResolveRouteTests(unittest.TestCase):
         self.assertTrue(plan["approval_gates"])
         self.assertTrue(plan["fallbacks"])
         self.assertEqual(plan["conflicts"], [])
+        self.assertFalse(plan["execution_plan"]["required"])
 
     def test_needs_input_for_defect_without_expected_behavior(self) -> None:
         envelope = self.envelope()
@@ -336,64 +378,225 @@ class ResolveRouteTests(unittest.TestCase):
         self.assertEqual(plan["status"], "routed")
         self.assertEqual(plan["approval_gates"], [])
         self.assertEqual(plan["assessment"]["risk_level"], "G0")
+        self.assertEqual(plan["execution_plan"]["status"], "not-required")
 
     def test_decisions_record_transitions_to_routed(self) -> None:
-        plan = self.parse_plan(self.run_resolver(self.envelope()))
+        plan_path = self.execution_plan()
+        plan = self.parse_plan(
+            self.run_resolver(self.envelope(), "--execution-plan", str(plan_path))
+        )
         decisions = {
-            "schema_version": "1.0",
+            "schema_version": "2.0",
             "scope_fingerprint": plan["scope_fingerprint"],
+            "presented_execution_plan": self.presented_plan(plan),
             "decisions": [
                 {
                     "gate_id": "implementation-approval",
                     "decision": "approved",
-                    "evidence": ["owner approval recorded 2026-08-09"],
+                    "evidence": self.decision_evidence(plan),
                 }
             ],
         }
         decisions_path = self.base / "decisions.json"
         write_json(decisions_path, decisions)
         routed = self.parse_plan(
-            self.run_resolver(self.envelope(), "--decisions", str(decisions_path))
+            self.run_resolver(
+                self.envelope(),
+                "--execution-plan", str(plan_path),
+                "--decisions", str(decisions_path),
+            )
         )
         self.assertEqual(routed["status"], "routed")
         self.assertEqual(routed["approval_gates"][0]["status"], "approved")
         self.assertTrue(routed["approval_gates"][0]["evidence"])
+        self.assertEqual(routed["execution_plan"]["status"], "presented")
+        self.assertTrue(routed["execution_plan"]["presentation_evidence"])
 
     def test_decisions_record_rejection(self) -> None:
-        plan = self.parse_plan(self.run_resolver(self.envelope()))
+        plan_path = self.execution_plan()
+        plan = self.parse_plan(
+            self.run_resolver(self.envelope(), "--execution-plan", str(plan_path))
+        )
         decisions = {
-            "schema_version": "1.0",
+            "schema_version": "2.0",
             "scope_fingerprint": plan["scope_fingerprint"],
+            "presented_execution_plan": self.presented_plan(plan),
             "decisions": [
                 {
                     "gate_id": "implementation-approval",
                     "decision": "rejected",
-                    "evidence": ["owner rejected scope 2026-08-09"],
+                    "evidence": self.decision_evidence(plan, "message:owner-rejection"),
                 }
             ],
         }
         decisions_path = self.base / "decisions.json"
         write_json(decisions_path, decisions)
         rejected = self.parse_plan(
-            self.run_resolver(self.envelope(), "--decisions", str(decisions_path))
+            self.run_resolver(
+                self.envelope(),
+                "--execution-plan", str(plan_path),
+                "--decisions", str(decisions_path),
+            )
         )
         self.assertEqual(rejected["status"], "approval_rejected")
 
     def test_stale_decisions_record_rejected(self) -> None:
+        plan_path = self.execution_plan()
+        plan = self.parse_plan(
+            self.run_resolver(self.envelope(), "--execution-plan", str(plan_path))
+        )
         decisions = {
-            "schema_version": "1.0",
+            "schema_version": "2.0",
             "scope_fingerprint": "sha256:" + "0" * 64,
+            "presented_execution_plan": self.presented_plan(plan),
             "decisions": [
                 {
                     "gate_id": "implementation-approval",
                     "decision": "approved",
-                    "evidence": ["stale"],
+                    "evidence": self.decision_evidence(plan),
+                }
+            ],
+        }
+        decisions_path = self.base / "decisions.json"
+        write_json(decisions_path, decisions)
+        result = self.run_resolver(
+            self.envelope(),
+            "--execution-plan", str(plan_path),
+            "--decisions", str(decisions_path),
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("stale", result.stderr)
+
+    def test_domain_implementation_decision_requires_execution_plan(self) -> None:
+        plan = self.parse_plan(self.run_resolver(self.envelope()))
+        decisions = {
+            "schema_version": "2.0",
+            "scope_fingerprint": plan["scope_fingerprint"],
+            "decisions": [
+                {
+                    "gate_id": "implementation-approval",
+                    "decision": "approved",
+                    "evidence": self.decision_evidence(plan),
                 }
             ],
         }
         decisions_path = self.base / "decisions.json"
         write_json(decisions_path, decisions)
         result = self.run_resolver(self.envelope(), "--decisions", str(decisions_path))
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("requires --execution-plan", result.stderr)
+
+    def test_domain_implementation_decision_requires_presentation_evidence(self) -> None:
+        plan_path = self.execution_plan()
+        plan = self.parse_plan(
+            self.run_resolver(self.envelope(), "--execution-plan", str(plan_path))
+        )
+        decisions = {
+            "schema_version": "2.0",
+            "scope_fingerprint": plan["scope_fingerprint"],
+            "decisions": [
+                {
+                    "gate_id": "implementation-approval",
+                    "decision": "approved",
+                    "evidence": self.decision_evidence(plan),
+                }
+            ],
+        }
+        decisions_path = self.base / "decisions.json"
+        write_json(decisions_path, decisions)
+        result = self.run_resolver(
+            self.envelope(),
+            "--execution-plan", str(plan_path),
+            "--decisions", str(decisions_path),
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("presented_execution_plan", result.stderr)
+
+    def test_agent_self_report_strings_cannot_satisfy_plan_confirmation(self) -> None:
+        plan_path = self.execution_plan()
+        plan = self.parse_plan(
+            self.run_resolver(self.envelope(), "--execution-plan", str(plan_path))
+        )
+        decisions = {
+            "schema_version": "2.0",
+            "scope_fingerprint": plan["scope_fingerprint"],
+            "presented_execution_plan": {
+                "artifact": plan["execution_plan"]["artifact"],
+                "sha256": plan["execution_plan"]["sha256"],
+                "evidence": ["agent self-reports plan was shown"],
+            },
+            "decisions": [
+                {
+                    "gate_id": "implementation-approval",
+                    "decision": "approved",
+                    "evidence": ["agent asserts owner approval"],
+                }
+            ],
+        }
+        decisions_path = self.base / "decisions.json"
+        write_json(decisions_path, decisions)
+        result = self.run_resolver(
+            self.envelope(),
+            "--execution-plan", str(plan_path),
+            "--decisions", str(decisions_path),
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("decisions record", result.stderr)
+
+    def test_decision_evidence_must_match_required_role_and_scope(self) -> None:
+        plan_path = self.execution_plan()
+        plan = self.parse_plan(
+            self.run_resolver(self.envelope(), "--execution-plan", str(plan_path))
+        )
+        evidence = self.decision_evidence(plan)
+        evidence[0]["actor_role"] = "Generator"
+        decisions = {
+            "schema_version": "2.0",
+            "scope_fingerprint": plan["scope_fingerprint"],
+            "presented_execution_plan": self.presented_plan(plan),
+            "decisions": [
+                {
+                    "gate_id": "implementation-approval",
+                    "decision": "approved",
+                    "evidence": evidence,
+                }
+            ],
+        }
+        decisions_path = self.base / "decisions.json"
+        write_json(decisions_path, decisions)
+        result = self.run_resolver(
+            self.envelope(),
+            "--execution-plan", str(plan_path),
+            "--decisions", str(decisions_path),
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("required role", result.stderr)
+
+    def test_execution_plan_change_invalidates_prior_decision(self) -> None:
+        plan_path = self.execution_plan()
+        plan = self.parse_plan(
+            self.run_resolver(self.envelope(), "--execution-plan", str(plan_path))
+        )
+        decisions = {
+            "schema_version": "2.0",
+            "scope_fingerprint": plan["scope_fingerprint"],
+            "presented_execution_plan": self.presented_plan(plan),
+            "decisions": [
+                {
+                    "gate_id": "implementation-approval",
+                    "decision": "approved",
+                    "evidence": self.decision_evidence(plan),
+                }
+            ],
+        }
+        decisions_path = self.base / "decisions.json"
+        write_json(decisions_path, decisions)
+        plan_path.write_text("# Revised Domain execution plan\n", encoding="utf-8")
+        result = self.run_resolver(
+            self.envelope(),
+            "--execution-plan", str(plan_path),
+            "--decisions", str(decisions_path),
+        )
         self.assertEqual(result.returncode, 2)
         self.assertIn("stale", result.stderr)
 

@@ -48,6 +48,11 @@ This release defines contracts and validators, not an operating production Route
 
 A Skill may help construct or inspect routing data, but a Skill alone is not the Router. Registry resolution, lifecycle filtering, dependency checking, approval state, and provenance must remain deterministic and auditable. A concrete task must not cause the Router to invent a task-specific Skill.
 
+After routing, selected Domains own the professional content of the concrete execution plan. The
+Kernel owns the cross-Domain checkpoint that persists the integrated plan in the target project's
+`task.md`, presents it completely to the user, binds its digest to implementation approval, and
+prevents mutation until the current displayed plan is explicitly confirmed.
+
 ## Precedence and Conflicts
 
 Context becomes more specific in this order:

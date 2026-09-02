@@ -17,6 +17,12 @@ The decision level in `docs/GOVERNANCE.md` sets the default ceiling. Project own
 
 An execution window is not a performance target. It is the maximum interval before state must be externalized to `progress.md` and the need for a checkpoint reassessed.
 
+Risk level does not replace the Domain Execution Plan checkpoint. When an active Domain is selected
+for a mutating task, pre-approval autonomy is limited to non-mutating baseline, assessment, and plan
+authoring. The complete current plan must be shown to the user, and mutation starts only after the
+user explicitly confirms that displayed version. Read-only Domain work and model-native fallback
+continue to use the matrix above.
+
 ## Budget Dimensions
 
 Every G1-or-higher plan must state:

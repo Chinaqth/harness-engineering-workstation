@@ -33,6 +33,9 @@ companion to the English primary README. Preserve other non-English source mater
 9. Update the relevant documentation and change record before completing work.
 10. Resolve enterprise functions through the Domain registry and project overlay. Do not invent an unregistered Domain or capability.
 11. Load only the selected Domain Pack content. Domain policy may specialize but may not weaken Kernel red lines.
+12. For a Domain-augmented mutating task, let the selected Domain produce the concrete `task.md`,
+    present that complete Markdown plan to the user, and pause. Resume mutation only after explicit
+    confirmation of the current plan digest; revise and present again when the user requests changes.
 
 ## Read on Demand
 

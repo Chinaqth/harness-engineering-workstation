@@ -22,7 +22,7 @@ Conversation is a transient interface, not the source of truth. Material work is
 | Artifact | Purpose | Primary writer |
 | --- | --- | --- |
 | `requirements.md` | Scope, constraints, risk, and human-readable acceptance | Planner |
-| `task.md` | Decomposition and verification matrix | Planner and Generator |
+| `task.md` | Decomposition, verification matrix, and authoritative Domain Execution Plan for routed mutating work | Planner and Generator |
 | `acceptance.json` | Machine-readable criterion state and evidence pointers | Generator, verified by Evaluator |
 | `progress.md` | Cross-session handoff and resume point | Current operator |
 | `contract.md` | Generator–Evaluator boundary, evidence standard, and verdict authority | Planner and Evaluator |
@@ -61,7 +61,10 @@ Routing composes two independent decisions before implementation:
 
 Concrete product features and defect symptoms remain task context. They are not Skill identities.
 A generic Domain Skill may contribute professional assessment and proposal work before approval and
-resume implementation afterward, while the Kernel owns approval state and scope.
+resume implementation afterward, while the Kernel owns approval state and scope. Before resuming a
+mutating Domain workflow, the complete target-project `task.md` must be shown to the user and its
+digest bound to the implementation approval. Routing selects professional authority; it is not the
+concrete plan the user approves.
 
 ## Information Layers
 

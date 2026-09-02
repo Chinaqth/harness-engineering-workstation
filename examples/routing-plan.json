@@ -1,10 +1,10 @@
 {
-  "schema_version": "3.0",
+  "schema_version": "4.0",
   "task_id": "example-android-login-timeout",
   "source": {
     "source_id": "enterprise-domain-packs",
     "repository": "git@github.com:Chinaqth/harness-engineering-domain-packs.git",
-    "revision": "60630348a14be125d3b7eb8aca3820a3929cf40f",
+    "revision": "3365343ee3025759160461a69613110185c92674",
     "registry": "registry/domains.json"
   },
   "workflow_selection": {
@@ -27,8 +27,16 @@
     "external_effects": [],
     "rationale": "Preliminary Kernel assessment from envelope facts: operation=modify, surfaces=2, external_effects=0, risk_hints=2. Domain professional assessment may refine this level."
   },
-  "scope_fingerprint": "sha256:0e2bf2a0c85739c89b1883c3cd8ccfab46646368544334c622d04d0d7e76b4dd",
+  "scope_fingerprint": "sha256:4299634394334801a17a94a9802a641379b8cbf0477790669e6ab49c8aed7506",
   "execution_mode": "model_native",
+  "execution_plan": {
+    "required": false,
+    "status": "not-required",
+    "artifact": null,
+    "sha256": null,
+    "domain_ids": [],
+    "presentation_evidence": []
+  },
   "fallbacks": [
     "No active enabled Domain capability matches task_type 'android-application-change'; execute model-native under the selected Kernel workflow, approvals, permissions, constraints, and evidence requirements."
   ],
@@ -45,7 +53,7 @@
         "Android login user interface",
         "client-side timeout and retry state"
       ],
-      "scope_fingerprint": "sha256:0e2bf2a0c85739c89b1883c3cd8ccfab46646368544334c622d04d0d7e76b4dd",
+      "scope_fingerprint": "sha256:4299634394334801a17a94a9802a641379b8cbf0477790669e6ab49c8aed7506",
       "evidence": []
     }
   ],

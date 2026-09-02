@@ -35,11 +35,14 @@ def validate_plan_state(plan: dict, errors: list[str]) -> None:
     conflicts = plan.get("conflicts")
     missing_inputs = plan.get("missing_inputs")
     execution_mode = plan.get("execution_mode")
+    execution_plan = plan.get("execution_plan")
     fallbacks = plan.get("fallbacks")
     if not all(
         isinstance(value, list)
         for value in (selections, approval_gates, conflicts, missing_inputs, fallbacks)
     ):
+        return
+    if not isinstance(execution_plan, dict):
         return
 
     gate_statuses = [
@@ -52,6 +55,34 @@ def validate_plan_state(plan: dict, errors: list[str]) -> None:
         errors.append("routing plan: domain_augmented mode requires a Domain selection")
     if execution_mode == "model_native" and selections:
         errors.append("routing plan: model_native mode cannot contain Domain selections")
+    plan_required = execution_plan.get("required") is True
+    plan_status = execution_plan.get("status")
+    artifact = execution_plan.get("artifact")
+    plan_digest = execution_plan.get("sha256")
+    presentation = execution_plan.get("presentation_evidence")
+    domain_ids = execution_plan.get("domain_ids")
+    selected_domain_ids = sorted(
+        selection.get("domain_id")
+        for selection in selections
+        if isinstance(selection, dict) and isinstance(selection.get("domain_id"), str)
+    )
+    if plan_required:
+        if execution_mode != "domain_augmented":
+            errors.append("routing plan: a required Domain execution plan requires domain_augmented mode")
+        if domain_ids != selected_domain_ids:
+            errors.append("routing plan: Domain execution plan must cover every selected Domain")
+        if plan_status == "missing" and any(value is not None for value in (artifact, plan_digest)):
+            errors.append("routing plan: missing Domain execution plan cannot declare an artifact or digest")
+        if plan_status in {"draft", "presented"} and (not artifact or not plan_digest):
+            errors.append("routing plan: draft or presented Domain execution plan requires an artifact and digest")
+        if plan_status == "draft" and presentation:
+            errors.append("routing plan: draft Domain execution plan cannot contain presentation evidence")
+        if plan_status == "presented" and not presentation:
+            errors.append("routing plan: presented Domain execution plan requires presentation evidence")
+    elif plan_status != "not-required" or any(
+        value not in (None, []) for value in (artifact, plan_digest, domain_ids, presentation)
+    ):
+        errors.append("routing plan: a non-required Domain execution plan must be empty and not-required")
     if (
         execution_mode == "model_native"
         and status not in {"needs_input", "unroutable"}
@@ -110,6 +141,16 @@ def validate_plan_state(plan: dict, errors: list[str]) -> None:
         if gate.get("status") in {"approved", "rejected"} and not gate.get("evidence"):
             errors.append(
                 "routing plan: approved or rejected gates require decision evidence"
+            )
+        if (
+            gate.get("kind") == "implementation"
+            and gate.get("status") in {"approved", "rejected"}
+            and plan_required
+            and plan_status != "presented"
+        ):
+            errors.append(
+                "routing plan: a Domain implementation decision requires the current "
+                "execution plan to be presented"
             )
 
 
@@ -181,6 +222,17 @@ def validate_workflow_selection(
     ):
         errors.append(
             "routing plan: selected workflow and risk require an implementation approval gate"
+        )
+    execution_plan = plan.get("execution_plan")
+    if (
+        requires_approval
+        and envelope.get("operation") != "inspect"
+        and plan.get("execution_mode") == "domain_augmented"
+        and isinstance(execution_plan, dict)
+        and execution_plan.get("required") is not True
+    ):
+        errors.append(
+            "routing plan: Domain-augmented mutating work requires a Domain execution plan"
         )
 
 

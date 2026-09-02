@@ -28,6 +28,10 @@ These rules apply to every adopting project.
 - For every new dependency, document necessity, maintenance status, license, and alternatives.
 - Consider compatibility for public interfaces, schemas, and data migrations.
 - When code and documentation disagree, resolve or explicitly record the conflict; do not choose silently.
+- For Domain-augmented mutating work, persist the concrete professional execution plan in the
+  target project's `changes/<change-id>/task.md`, present the complete current Markdown to the user,
+  and pause before implementation. Silence, file creation, or a summary is not approval. A material
+  plan change invalidates prior approval and requires a complete re-presentation.
 
 ## Verification Rules
 

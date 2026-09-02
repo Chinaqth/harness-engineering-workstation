@@ -1,0 +1,21 @@
+{
+  "schema_version": "2.0",
+  "scope_fingerprint": "sha256:4299634394334801a17a94a9802a641379b8cbf0477790669e6ab49c8aed7506",
+  "decisions": [
+    {
+      "gate_id": "implementation-approval",
+      "decision": "approved",
+      "evidence": [
+        {
+          "evidence_type": "explicit-user-decision",
+          "actor_role": "Owner",
+          "actor_id": "user:example-owner",
+          "channel": "example",
+          "reference": "message:example-confirmation",
+          "recorded_at": "2026-09-02T00:00:00Z",
+          "scope_fingerprint": "sha256:4299634394334801a17a94a9802a641379b8cbf0477790669e6ab49c8aed7506"
+        }
+      ]
+    }
+  ]
+}

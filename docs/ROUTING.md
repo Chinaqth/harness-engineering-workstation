@@ -9,7 +9,7 @@ provenance, Domain capabilities, permissions, approvals, or evidence are incompl
 ship a natural-language classifier, an Intake component, or an orchestration service; Task
 Envelopes are authored outside the resolver and lifecycle execution remains operator-driven.
 
-Task Envelope uses contract version `2.0` and Routing Plan uses `3.0`; the Kernel protocol and Domain
+Task Envelope uses contract version `2.0` and Routing Plan uses `4.0`; the Kernel protocol and Domain
 contracts have separate identities. See `config/protocol-versions.json` and
 `docs/PROTOCOL_VERSIONING.md`. A shared numeric label must not be used as evidence of compatibility.
 
@@ -77,6 +77,9 @@ Receive task
   -> identify conflicts, missing input, and approval gates
   -> emit one traceable Routing Plan
   -> load selected professional content on demand
+  -> let selected Domains produce one integrated target-project task.md
+  -> bind its digest, display the complete Markdown, and pause for the owner
+  -> apply a decision only for the currently displayed digest
 ```
 
 Only workflow and Domain registry metadata plus candidate route data should load during discovery.
@@ -93,7 +96,31 @@ Assessment occurs at two layers and is reconciled before implementation:
 
 A generic Domain Skill may run in a non-mutating or otherwise authorized planning mode to contribute
 professional assessment and a proposal. It may resume in implementation mode only after every
-required Kernel approval gate is satisfied for the current scope.
+required Kernel approval gate is satisfied for the current scope. For Domain-augmented mutating
+work, the proposal is not sufficient until it is integrated into the target project's
+`changes/<change-id>/task.md`, displayed completely to the user, and bound by digest to the
+implementation gate.
+
+## Domain Execution Plan
+
+The Routing Plan answers which workflow and professional capabilities apply. It is not the concrete
+implementation plan presented to the user. The selected Domain workflows produce professional plan
+content, and the Planner integrates all selected contributions into one authoritative
+target-project `changes/<change-id>/task.md`.
+
+For Domain-augmented mutating work, `execution_plan` records:
+
+- Whether the Domain-specific checkpoint is required;
+- `missing`, `draft`, or `presented` state (`not-required` for unaffected paths);
+- The exact `task.md` artifact reference and SHA-256 digest;
+- Every selected Domain ID covered by the integrated plan;
+- Evidence that the complete current Markdown was shown to the user.
+
+The resolver may emit `needs_approval` with a `missing` plan so selected Domain content can run in
+non-mutating planning mode. `--execution-plan` binds a non-empty target-project
+`changes/<change-id>/task.md` and changes the scope fingerprint. An implementation decision for a
+required plan must carry `presented_execution_plan` whose artifact and digest exactly match the
+current plan and whose evidence identifies the user-visible Markdown presentation.
 
 ## Routing Plan Requirements
 
@@ -109,6 +136,7 @@ Every Routing Plan records:
 - Selection reasons;
 - Structured approval gates bound to explicit scope;
 - A current scope fingerprint shared by every approval gate;
+- The required Domain Execution Plan state, artifact digest, covered Domain IDs, and presentation evidence;
 - Unresolved conflicts or missing inputs;
 - Execution mode (`domain_augmented` or `model_native`) and explicit fallback reasons.
 
@@ -134,8 +162,8 @@ affected approval gate returns to `pending`.
 
 | Status | Required | Forbidden |
 | --- | --- | --- |
-| `routed` | Kernel workflow selected; every required gate present and every present gate approved with evidence | Pending or rejected gates, conflicts, missing inputs |
-| `needs_approval` | Executable Domain-augmented or model-native plan and at least one pending gate | Rejected gates, conflicts, missing inputs |
+| `routed` | Kernel workflow selected; every required gate approved; every required Domain plan is current and presented | Pending or rejected gates, conflicts, missing inputs, required unpresented plan |
+| `needs_approval` | Routing is executable for non-mutating planning and at least one gate is pending; a required Domain plan may be `missing` or `draft` | Rejected gates, conflicts, missing inputs |
 | `approval_rejected` | Executable plan and at least one rejected gate with evidence | Conflicts, missing inputs |
 | `needs_input` | At least one missing input | Approval gates, conflicts |
 | `unroutable` | At least one hard structural, compatibility, policy, permission, or safety conflict | Approval gates, missing inputs |
@@ -152,8 +180,9 @@ professional loop within that state machine:
 professional assess
   -> establish observable baseline
   -> propose options and recommended change
-  -> record affected surfaces, evidence plan, and recovery
-  -> stop at a pending approval boundary
+  -> integrate affected surfaces, steps, evidence, and recovery into task.md
+  -> display the complete current Markdown plan
+  -> stop at a pending approval boundary and await an explicit user decision
   -> resume within approved scope
   -> implement and verify
   -> hand evidence to an independent evaluator
@@ -196,14 +225,16 @@ sibling `harness-domain-packs` checkout. If neither is available, it prints an e
 Kernel-only CI cannot prove cross-repository compatibility without authorized source access. A
 release or source-pin update must provide the checkout; a skip is not release evidence.
 
-## Deterministic Resolver v2
+## Deterministic Resolver v3
 
 `scripts/resolve_route.py` implements the conceptual routing sequence deterministically:
 
 ```bash
 python3 scripts/resolve_route.py envelope.json \
   [--root .] [--domain-root /path/to/authorized/harness-engineering-domain-packs] \
-  [--overlay .harness/domains.json] [--decisions decisions.json] [-o plan.json]
+  [--overlay .harness/domains.json] \
+  [--execution-plan /target/project/changes/<change-id>/task.md] \
+  [--decisions decisions.json] [-o plan.json]
 ```
 
 The Domain checkout defaults to `HARNESS_DOMAIN_PACKS_CHECKOUT`, then a sibling
@@ -262,7 +293,8 @@ production, deploy, publish, or release. Every gate requires the Owner role and 
 The scope fingerprint is `sha256:` of the canonical JSON (sorted keys, compact separators, ASCII)
 of: `task_id`, `operation`, `affected_surfaces`, `constraints`, `non_goals`, `deliverables`,
 `external_effects`, `workflow_id`, `workflow_version`, and each selection's `domain_id`, `version`,
-`route_id`, sorted `capability_ids`, and sorted Skill IDs. Identical inputs always produce
+`route_id`, sorted `capability_ids`, sorted Skill IDs, fallbacks, and the bound Domain Execution
+Plan digest. Identical inputs always produce
 identical fingerprints; any scope-bearing change alters the fingerprint.
 
 ### Decisions Record
@@ -271,16 +303,46 @@ identical fingerprints; any scope-bearing change alters the fingerprint.
 
 ```json
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "scope_fingerprint": "sha256:<current plan fingerprint>",
+  "presented_execution_plan": {
+    "artifact": "changes/<change-id>/task.md",
+    "sha256": "sha256:<current task.md digest>",
+    "evidence": [{
+      "evidence_type": "user-visible-markdown",
+      "issuer": "platform-adapter",
+      "channel": "conversation",
+      "reference": "message:plan-presentation-42",
+      "recorded_at": "2026-09-02T09:00:00Z",
+      "plan_sha256": "sha256:<current task.md digest>"
+    }]
+  },
   "decisions": [
-    {"gate_id": "implementation-approval", "decision": "approved", "evidence": ["..."]}
+    {
+      "gate_id": "implementation-approval",
+      "decision": "approved",
+      "evidence": [{
+        "evidence_type": "explicit-user-decision",
+        "actor_role": "owner",
+        "actor_id": "user:account-123",
+        "channel": "conversation",
+        "reference": "message:approval-43",
+        "recorded_at": "2026-09-02T09:01:00Z",
+        "scope_fingerprint": "sha256:<current plan fingerprint>"
+      }]
+    }
   ]
 }
 ```
 
-A fingerprint mismatch rejects the record as stale (exit 2). Every decision requires non-empty
-evidence. All gates approved yields `routed`; any rejection yields `approval_rejected`.
+A fingerprint mismatch rejects the record as stale (exit 2). For a required Domain plan, the
+presented artifact and digest must also match. Presentation and decision evidence must conform to
+`schemas/approval-decisions.schema.json`, bind the current plan digest or scope fingerprint, and
+identify a durable message reference. Free-text strings and agent self-reports are rejected; the
+implementation decision actor must hold the gate's required role. All gates approved yields `routed`; any rejection yields
+`approval_rejected`. If the user asks to revise the plan, update `task.md`, rerun with
+`--execution-plan`, display the complete new Markdown, and collect a new decision; the old record
+cannot be replayed because its fingerprint and digest are stale.
 
 ## Android Defect Example
 

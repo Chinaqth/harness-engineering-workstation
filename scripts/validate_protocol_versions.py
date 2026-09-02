@@ -24,6 +24,10 @@ CONTRACT_DOCUMENTS = {
         "examples/routing-plan.json",
         "schemas/routing-plan.schema.json",
     ),
+    "approval_decisions": (
+        "examples/approval-decisions.json",
+        "schemas/approval-decisions.schema.json",
+    ),
     "task_workflow_registry": (
         "config/task-workflows.json",
         "schemas/task-workflow-registry.schema.json",

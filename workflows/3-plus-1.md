@@ -14,8 +14,9 @@ Outputs:
 - `decision.md` when the change requires an important trade-off.
 
 Create these artifacts under the explicitly identified target project's
-`<project-root>/changes/<change-id>/`, whether or not that project uses Git. Human-readable change
-Markdown defaults to Chinese; machine-readable contract keys and status values remain English.
+`<project-root>/changes/<change-id>/`, whether or not that project uses Git. For a routed mutating
+task, `task.md` is also the authoritative human-readable Domain Execution Plan. Human-readable
+change Markdown defaults to Chinese; machine-readable contract keys and status values remain English.
 
 Artifact depth is risk-proportional:
 
@@ -53,13 +54,30 @@ diagnose the concrete task, evaluate the Domain-owned impact surface, and contri
 recommended plan. The concrete feature, screen, endpoint, or defect remains task context and must
 not become a task-specific Skill.
 
+For Domain-augmented mutating work, planning must finish at an explicit confirmation checkpoint:
+
+1. Integrate every selected Domain's professional contribution into the target project's
+   `changes/<change-id>/task.md` and identify the responsible Domain and capability for each step.
+2. Bind the exact file digest and every selected Domain ID into the Routing Plan.
+3. Present the complete current `task.md` to the user as Markdown; a summary or file link alone is
+   insufficient.
+4. Pause without performing a mutating implementation step. Silence is pending, not approval.
+5. If the user requests changes, revise the durable plan, recompute its digest and approval scope,
+   invalidate the old decision, and present the complete plan again.
+6. Only an explicit confirmation of the currently presented digest may satisfy the implementation
+   approval gate. A Domain Skill cannot record this decision on the user's behalf.
+
+Read-only investigation and model-native execution retain their risk-proportional Kernel approval
+behavior; the Domain-specific plan gate applies only when a selected Domain will perform mutation.
+
 Reconcile Kernel and Domain assessments into the approval scope. Bind each required approval to a
 fingerprint of that scope. The Kernel owns approval state; a Domain Skill cannot approve its own
 proposal or turn planning authority into implementation authority.
 
 ## Phase 2: Implement
 
-- Begin only when the Routing Plan is `routed` and every present approval gate is approved with evidence.
+- Begin only when the Routing Plan is `routed`, every present approval gate is approved with
+  evidence, and every required Domain Execution Plan is bound and recorded as presented.
 - Modify only the approved scope.
 - Load rules, skills, and external tools on demand.
 - Follow the Routing Plan and record any capability or dependency change that forces rerouting.

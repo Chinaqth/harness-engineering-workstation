@@ -57,6 +57,11 @@ changes/<YYYYMMDD-short-name>/
 通过专业能力路由的任务，应把有效 Task Envelope 和 Routing Plan 与 change 记录放在一起，或通过
 不可变 ID 链接到等价的持久记录。路由记录不能替代按风险要求生成的执行文件。
 
+当已选中 Domain 的任务将产生修改时，`task.md` 是具体专业执行计划的权威 Markdown。计划必须记录
+选中的 Domain、Capability、Workflow 或 Skill 来源，并把每个步骤映射到专业贡献、影响面、验证和
+回滚。执行者必须在修改前把当前完整 `task.md` 展示给用户并暂停；链接、摘要、文件已写入或用户沉默
+均不构成批准。用户要求修改时应先更新计划、重新计算摘要、使旧批准失效并再次完整展示。
+
 评估前运行：
 
 ```bash

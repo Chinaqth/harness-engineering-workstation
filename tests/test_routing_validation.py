@@ -66,6 +66,16 @@ class RoutingValidationTests(unittest.TestCase):
             "evidence": [] if status == "pending" else ["Owner decision record"],
         }
 
+    def execution_plan(self, status: str = "presented") -> dict:
+        return {
+            "required": True,
+            "status": status,
+            "artifact": None if status == "missing" else "changes/example/task.md",
+            "sha256": None if status == "missing" else f"sha256:{'a' * 64}",
+            "domain_ids": ["engineering.ios"],
+            "presentation_evidence": [] if status != "presented" else ["User-visible Markdown plan"],
+        }
+
     def overlay_domain(self) -> dict:
         return {
             "id": "engineering.ios",
@@ -93,6 +103,7 @@ class RoutingValidationTests(unittest.TestCase):
             {
                 "status": "routed",
                 "execution_mode": "domain_augmented",
+                "execution_plan": self.execution_plan(),
                 "fallbacks": [],
                 "selections": [self.selection()],
                 "approval_gates": [self.gate(plan, "approved")],
@@ -184,6 +195,7 @@ class RoutingValidationTests(unittest.TestCase):
             {
                 "status": "needs_approval",
                 "execution_mode": "domain_augmented",
+                "execution_plan": self.execution_plan("missing"),
                 "fallbacks": [],
                 "selections": [self.selection()],
                 "approval_gates": [self.gate(plan)],
@@ -196,6 +208,86 @@ class RoutingValidationTests(unittest.TestCase):
         plan["status"] = "routed"
         errors = self.save_plan(path, plan)
         self.assertTrue(any("requires every gate approved" in error for error in errors))
+
+    def test_domain_implementation_decision_requires_presented_execution_plan(self) -> None:
+        path, plan = self.plan()
+        plan.update(
+            {
+                "status": "routed",
+                "execution_mode": "domain_augmented",
+                "execution_plan": self.execution_plan("draft"),
+                "fallbacks": [],
+                "selections": [self.selection()],
+                "approval_gates": [self.gate(plan, "approved")],
+                "conflicts": [],
+                "missing_inputs": [],
+            }
+        )
+        errors = self.save_plan(path, plan)
+        self.assertTrue(any("requires the current execution plan to be presented" in error for error in errors))
+
+    def test_domain_execution_plan_covers_every_selected_domain(self) -> None:
+        path, plan = self.plan()
+        execution_plan = self.execution_plan("missing")
+        execution_plan["domain_ids"] = []
+        plan.update(
+            {
+                "status": "needs_approval",
+                "execution_mode": "domain_augmented",
+                "execution_plan": execution_plan,
+                "fallbacks": [],
+                "selections": [self.selection()],
+                "approval_gates": [self.gate(plan)],
+                "conflicts": [],
+                "missing_inputs": [],
+            }
+        )
+        errors = self.save_plan(path, plan)
+        self.assertTrue(any("cover every selected Domain" in error for error in errors))
+
+    def test_integrated_execution_plan_can_cover_multiple_domains(self) -> None:
+        path, plan = self.plan()
+        second = json.loads(json.dumps(self.selection()))
+        second["domain_id"] = "engineering.security"
+        execution_plan = self.execution_plan()
+        execution_plan["domain_ids"] = ["engineering.ios", "engineering.security"]
+        plan.update(
+            {
+                "status": "routed",
+                "execution_mode": "domain_augmented",
+                "execution_plan": execution_plan,
+                "fallbacks": [],
+                "selections": [self.selection(), second],
+                "approval_gates": [self.gate(plan, "approved")],
+                "conflicts": [],
+                "missing_inputs": [],
+            }
+        )
+        self.assertEqual(self.save_plan(path, plan), [])
+
+    def test_mutating_domain_route_cannot_mark_execution_plan_not_required(self) -> None:
+        path, plan = self.plan()
+        plan.update(
+            {
+                "status": "needs_approval",
+                "execution_mode": "domain_augmented",
+                "execution_plan": {
+                    "required": False,
+                    "status": "not-required",
+                    "artifact": None,
+                    "sha256": None,
+                    "domain_ids": [],
+                    "presentation_evidence": [],
+                },
+                "fallbacks": [],
+                "selections": [self.selection()],
+                "approval_gates": [self.gate(plan)],
+                "conflicts": [],
+                "missing_inputs": [],
+            }
+        )
+        errors = self.save_plan(path, plan)
+        self.assertTrue(any("requires a Domain execution plan" in error for error in errors))
 
     def test_mutating_workflow_requires_implementation_approval(self) -> None:
         path, plan = self.plan()

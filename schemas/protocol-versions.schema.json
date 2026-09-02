@@ -10,11 +10,12 @@
     "contracts": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["domain_pack_source", "task_envelope", "routing_plan", "task_workflow_registry", "project_domain_overlay", "domain_pack", "domain_registry"],
+      "required": ["domain_pack_source", "task_envelope", "routing_plan", "approval_decisions", "task_workflow_registry", "project_domain_overlay", "domain_pack", "domain_registry"],
       "properties": {
         "domain_pack_source": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },
         "task_envelope": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },
         "routing_plan": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },
+        "approval_decisions": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },
         "task_workflow_registry": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },
         "project_domain_overlay": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },
         "domain_pack": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },

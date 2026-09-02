@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Resolve a Task Envelope into one governed Routing Plan.
 
-Deterministic Router/Resolver v2 (change 20260809-governed-model-fallback).
+Deterministic Router/Resolver v3 (change 20260902-plan-confirmation-checkpoint).
 
 Inputs:
 - A schema-valid Task Envelope (contract 2.0);
@@ -10,6 +10,7 @@ Inputs:
 - the pinned Domain registry, routes, capabilities, and Skill artifacts read
   exclusively from the pinned Git commit of an authorized Domain checkout;
 - an optional decisions record applying approval-gate decisions.
+- an optional target-project ``changes/<change-id>/task.md`` Domain execution plan.
 
 The resolver never synthesizes a Domain, capability, or Skill. Missing optional
 professional assets produce an explicit model-native fallback. An envelope that
@@ -71,6 +72,10 @@ def fail_input(errors: list[str]) -> int:
 def canonical_fingerprint(scope: dict) -> str:
     blob = json.dumps(scope, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
     return "sha256:" + hashlib.sha256(blob.encode("utf-8")).hexdigest()
+
+
+def file_digest(path: Path) -> str:
+    return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def select_workflow(envelope: dict, registry: dict) -> dict | None:
@@ -398,7 +403,11 @@ def build_gates(
 
 
 def scope_fingerprint(
-    envelope: dict, workflow: dict, selections: list[dict], fallbacks: list[str]
+    envelope: dict,
+    workflow: dict,
+    selections: list[dict],
+    fallbacks: list[str],
+    execution_plan: dict,
 ) -> str:
     scope = {
         "task_id": envelope.get("task_id"),
@@ -421,6 +430,7 @@ def scope_fingerprint(
             for selection in selections
         ],
         "fallbacks": sorted(fallbacks),
+        "execution_plan_sha256": execution_plan.get("sha256"),
     }
     return canonical_fingerprint(scope)
 
@@ -439,6 +449,59 @@ def apply_decisions(
         )
         return False
     gates = {gate["gate_id"]: gate for gate in plan.get("approval_gates", [])}
+    implementation_decision = any(
+        isinstance(record, dict)
+        and record.get("gate_id") in gates
+        and gates[record.get("gate_id")].get("kind") == "implementation"
+        for record in records
+    )
+    execution_plan = plan.get("execution_plan", {})
+    if implementation_decision and execution_plan.get("required") is True:
+        if decisions.get("schema_version") != "2.0":
+            errors.append(
+                "decisions record: Domain execution-plan decisions require schema_version 2.0"
+            )
+            return False
+        presented = decisions.get("presented_execution_plan")
+        if not isinstance(presented, dict):
+            errors.append(
+                "decisions record: Domain implementation decisions require "
+                "presented_execution_plan evidence"
+            )
+            return False
+        if presented.get("artifact") != execution_plan.get("artifact"):
+            errors.append(
+                "decisions record: presented execution-plan artifact does not match "
+                "the current Domain execution plan"
+            )
+            return False
+        if presented.get("sha256") != execution_plan.get("sha256"):
+            errors.append(
+                "decisions record: presented execution-plan digest does not match "
+                "the current Domain execution plan; the approval is stale"
+            )
+            return False
+        presentation_evidence = presented.get("evidence")
+        if not isinstance(presentation_evidence, list) or not presentation_evidence:
+            errors.append(
+                "decisions record: presented execution plan requires non-empty "
+                "user-visible Markdown presentation evidence"
+            )
+            return False
+        if any(
+            not isinstance(item, dict)
+            or item.get("plan_sha256") != execution_plan.get("sha256")
+            for item in presentation_evidence
+        ):
+            errors.append(
+                "decisions record: every presentation receipt must bind to the current "
+                "Domain execution-plan digest"
+            )
+            return False
+        execution_plan["status"] = "presented"
+        execution_plan["presentation_evidence"] = sorted(
+            {str(item["reference"]) for item in presentation_evidence}
+        )
     for record in records:
         if not isinstance(record, dict):
             errors.append("decisions record: every decision must be an object")
@@ -459,8 +522,21 @@ def apply_decisions(
                 f"decisions record: gate '{gate_id}' requires non-empty decision evidence"
             )
             return False
+        if any(
+            not isinstance(item, dict)
+            or item.get("actor_role") != gates[gate_id].get("required_role")
+            or item.get("scope_fingerprint") != plan.get("scope_fingerprint")
+            for item in evidence
+        ):
+            errors.append(
+                f"decisions record: gate '{gate_id}' evidence must identify the required "
+                "role and bind to the current scope fingerprint"
+            )
+            return False
         gates[gate_id]["status"] = decision
-        gates[gate_id]["evidence"] = sorted({str(item) for item in evidence})
+        gates[gate_id]["evidence"] = sorted(
+            {str(item["reference"]) for item in evidence}
+        )
     return True
 
 
@@ -505,6 +581,12 @@ def main() -> int:
     parser.add_argument(
         "--decisions", type=Path, default=None, help="Optional decisions record JSON"
     )
+    parser.add_argument(
+        "--execution-plan",
+        type=Path,
+        default=None,
+        help="Optional target-project changes/<change-id>/task.md produced by the selected Domain workflow",
+    )
     parser.add_argument("-o", "--output", type=Path, default=None, help="Output path")
     args = parser.parse_args()
 
@@ -548,7 +630,7 @@ def main() -> int:
         return fail_input(errors)
 
     plan: dict = {
-        "schema_version": "3.0",
+        "schema_version": "4.0",
         "task_id": envelope["task_id"],
         "source": {
             "source_id": source.get("id", ""),
@@ -568,6 +650,14 @@ def main() -> int:
         "assessment": {},
         "scope_fingerprint": "",
         "execution_mode": "model_native",
+        "execution_plan": {
+            "required": False,
+            "status": "not-required",
+            "artifact": None,
+            "sha256": None,
+            "domain_ids": [],
+            "presentation_evidence": [],
+        },
         "fallbacks": [],
         "status": "",
         "selections": [],
@@ -634,8 +724,53 @@ def main() -> int:
     )
 
     plan["assessment"] = derive_assessment(envelope, len(plan["selections"]))
+    implementation_gate_required = (
+        workflow.get("approval_policy") == "always-before-implementation"
+        or plan["assessment"].get("risk_level") in {"G1", "G2", "G3"}
+    )
+    requires_domain_execution_plan = (
+        plan["execution_mode"] == "domain_augmented"
+        and envelope.get("operation") != "inspect"
+        and implementation_gate_required
+    )
+    plan["execution_plan"] = {
+        "required": requires_domain_execution_plan,
+        "status": "missing" if requires_domain_execution_plan else "not-required",
+        "artifact": None,
+        "sha256": None,
+        "domain_ids": sorted(
+            selection["domain_id"] for selection in plan["selections"]
+        ) if requires_domain_execution_plan else [],
+        "presentation_evidence": [],
+    }
+    if args.execution_plan is not None:
+        if not requires_domain_execution_plan:
+            return fail_input(
+                ["execution plan provided but the routed task does not require a Domain execution plan"]
+            )
+        if args.execution_plan.name != "task.md" or "changes" not in args.execution_plan.parts:
+            return fail_input(
+                ["execution plan must be the target project's changes/<change-id>/task.md"]
+            )
+        try:
+            plan_text = args.execution_plan.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError) as exc:
+            return fail_input([f"execution plan: cannot read Markdown: {exc}"])
+        if not plan_text.strip():
+            return fail_input(["execution plan: task.md must contain a non-empty Markdown plan"])
+        plan["execution_plan"].update(
+            {
+                "status": "draft",
+                "artifact": args.execution_plan.as_posix(),
+                "sha256": file_digest(args.execution_plan),
+            }
+        )
     plan["scope_fingerprint"] = scope_fingerprint(
-        envelope, workflow, plan["selections"], plan["fallbacks"]
+        envelope,
+        workflow,
+        plan["selections"],
+        plan["fallbacks"],
+        plan["execution_plan"],
     )
     if not plan["missing_inputs"] and not plan["conflicts"]:
         plan["approval_gates"] = build_gates(
@@ -653,9 +788,27 @@ def main() -> int:
                 ]
             )
         decisions = load_json(args.decisions, "decisions record", errors)
+        decisions_schema = load_json(
+            root / "schemas" / "approval-decisions.schema.json",
+            "approval decisions schema",
+            errors,
+        )
         if errors:
             return fail_input(errors)
+        decisions_schema_errors = [
+            f"decisions record: {error}"
+            for error in validate_instance(decisions, decisions_schema)
+        ]
+        if decisions_schema_errors:
+            return fail_input(decisions_schema_errors)
         decision_errors: list[str] = []
+        if plan["execution_plan"].get("required") and plan["execution_plan"].get("status") == "missing":
+            return fail_input(
+                [
+                    "Domain implementation approval requires --execution-plan pointing to "
+                    "the current target-project changes/<change-id>/task.md"
+                ]
+            )
         if not apply_decisions(plan, decisions, decision_errors):
             return fail_input(decision_errors)
         plan["status"] = derive_status(plan)
