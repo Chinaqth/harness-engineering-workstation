@@ -1,0 +1,55 @@
+{
+  "kind": "fixture_host_adapter_in_separate_processes",
+  "stages": [
+    {
+      "stage": "prepare",
+      "context_id": "8d33d0b7ad2d418f8ab5450e749d2a56",
+      "binding": "domains/engineering/web/skills/web-prepare/SKILL.md"
+    },
+    {
+      "stage": "execute",
+      "context_id": "96255757ff0948a4852b8c5a492a9cb0",
+      "binding": "domains/engineering/web/skills/web-execute/SKILL.md"
+    },
+    {
+      "stage": "evaluate",
+      "context_id": "703798fe059444b88c75b879034c8a1a",
+      "binding": "domains/engineering/web/skills/web-evaluate/SKILL.md"
+    },
+    {
+      "stage": "summarize",
+      "context_id": "51a309cbd3ec4dfdbc4fda7aefbc5581",
+      "binding": "domains/engineering/web/skills/web-summarize/SKILL.md"
+    }
+  ],
+  "final": {
+    "task_id": "installed-journey-fixture",
+    "flow_status": "ended",
+    "completion": "achieved",
+    "completion_at_evaluation": "achieved",
+    "evaluation_current": true,
+    "summary": "Fixture adapter completed all four stages; not a real product acceptance.",
+    "artifacts": [
+      "review.txt"
+    ],
+    "checks": [
+      {
+        "id": "fixture-observation",
+        "status": "passed",
+        "evidence": [
+          "fixture observation passed"
+        ]
+      }
+    ],
+    "issues": [],
+    "assumptions": [],
+    "next_actions": []
+  },
+  "no_match": {
+    "status": "no_match",
+    "message": "无匹配 Domain，本次任务已结束，未执行具体任务。"
+  },
+  "limitations": [
+    "Does not exercise real browser/device professional tools or independent model evaluation."
+  ]
+}

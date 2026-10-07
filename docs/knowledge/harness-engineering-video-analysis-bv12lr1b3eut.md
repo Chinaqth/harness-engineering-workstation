@@ -208,7 +208,7 @@ The term is useful when it names this systems-level shift. It becomes hype when 
 | Repository as system of record | `AGENTS.md`, `docs/`, `changes/` |
 | Progressive disclosure | Short entry index with on-demand reading |
 | Risk-proportional execution | G0–G3 governance levels |
-| Plan, generate, evaluate, institutionalize | `workflows/3-plus-1.md` |
+| Plan, generate, evaluate, institutionalize | `workflows/lifecycle.md` (current lifecycle) |
 | Durable change memory | Requirements, task, and decision templates |
 | Explicit guardrails | `rules/CORE.md` |
 | Mechanical enforcement | `scripts/harness-check.sh` and CI |

@@ -1,0 +1,44 @@
+{
+  "removed": {
+    "harness-engineering-workstation": [
+      "20260802-domain-auto-activation.md",
+      "20260805-task-workflow-routing",
+      "20260806-cross-repository-compatibility",
+      "20260806-domain-pack-pin",
+      "20260806-protocol-version-separation",
+      "20260808-domain-pin-sync",
+      "20260809-governed-model-fallback",
+      "20260809-router-resolver-v1",
+      "20260811-project-harness-bridge",
+      "20260902-plan-confirmation-checkpoint",
+      "_template",
+      "archive",
+      "engineering.harmonyos-completion"
+    ],
+    "harness-engineering-domain-packs": [
+      "20260802-domain-readme-ch",
+      "20260805-remove-android-test-domain",
+      "20260817-harmonyos-business-module-development",
+      "20260828-harmonyos-ui-resource-comment-policy",
+      "20260829-harmonyos-network-request-policy",
+      "20260830-harmonyos-model-api-boundary",
+      "autonomous-domain-completion",
+      "domain-auto-activation",
+      "engineering.harmonyos-activation",
+      "engineering.harmonyos-completion",
+      "engineering.web-activation",
+      "engineering.web-completion",
+      "harmonyos-verification-gate-adjustment"
+    ]
+  },
+  "retained": [
+    "README.md",
+    "20261007-lifecycle-v4"
+  ],
+  "backup_sha256": {
+    "harness-engineering-domain-packs.tar.gz": "5fe27cb706c46b877527622951b5fc6ac6937c38baadc30a7414c6fb20252fd3",
+    "harness-engineering-workstation.tar.gz": "df25a7394dce13fdcf4a67136b2b362c539b349c1e113027e59848a27b4e0bca",
+    "installed-runtime-before.tar.gz": "5d1976679adf05ef6646aaea460a92167fb5899e1592b8c43b96dce3b742444f",
+    "th-harness-cli.tar.gz": "0c6025d617762dce0c0463379c39a9aeeee15e74ceefcdc45758d92eaaa881c7"
+  }
+}

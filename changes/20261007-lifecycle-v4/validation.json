@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "date": "2026-10-07",
+  "status": "local_validation_passed",
+  "versions": {
+    "kernel_protocol": "4.0",
+    "routing_plan": "5.0",
+    "lifecycle": "1.0",
+    "web": "2.0.0",
+    "harmonyos": "7.0.0",
+    "cli": "1.0.0"
+  },
+  "runtime": {
+    "bundle_version": "1.0.0-dev+104b9e6.9b69c6d",
+    "build_kind": "development",
+    "kernel_revision": "sha256:104b9e6c0a5eb41ab9c4208890770c8cbbe0a132d6b28e38376a679a7c0e313b",
+    "domain_revision": "sha256:9b69c6da07f928bf5cd0a3fcba674aec5f4056d5e3b22262e34c4c9e35d67bdc",
+    "files_verified": 913,
+    "installed": true
+  },
+  "checks": {
+    "kernel": {
+      "passed": 39,
+      "skipped": 0
+    },
+    "domains": {
+      "passed": 51,
+      "skipped": 0
+    },
+    "cli": {
+      "passed": 23,
+      "skipped": 0
+    },
+    "installed_fixture_journey": "passed",
+    "source_and_runtime_digests": "matched",
+    "git_diff_check": "passed"
+  },
+  "cleanup": {
+    "harness-engineering-workstation": 13,
+    "harness-engineering-domain-packs": 13
+  },
+  "independent_model_review": "not_performed",
+  "real_product_browser_device_acceptance": "not_exercised",
+  "git_delivery": "not_committed_not_pushed_not_published",
+  "backup": "/Users/albertq/harness-work-space/.refactor-backups/20261007-lifecycle-v4"
+}

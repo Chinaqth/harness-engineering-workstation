@@ -1,18 +1,18 @@
 {
-  "schema_version": "2.0",
+  "schema_version": "3.0",
   "sources": [
     {
       "id": "enterprise-domain-packs",
       "repository": "git@github.com:Chinaqth/harness-engineering-domain-packs.git",
-      "ref": "3365343ee3025759160461a69613110185c92674",
+      "ref": "sha256:e9eac55a978fad9a59bfdd6ee8f79af557888b0a08ad2d32f45222ac13dc5cf8",
       "registry": "registry/domains.json",
-      "required_kernel_protocol_version": "3.0",
+      "required_kernel_protocol_version": "4.0",
       "required_domain_pack_contract_version": "1.0",
       "required_domain_registry_version": "1.0"
     }
   ],
   "runtime": {
-    "domain_root": "~/.harness/domains",
+    "domain_root": "~/.harness/runtime/domains",
     "global_skill_root": "~/.agents/skills",
     "project_overlay": ".harness/domains.json"
   }

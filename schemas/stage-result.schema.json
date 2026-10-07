@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "required": [
+    "status",
+    "context_id"
+  ],
+  "properties": {
+    "status": {
+      "enum": [
+        "completed",
+        "partial",
+        "unavailable",
+        "error"
+      ]
+    },
+    "context_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "completion": {
+      "enum": [
+        "achieved",
+        "partial",
+        "unachieved"
+      ]
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "checks": {
+      "type": "array"
+    },
+    "issues": {
+      "type": "array"
+    },
+    "evaluated_digest": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "repair_requested": {
+      "type": "boolean"
+    }
+  }
+}

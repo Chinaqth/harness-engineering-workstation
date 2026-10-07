@@ -1,136 +1,67 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Harness Routing Plan",
   "type": "object",
-  "additionalProperties": false,
-  "required": ["schema_version", "task_id", "source", "workflow_selection", "assessment", "scope_fingerprint", "execution_mode", "execution_plan", "fallbacks", "status", "selections", "approval_gates", "conflicts", "missing_inputs"],
+  "required": [
+    "schema_version",
+    "task_id",
+    "status",
+    "message",
+    "source_revision",
+    "selections",
+    "issues"
+  ],
   "properties": {
-    "schema_version": { "const": "4.0" },
-    "task_id": { "type": "string", "minLength": 1 },
-    "source": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["source_id", "repository", "revision", "registry"],
-      "properties": {
-        "source_id": { "type": "string", "minLength": 1 },
-        "repository": { "type": "string", "minLength": 1 },
-        "revision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
-        "registry": { "type": "string", "minLength": 1 }
-      }
+    "schema_version": {
+      "const": "5.0"
     },
-    "workflow_selection": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["workflow_id", "version", "registry", "reason"],
-      "properties": {
-        "workflow_id": { "type": "string", "pattern": "^task\\.[a-z0-9][a-z0-9-]*$" },
-        "version": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },
-        "registry": { "const": "config/task-workflows.json" },
-        "reason": { "type": "string", "minLength": 1 }
-      }
+    "task_id": {
+      "type": "string"
     },
-    "assessment": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["risk_level", "impact_surfaces", "affected_units", "change_points", "domain_count", "reversibility", "data_sensitivity", "external_effects", "rationale"],
-      "properties": {
-        "risk_level": { "enum": ["G0", "G1", "G2", "G3"] },
-        "impact_surfaces": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
-        "affected_units": { "type": "integer", "minimum": 1 },
-        "change_points": { "type": "integer", "minimum": 0 },
-        "domain_count": { "type": "integer", "minimum": 0 },
-        "reversibility": { "enum": ["high", "medium", "low", "irreversible", "unknown"] },
-        "data_sensitivity": { "enum": ["none", "internal", "personal", "sensitive", "regulated", "unknown"] },
-        "external_effects": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
-        "rationale": { "type": "string", "minLength": 1 }
-      }
+    "status": {
+      "enum": [
+        "matched",
+        "no_match",
+        "source_error"
+      ]
     },
-    "scope_fingerprint": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
-    "execution_mode": { "enum": ["model_native", "domain_augmented"] },
-    "execution_plan": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["required", "status", "artifact", "sha256", "domain_ids", "presentation_evidence"],
-      "properties": {
-        "required": { "type": "boolean" },
-        "status": { "enum": ["not-required", "missing", "draft", "presented"] },
-        "artifact": {
-          "anyOf": [
-            { "type": "string", "minLength": 1 },
-            { "type": "null" }
-          ]
-        },
-        "sha256": {
-          "anyOf": [
-            { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
-            { "type": "null" }
-          ]
-        },
-        "domain_ids": {
-          "type": "array",
-          "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*(\\.[a-z0-9][a-z0-9-]*)+$" },
-          "uniqueItems": true
-        },
-        "presentation_evidence": {
-          "type": "array",
-          "items": { "type": "string", "minLength": 1 },
-          "uniqueItems": true
-        }
-      }
+    "message": {
+      "type": "string"
     },
-    "fallbacks": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
-    "status": { "enum": ["routed", "needs_input", "needs_approval", "approval_rejected", "unroutable"] },
+    "source_revision": {
+      "type": "string"
+    },
     "selections": {
       "type": "array",
       "items": {
         "type": "object",
-        "additionalProperties": false,
-        "required": ["domain_id", "version", "route_id", "capability_ids", "workflows", "skills", "tools", "evaluators", "permissions", "reason"],
+        "required": [
+          "domain_id",
+          "version",
+          "route_id",
+          "capability_ids",
+          "reason",
+          "stages"
+        ],
         "properties": {
-          "domain_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*(\\.[a-z0-9][a-z0-9-]*)+$" },
-          "version": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },
-          "route_id": { "type": "string", "minLength": 1 },
-          "capability_ids": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
-          "workflows": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
-          "skills": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["skill_id", "capability_id", "source_path", "reuse_scope"],
-              "properties": {
-                "skill_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
-                "capability_id": { "type": "string", "minLength": 1 },
-                "source_path": { "type": "string", "pattern": "^skills/[a-z0-9][a-z0-9-]*/SKILL\\.md$" },
-                "reuse_scope": { "const": "domain" }
-              }
-            }
+          "domain_id": {
+            "type": "string"
           },
-          "tools": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
-          "evaluators": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
-          "permissions": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
-          "reason": { "type": "string", "minLength": 1 }
+          "version": {
+            "type": "string"
+          },
+          "stages": {
+            "type": "object",
+            "required": [
+              "prepare",
+              "execute",
+              "evaluate",
+              "summarize"
+            ]
+          }
         }
       }
     },
-    "approval_gates": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["gate_id", "kind", "required_role", "status", "scope", "scope_fingerprint", "evidence"],
-        "properties": {
-          "gate_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
-          "kind": { "enum": ["implementation", "permission", "external-effect", "publication", "deployment", "migration", "destructive-action", "risk-acceptance"] },
-          "required_role": { "type": "string", "minLength": 1 },
-          "status": { "enum": ["pending", "approved", "rejected"] },
-          "scope": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
-          "scope_fingerprint": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
-          "evidence": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
-        }
-      }
-    },
-    "conflicts": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
-    "missing_inputs": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+    "issues": {
+      "type": "array"
+    }
   }
 }

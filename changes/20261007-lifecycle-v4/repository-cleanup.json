@@ -1,0 +1,108 @@
+{
+  "deleted": [
+    {
+      "path": "harness-engineering-workstation/tests/__pycache__",
+      "reason": "Generated Python cache",
+      "files": 8,
+      "bytes": 99600
+    },
+    {
+      "path": "harness-engineering-workstation/scripts/__pycache__",
+      "reason": "Generated Python cache",
+      "files": 8,
+      "bytes": 91479
+    },
+    {
+      "path": "harness-engineering-domain-packs/domains/engineering/web/templates/.gitkeep",
+      "reason": "Placeholder in populated directory",
+      "files": 1,
+      "bytes": 1
+    },
+    {
+      "path": "harness-engineering-domain-packs/domains/engineering/web/skills/.gitkeep",
+      "reason": "Placeholder in populated directory",
+      "files": 1,
+      "bytes": 1
+    },
+    {
+      "path": "harness-engineering-domain-packs/domains/engineering/harmonyos/templates/.gitkeep",
+      "reason": "Placeholder in populated directory",
+      "files": 1,
+      "bytes": 1
+    },
+    {
+      "path": "harness-engineering-domain-packs/domains/engineering/harmonyos/skills/.gitkeep",
+      "reason": "Placeholder in populated directory",
+      "files": 1,
+      "bytes": 1
+    },
+    {
+      "path": "harness-engineering-domain-packs/tests/__pycache__",
+      "reason": "Generated Python cache",
+      "files": 5,
+      "bytes": 78325
+    },
+    {
+      "path": "harness-engineering-domain-packs/.agents/skills/evaluate-domain-pack/scripts/__pycache__",
+      "reason": "Generated Python cache",
+      "files": 1,
+      "bytes": 11826
+    },
+    {
+      "path": "harness-engineering-domain-packs/.agents/skills/complete-domain-pack/scripts/__pycache__",
+      "reason": "Generated Python cache",
+      "files": 3,
+      "bytes": 45627
+    },
+    {
+      "path": "harness-engineering-domain-packs/.agents/skills/register-domain-pack/scripts/__pycache__",
+      "reason": "Generated Python cache",
+      "files": 1,
+      "bytes": 10735
+    },
+    {
+      "path": "harness-engineering-domain-packs/.agents/skills/evaluate-domain-artifact/scripts/__pycache__",
+      "reason": "Generated Python cache",
+      "files": 1,
+      "bytes": 11876
+    },
+    {
+      "path": "harness-engineering-domain-packs/scripts/__pycache__",
+      "reason": "Generated Python cache",
+      "files": 4,
+      "bytes": 29254
+    },
+    {
+      "path": "harness-engineering-workstation/IDEA.md",
+      "reason": "Empty idea stub superseded by architecture documentation",
+      "files": 1,
+      "bytes": 80
+    },
+    {
+      "path": "harness-engineering-workstation/workflows/3-plus-1.md",
+      "reason": "Retired workflow tombstone",
+      "files": 1,
+      "bytes": 160
+    },
+    {
+      "path": "harness-engineering-workstation/docs/reference/harness-engineering-video-analysis.md",
+      "reason": "Exact duplicate of docs/knowledge/harness-engineering-video-analysis.md",
+      "files": 1,
+      "bytes": 13784
+    },
+    {
+      "path": "harness-engineering-domain-packs/docs/plans/2026-09-02-domain-execution-plan-confirmation.md",
+      "reason": "Obsolete protocol 3 approval migration",
+      "files": 1,
+      "bytes": 1908
+    },
+    {
+      "path": "harness-engineering-domain-packs/docs/superpowers/plans/2026-08-30-harmonyos-model-api-boundary.md",
+      "reason": "Old implementation checklist; professional boundary design retained",
+      "files": 1,
+      "bytes": 6310
+    }
+  ],
+  "file_count": 40,
+  "bytes": 400968
+}

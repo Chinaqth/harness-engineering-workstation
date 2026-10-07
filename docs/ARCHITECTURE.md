@@ -1,107 +1,54 @@
-# Workstation Architecture
+# Kernel Architecture
 
-## Design Goal
+The Kernel owns project activation, deterministic Domain routing, lifecycle scheduling,
+persisted task state, evidence references, and checklist delivery. Domains own all
+professional planning, execution, evaluation, and summary content.
 
-The workstation converts model capability into repeatable, governable organizational capability. It does not depend on a single model, IDE, or vendor. Instead, it is organized around six durable capability domains.
+## Runtime contract
 
-## Six Capability Domains
+Inspect only the target project-root `.harness.json`. Activate only when
+`contract_code` equals `harness-engineering` and `enabled` is the JSON boolean true.
+Resolve a schema-valid task with `scripts/resolve_route.py`. A `no_match` result ends
+immediately with a user-visible no-matching-Domain notice. No model-native or generic
+Domain fallback exists. A `source_error` reports its actual configuration/source cause.
 
-| Domain | Repository mechanism | Objective |
-| --- | --- | --- |
-| Context architecture | `AGENTS.md`, `docs/`, `changes/` | Give AI the smallest sufficient context at the right time |
-| Tool system | `skills/`, external connection inventory | Package expertise and connect to real systems safely |
-| Execution orchestration | `workflows/`, change task lists | Make complex work decomposable, transferable, and verifiable |
-| State and memory | Git, specifications, decision records | Preserve consistency across sessions and contributors |
-| Evaluation and observability | `scripts/`, CI, audit reports | Measure quality, cost, and reliability with evidence |
-| Guardrails and recovery | `rules/`, approval boundaries, rollback plans | Prevent boundary violations and reduce recovery cost |
+A matched task follows `prepare -> execute -> evaluate -> summarize`. The host reads
+the Domain Skill bound to each stage, executes it, and submits a factual receipt.
+The Kernel never executes professional code or supplies a professional verdict.
 
-## Execution Control Artifacts
+Ordinary quality/environment problems are recorded and other feasible work continues.
+No Kernel approval checkpoint or quality pass/fail gate interrupts the lifecycle.
+User and platform authority still bounds actual operations; missing authority is a
+recorded unperformed operation, not an implicit grant.
 
-Conversation is a transient interface, not the source of truth. Material work is controlled by five artifacts:
+## Host procedure
 
-| Artifact | Purpose | Primary writer |
-| --- | --- | --- |
-| `requirements.md` | Scope, constraints, risk, and human-readable acceptance | Planner |
-| `task.md` | Decomposition, verification matrix, and authoritative Domain Execution Plan for routed mutating work | Planner and Generator |
-| `acceptance.json` | Machine-readable criterion state and evidence pointers | Generator, verified by Evaluator |
-| `progress.md` | Cross-session handoff and resume point | Current operator |
-| `contract.md` | Generator–Evaluator boundary, evidence standard, and verdict authority | Planner and Evaluator |
+1. Normalize the request into Task Envelope 2.0, keeping task facts and explicit constraints.
+2. Read the applicable project overlay `.harness/domains.json` if present and pass it to Route.
+3. Save the routing result and envelope in the target project's task record.
+4. Start `task_runtime.py` with that plan, envelope, project root and state path.
+5. Call `next`. For `dispatch`, read only the returned Domain stage Skills and invoke them.
+6. Use a fresh, independent host execution context for evaluation, distinct from execution.
+   A context token correlates receipts; it does not by itself prove evaluator independence.
+7. Save the result and submit it using `record` with the invocation ID and context ID.
+8. On `reconcile`, inspect already produced side effects before recording a result. Never
+   automatically repeat an in-flight operation after a crash.
+9. Continue after `unavailable`; the missing stage is recorded, not fabricated as completed.
+10. When ended, display `summary`, preserving completion, checks, issues and next actions.
 
-Two routing artifacts precede and constrain those execution artifacts:
+## Read on demand
 
-| Artifact | Purpose | Primary writer |
-| --- | --- | --- |
-| `task-envelope.json` | Preserve normalized concrete task facts, requested operation, constraints, and evidence needs | Intake or Planner |
-| `routing-plan.json` | Preserve workflow provenance, assessment, Domain capability and Skill bindings, permissions, and approval gates | Conforming Router and Planner |
+- Architecture: `docs/ARCHITECTURE.md`
+- Stage invocation and receipts: `docs/LIFECYCLE.md`
+- Routing: `docs/ROUTING.md`
+- Activation: `docs/PROJECT_ACTIVATION.md`
+- Evidence: `docs/OBSERVABILITY.md`
+- Versions and migration: `docs/PROTOCOL_VERSIONING.md`
 
-Material routed work stores these records under the explicitly identified target project's
-`<project-root>/changes/<change-id>/`, whether or not the project uses Git, or in an equivalently
-durable system linked by immutable IDs. Control-plane repositories must not absorb another
-project's concrete task record merely because they provide the workflow. Chat-only routing is not
-sufficient evidence.
+## Truth and recovery
 
-The artifacts form a closed loop:
-
-```text
-Intent -> Plan -> Generate -> Observe -> Evaluate -> Decide
-   ^                                                |
-   +---------- Institutionalize evidence -----------+
-```
-
-The Generator may propose that a criterion passes. The Evaluator owns the independent verdict for G2 and G3 work. Neither role may silently weaken acceptance criteria after implementation begins.
-
-## Two-Dimensional Routing
-
-Routing composes two independent decisions before implementation:
-
-1. The Kernel selects exactly one registered task workflow, such as `task.defect-remediation`, to
-   govern lifecycle, risk, approval, state, and evidence.
-2. The Domain resolver selects one or more registered professional capabilities and their declared
-   reusable Skills, tools, permissions, and evaluators.
-
-Concrete product features and defect symptoms remain task context. They are not Skill identities.
-A generic Domain Skill may contribute professional assessment and proposal work before approval and
-resume implementation afterward, while the Kernel owns approval state and scope. Before resuming a
-mutating Domain workflow, the complete target-project `task.md` must be shown to the user and its
-digest bound to the implementation approval. Routing selects professional authority; it is not the
-concrete plan the user approves.
-
-## Information Layers
-
-```text
-L-1 Project gate: .harness.json
-  └─ L0 Entry point: AGENTS.md
-  └─ L1 Domain policies: architecture / governance / workflows / rules
-       └─ L2 Task context: changes/<change-id>/
-            └─ L3 Deep references: docs/reference/ and skill references
-```
-
-Platform adapters evaluate the project gate first and load L0 only when the bridge activates
-Harness. The exact two-field bridge contract and fail-closed evaluation order are defined in
-[PROJECT_ACTIVATION.md](PROJECT_ACTIVATION.md). After activation, enter L1 according to the task,
-load L2 only while working on that change, and consult L3 only when detailed knowledge or evidence
-is required.
-
-## Control Plane and Project Plane
-
-- **Kernel control plane (this repository):** Organization defaults, registered task workflows, cross-domain lifecycle, routing protocol, approval state, templates, Skills, maturity models, and audit standards.
-- **Domain plane (`harness-engineering-domain-packs`):** Versioned professional functions, route metadata, capability contracts, domain workflows, rules, Skills, and evaluators.
-- **Project plane (product repositories):** Project architecture, Domain Pack overlays, project rules, tests, and concrete change records.
-- **Synchronization:** The control plane publishes versions. Projects explicitly adopt a version and record deviations; updates never silently overwrite project-specific policy.
-
-The detailed boundary, lifecycle, precedence, and runtime distribution model is defined in [ENTERPRISE_DOMAIN_ARCHITECTURE.md](ENTERPRISE_DOMAIN_ARCHITECTURE.md). The task-to-capability protocol is defined in [ROUTING.md](ROUTING.md).
-
-Protocol and document contracts are versioned independently through
-`config/protocol-versions.json`; identical-looking version strings never imply compatibility. The
-current identities, supported Kernel/Domain tuples, bump rules, and migration procedure are defined
-in [PROTOCOL_VERSIONING.md](PROTOCOL_VERSIONING.md).
-
-## Scaling Principles
-
-- Organize rules as organization defaults, domain rules, and project rules. Rules become more specific closer to the project but cannot weaken organizational red lines.
-- Discover professional capabilities through a registry and load full Domain Pack content only after a conforming resolver selects it.
-- Assign each skill to a domain owner and require a clear trigger description, input/output contract, and validation method.
-- Make every automated decision traceable to a rule, test, or human approval.
-- Treat logs, health checks, traces, screenshots, and reproducible user journeys as agent inputs, not operational exhaust.
-- Bound autonomy by risk, permissions, external effects, cost, and mandatory checkpoints.
-- Begin metrics with the presence and quality of evidence, then add efficiency and quality trends as the system matures.
+Flow ending and target achievement are independent. Report failed and unverified checks
+separately. After evaluated artifacts change, reevaluate before summary. Persist state
+atomically; retain artifact digests, invocation IDs and explicit recovery points.
+Do not promote Generator confidence to verified evidence. Do not commit, push or publish
+unless the user authorizes that operation.

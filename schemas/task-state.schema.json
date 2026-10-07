@@ -1,0 +1,74 @@
+{
+  "type": "object",
+  "required": [
+    "schema_version",
+    "task_id",
+    "task",
+    "route",
+    "project_root",
+    "flow_status",
+    "completion",
+    "cursor",
+    "round",
+    "pending",
+    "results",
+    "issues",
+    "events",
+    "artifacts",
+    "evaluation_digest",
+    "summary"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "project_root": {
+      "type": "string",
+      "minLength": 1
+    },
+    "flow_status": {
+      "enum": [
+        "prepare",
+        "execute",
+        "evaluate",
+        "summarize",
+        "ended"
+      ]
+    },
+    "completion": {
+      "enum": [
+        "achieved",
+        "partial",
+        "unachieved",
+        "unassessed"
+      ]
+    },
+    "cursor": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "round": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "issues": {
+      "type": "array"
+    },
+    "events": {
+      "type": "array"
+    },
+    "results": {
+      "type": "array"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

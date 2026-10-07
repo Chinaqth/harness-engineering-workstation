@@ -1,53 +1,21 @@
 {
   "schema_version": "2.0",
-  "task_id": "example-android-login-timeout",
-  "intent": "Stop the Android login screen from spinning indefinitely after a network timeout.",
-  "task_class": "defect",
-  "task_type": "android-application-change",
-  "operation": "modify",
+  "task_id": "20261007-web-example",
+  "intent": "Inspect a frontend interface",
+  "task_class": "investigation",
+  "task_type": "web-frontend-review",
+  "operation": "inspect",
   "deliverables": [
-    "Evidence-backed diagnosis",
-    "Approved repair plan",
-    "Verification evidence for timeout and retry behavior"
+    "Evidence-backed review"
   ],
-  "constraints": [
-    "Preserve the existing authentication service contract",
-    "Do not add a dependency without separate approval"
-  ],
+  "constraints": [],
   "repository_signals": [
-    "kotlin",
-    "android",
-    "viewmodel",
-    "authentication"
+    "html"
   ],
   "affected_surfaces": [
-    "Android login user interface",
-    "client-side timeout and retry state"
-  ],
-  "current_behavior": [
-    "The loading state remains visible indefinitely after a network timeout"
-  ],
-  "expected_behavior": [
-    "A timeout ends the loading state",
-    "The user receives recoverable feedback and can retry"
-  ],
-  "non_goals": [
-    "Change the authentication API contract",
-    "Change organization-wide timeout policy"
-  ],
-  "permission_hints": [
-    "Read-only diagnosis before approval",
-    "Task-scoped Android source modification after approval"
-  ],
-  "external_effects": [
+    "frontend"
   ],
   "required_evidence": [
-    "unit tests",
-    "timeout reproduction",
-    "retry user journey"
-  ],
-  "risk_hints": [
-    "authentication journey",
-    "cross-layer client state"
+    "rendered behavior"
   ]
 }

@@ -1,825 +1,101 @@
 #!/usr/bin/env python3
-"""Resolve a Task Envelope into one governed Routing Plan.
-
-Deterministic Router/Resolver v3 (change 20260902-plan-confirmation-checkpoint).
-
-Inputs:
-- A schema-valid Task Envelope (contract 2.0);
-- the Kernel task-workflow registry;
-- an optional project overlay;
-- the pinned Domain registry, routes, capabilities, and Skill artifacts read
-  exclusively from the pinned Git commit of an authorized Domain checkout;
-- an optional decisions record applying approval-gate decisions.
-- an optional target-project ``changes/<change-id>/task.md`` Domain execution plan.
-
-The resolver never synthesizes a Domain, capability, or Skill. Missing optional
-professional assets produce an explicit model-native fallback. An envelope that
-fails schema validation or whose
-task_class matches no registered workflow is rejected at the input boundary
-(exit 2) because no conforming Routing Plan can be emitted for it.
-
-Deterministic mapping and fingerprint rules are documented in docs/ROUTING.md.
-"""
-
-from __future__ import annotations
-
-import argparse
-import hashlib
-import json
-import os
-import sys
+"""Protocol 4.0 Domain matching and structural dispatch only."""
+import argparse, json, os, sys
 from pathlib import Path
+from schema_validation import validate_instance
+from source_tree import Source
+from lifecycle import STAGES, atomic_json
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from schema_validation import validate_instance  # noqa: E402
-import validate_domain_source as vds  # noqa: E402
-
-SENSITIVE_HINT_KEYWORDS = (
-    "authentication",
-    "credential",
-    "password",
-    "token",
-    "biometric",
-    "payment",
-    "personal",
-    "pii",
-    "health",
-    "regulated",
-)
-
-ELEVATED_PERMISSION_KEYWORDS = ("production", "deploy", "publish", "release")
-DESTRUCTIVE_KEYWORDS = ("destructive", "irreversible", "delete-data", "drop")
-
-
-def load_json(path: Path, label: str, errors: list[str]) -> dict:
-    try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        errors.append(f"{label}: invalid JSON: {exc}")
-        return {}
-    if not isinstance(value, dict):
-        errors.append(f"{label}: top-level value must be an object")
-        return {}
-    return value
-
-
-def fail_input(errors: list[str]) -> int:
-    for error in errors:
-        print(f"ERROR: {error}", file=sys.stderr)
-    return 2
-
-
-def canonical_fingerprint(scope: dict) -> str:
-    blob = json.dumps(scope, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
-    return "sha256:" + hashlib.sha256(blob.encode("utf-8")).hexdigest()
-
-
-def file_digest(path: Path) -> str:
-    return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
-
-
-def select_workflow(envelope: dict, registry: dict) -> dict | None:
-    task_class = envelope.get("task_class")
-    matches = [
-        workflow
-        for workflow in registry.get("workflows", [])
-        if isinstance(workflow, dict) and task_class in workflow.get("task_classes", [])
-    ]
-    return matches[0] if len(matches) == 1 else None
-
-
-def derive_assessment(envelope: dict, domain_count: int) -> dict:
-    surfaces = list(envelope.get("affected_surfaces", []))
-    hints = [str(hint).lower() for hint in envelope.get("risk_hints", [])]
-    external = list(envelope.get("external_effects", []))
-    permission_hints = [str(hint).lower() for hint in envelope.get("permission_hints", [])]
-    operation = envelope.get("operation")
-
-    if any(any(k in hint for k in SENSITIVE_HINT_KEYWORDS) for hint in hints):
-        sensitivity = "sensitive"
-    elif hints:
-        sensitivity = "internal"
-    else:
-        sensitivity = "unknown"
-
-    if operation == "inspect":
-        reversibility = "high"
-    elif operation == "remove":
-        reversibility = "low"
-    else:
-        reversibility = "unknown"
-
-    joined_permissions = " ".join(permission_hints + [str(e).lower() for e in external])
-    if any(k in joined_permissions for k in DESTRUCTIVE_KEYWORDS):
-        risk = "G3"
-    elif external:
-        risk = "G2"
-    elif operation in {"publish", "operate"}:
-        risk = "G2"
-    elif operation == "inspect" and not external:
-        risk = "G0"
-    else:
-        risk = "G1"
-
-    rationale = (
-        f"Preliminary Kernel assessment from envelope facts: operation={operation}, "
-        f"surfaces={len(surfaces)}, external_effects={len(external)}, "
-        f"risk_hints={len(hints)}. Domain professional assessment may refine this level."
-    )
-    return {
-        "risk_level": risk,
-        "impact_surfaces": surfaces,
-        "affected_units": len(surfaces),
-        "change_points": 0,
-        "domain_count": domain_count,
-        "reversibility": reversibility,
-        "data_sensitivity": sensitivity,
-        "external_effects": external,
-        "rationale": rationale,
-    }
-
-
-class DomainResolver:
-    """Read Domain metadata exclusively from the pinned commit."""
-
-    def __init__(self, domain_root: Path, revision: str) -> None:
-        self.domain_root = domain_root
-        self.revision = revision
-        self.errors: list[str] = []
-
-    def read_json(self, relative: str) -> dict:
-        return vds.revision_json(self.domain_root, self.revision, relative, self.errors)
-
-    def exists(self, relative: str) -> bool:
-        return vds.revision_path_exists(self.domain_root, self.revision, relative)
-
-
-def resolve_domains(
-    envelope: dict,
-    resolver: DomainResolver,
-    registry_path: str,
-    overlay: dict | None,
-) -> tuple[list[dict], list[str], list[str], list[str]]:
-    """Return selections, hard conflicts, missing inputs, and soft fallbacks."""
-    selections: list[dict] = []
-    selection_dependencies: list[list[str]] = []
-    conflicts: list[str] = []
-    missing: list[str] = []
-    fallbacks: list[str] = []
-    task_type = envelope.get("task_type")
-
-    registry = resolver.read_json(registry_path)
-    entries = registry.get("domains")
-    if not isinstance(entries, list):
-        return [], [f"Domain registry at {registry_path} has no domains array"], [], []
-
-    overlay_domains: dict[str, dict] = {}
-    if overlay is not None:
-        for entry in overlay.get("domains", []):
-            if isinstance(entry, dict) and isinstance(entry.get("id"), str):
-                overlay_domains[entry["id"]] = entry
-
-    for entry in entries:
-        if not isinstance(entry, dict):
+def resolve(envelope, domain_root, source, overlay=None):
+    plan = {'schema_version': '5.0', 'task_id': envelope['task_id'], 'status': 'no_match', 'message': '无匹配 Domain，本次任务已结束，未执行具体任务。', 'source_revision': source['ref'], 'source_root': str(Path(domain_root).resolve()), 'selections': [], 'issues': []}
+    reader = Source(domain_root, source['ref'])
+    registry = reader.json(source.get('registry', 'registry/domains.json'))
+    allowed = None if overlay is None else {d['id']: d for d in overlay.get('domains', [])}
+    for entry in registry['domains']:
+        if entry['status'] != 'active':
             continue
-        domain_id = entry.get("id")
-        domain_path = entry.get("path")
-        if entry.get("status") != "active" or not domain_id or not domain_path:
+        if allowed is not None and (entry['id'] not in allowed or not allowed[entry['id']].get('enabled')):
             continue
-
-        if overlay is not None:
-            overlay_entry = overlay_domains.get(domain_id)
-            if overlay_entry is None or overlay_entry.get("enabled") is not True:
-                continue
-            if overlay_entry.get("version") != entry.get("version"):
-                conflicts.append(
-                    f"Overlay pins {domain_id} version {overlay_entry.get('version')} "
-                    f"but the pinned registry declares {entry.get('version')}."
-                )
-                continue
-            disabled = set(overlay_entry.get("disabled_capabilities", []))
-        else:
-            disabled = set()
-
-        domain_doc = resolver.read_json(f"{domain_path}/domain.json")
-        applicability = domain_doc.get("applicability", {})
-        if task_type not in applicability.get("task_types", []):
+        prefix = entry['path']
+        manifest = reader.json(prefix + '/domain.json')
+        if envelope['task_type'] not in manifest['applicability']['task_types']:
             continue
-
-        routes_doc = resolver.read_json(f"{domain_path}/routes.json")
-        routes = [
-            route
-            for route in routes_doc.get("routes", [])
-            if isinstance(route, dict) and task_type in route.get("task_types", [])
-        ]
+        if allowed is not None and allowed[entry['id']].get('version') != entry['version']:
+            raise ValueError('Overlay version mismatch: ' + entry['id'])
+        if manifest['compatibility']['kernel_protocol_version'] != '4.0':
+            raise ValueError('Incompatible Domain protocol: ' + entry['id'])
+        if any((manifest.get(k) != entry[k] for k in ('id', 'version', 'status', 'owner'))):
+            raise ValueError('Manifest and registry disagree: ' + entry['id'])
+        routes = [r for r in reader.json(prefix + '/routes.json')['routes'] if envelope['task_type'] in r['task_types']]
         if not routes:
             continue
-        best_priority = max(route.get("priority", 0) for route in routes)
-        best = [route for route in routes if route.get("priority", 0) == best_priority]
+        priority = max((r['priority'] for r in routes))
+        best = sorted((r for r in routes if r['priority'] == priority), key=lambda r: r['id'])
         if len(best) > 1:
-            tied = ", ".join(str(route.get("id")) for route in best)
-            missing.append(
-                f"Route disambiguation for {domain_id}: routes {tied} tie at "
-                f"priority {best_priority} for task_type '{task_type}'."
-            )
-            continue
+            plan['issues'].append({'code': 'route_tie', 'message': 'Equal priority; selected stable route ID ' + best[0]['id']})
         route = best[0]
-
-        capabilities_doc = resolver.read_json(f"{domain_path}/capabilities.json")
-        declared = {
-            capability.get("id"): capability
-            for capability in capabilities_doc.get("capabilities", [])
-            if isinstance(capability, dict)
-        }
-        capability_ids = list(route.get("capabilities", []))
-        broken = False
-        capability_records: list[dict] = []
-        for capability_id in capability_ids:
-            capability = declared.get(capability_id)
-            if capability is None:
-                conflicts.append(
-                    f"{domain_id}: route '{route.get('id')}' declares unknown "
-                    f"capability '{capability_id}'."
-                )
-                broken = True
-                continue
-            if capability_id in disabled:
-                conflicts.append(
-                    f"{domain_id}: required capability '{capability_id}' is disabled "
-                    "by the project overlay."
-                )
-                broken = True
-                continue
-            capability_records.append(capability)
-        if broken:
+        capabilities = {c['id']: c for c in reader.json(prefix + '/capabilities.json')['capabilities']}
+        disabled = set(allowed[entry['id']].get('disabled_capabilities', [])) if allowed else set()
+        selected = [c for c in route['capabilities'] if c not in disabled]
+        for disabled_id in sorted(set(route['capabilities']) & disabled):
+            plan['issues'].append({'code': 'disabled_capability', 'message': entry['id'] + ': project disabled ' + disabled_id})
+        if not selected:
             continue
+        if any((c not in capabilities for c in selected)):
+            raise ValueError('Route references unknown capability')
+        binding = reader.json(prefix + '/lifecycle.json')
+        if binding.get('schema_version') != '1.0' or binding.get('domain_id') != entry['id']:
+            raise ValueError('Invalid lifecycle binding')
+        stages = {}
+        for stage in STAGES:
+            skill = binding.get('stages', {}).get(stage)
+            if not skill:
+                stages[stage] = None
+                continue
+            try:
+                content = reader.text(prefix + '/' + skill)
+                if not content.startswith('---\n'):
+                    raise ValueError('Skill lacks frontmatter')
+            except (ValueError, OSError):
+                stages[stage] = None
+                plan['issues'].append({'code': 'missing_stage', 'message': entry['id'] + ': unavailable ' + stage + ' Skill'})
+                continue
+            stages[stage] = {'path': prefix + '/' + skill, 'source_revision': source['ref']}
+        plan['selections'].append({'domain_id': entry['id'], 'version': entry['version'], 'route_id': route['id'], 'capability_ids': selected, 'reason': 'Exact task_type match: ' + envelope['task_type'], 'stages': stages})
+    reader.verify()
+    if plan['selections']:
+        plan.update(status='matched', message='Domain dispatch ready')
+    return plan
 
-        skills: list[dict] = []
-        workflows: list[str] = []
-        tools: list[str] = []
-        evaluators: list[str] = []
-        permissions: list[str] = []
-        qualified_dependencies: list[str] = []
-        for capability in capability_records:
-            for skill_id in capability.get("skills", []):
-                source_path = f"skills/{skill_id}/SKILL.md"
-                if not resolver.exists(f"{domain_path}/{source_path}"):
-                    fallbacks.append(
-                        f"Optional Skill {domain_id}/{skill_id} is unavailable at the pinned "
-                        "revision; execute its declared capability through the Kernel workflow "
-                        "with model reasoning, permitted retrieval, and task evidence."
-                    )
-                    continue
-                skills.append(
-                    {
-                        "skill_id": skill_id,
-                        "capability_id": capability["id"],
-                        "source_path": source_path,
-                        "reuse_scope": "domain",
-                    }
-                )
-            for field, directory in (
-                ("workflows", "workflows"),
-                ("evaluators", "evaluators"),
-            ):
-                for relative in capability.get(field, []):
-                    artifact = f"{domain_path}/{directory}/{relative}"
-                    if not resolver.exists(artifact):
-                        conflicts.append(
-                            f"{domain_id}: capability '{capability['id']}' references "
-                            f"'{directory}/{relative}' which is absent at the pinned revision."
-                        )
-                        broken = True
-            workflows.extend(capability.get("workflows", []))
-            tools.extend(capability.get("tools", []))
-            evaluators.extend(capability.get("evaluators", []))
-            permissions.extend(capability.get("permissions", []))
-            for dependency in capability.get("dependencies", []):
-                qualified = (
-                    dependency
-                    if "/" in dependency
-                    else f"{domain_id}/{dependency}"
-                )
-                qualified_dependencies.append(qualified)
-        if broken:
-            continue
-
-        selections.append(
-            {
-                "domain_id": domain_id,
-                "version": entry.get("version", ""),
-                "route_id": route.get("id", ""),
-                "capability_ids": capability_ids,
-                "workflows": sorted(set(workflows)),
-                "skills": skills,
-                "tools": sorted(set(tools)),
-                "evaluators": sorted(set(evaluators)),
-                "permissions": sorted(set(permissions)),
-                "reason": (
-                    f"task_type '{task_type}' matches route '{route.get('id')}' "
-                    f"(priority {best_priority}) of active Domain {domain_id}."
-                ),
-            }
-        )
-        selection_dependencies.append(qualified_dependencies)
-
-    selected_qualified = {
-        f"{selection['domain_id']}/{capability_id}"
-        for selection in selections
-        for capability_id in selection["capability_ids"]
-    }
-    for selection, dependencies in zip(selections, selection_dependencies):
-        unsatisfied = sorted(
-            {dep for dep in dependencies if dep not in selected_qualified}
-        )
-        if unsatisfied:
-            fallbacks.append(
-                f"Soft capability dependencies for {selection['domain_id']}/"
-                f"{selection['route_id']} are not selected: {', '.join(unsatisfied)}; "
-                "cover these professional concerns through model reasoning and explicit evidence."
-            )
-
-    return selections, conflicts, missing, sorted(set(fallbacks))
-
-
-def build_gates(
-    envelope: dict, workflow: dict, assessment: dict, fingerprint: str
-) -> list[dict]:
-    gates: list[dict] = []
-    operation = envelope.get("operation")
-    surfaces = list(envelope.get("affected_surfaces", []))
-    external = list(envelope.get("external_effects", []))
-    permission_hints = list(envelope.get("permission_hints", []))
-
-    policy = workflow.get("approval_policy")
-    risk = assessment.get("risk_level")
-    needs_implementation_gate = policy == "always-before-implementation" or risk in {
-        "G1",
-        "G2",
-        "G3",
-    }
-    if needs_implementation_gate:
-        gates.append(
-            {
-                "gate_id": "implementation-approval",
-                "kind": "implementation",
-                "required_role": "Owner",
-                "status": "pending",
-                "scope": [f"operation: {operation}"] + surfaces,
-                "scope_fingerprint": fingerprint,
-                "evidence": [],
-            }
-        )
-    if external:
-        gates.append(
-            {
-                "gate_id": "external-effect-approval",
-                "kind": "external-effect",
-                "required_role": "Owner",
-                "status": "pending",
-                "scope": external,
-                "scope_fingerprint": fingerprint,
-                "evidence": [],
-            }
-        )
-    elevated = [
-        hint
-        for hint in permission_hints
-        if any(k in hint.lower() for k in ELEVATED_PERMISSION_KEYWORDS)
-    ]
-    if elevated:
-        gates.append(
-            {
-                "gate_id": "elevated-permission-approval",
-                "kind": "permission",
-                "required_role": "Owner",
-                "status": "pending",
-                "scope": elevated,
-                "scope_fingerprint": fingerprint,
-                "evidence": [],
-            }
-        )
-    return gates
-
-
-def scope_fingerprint(
-    envelope: dict,
-    workflow: dict,
-    selections: list[dict],
-    fallbacks: list[str],
-    execution_plan: dict,
-) -> str:
-    scope = {
-        "task_id": envelope.get("task_id"),
-        "operation": envelope.get("operation"),
-        "affected_surfaces": envelope.get("affected_surfaces", []),
-        "constraints": envelope.get("constraints", []),
-        "non_goals": envelope.get("non_goals", []),
-        "deliverables": envelope.get("deliverables", []),
-        "external_effects": envelope.get("external_effects", []),
-        "workflow_id": workflow.get("id"),
-        "workflow_version": workflow.get("version"),
-        "selections": [
-            {
-                "domain_id": selection["domain_id"],
-                "version": selection["version"],
-                "route_id": selection["route_id"],
-                "capability_ids": sorted(selection["capability_ids"]),
-                "skill_ids": sorted(skill["skill_id"] for skill in selection["skills"]),
-            }
-            for selection in selections
-        ],
-        "fallbacks": sorted(fallbacks),
-        "execution_plan_sha256": execution_plan.get("sha256"),
-    }
-    return canonical_fingerprint(scope)
-
-
-def apply_decisions(
-    plan: dict, decisions: dict, errors: list[str]
-) -> bool:
-    records = decisions.get("decisions")
-    if not isinstance(records, list):
-        errors.append("decisions record: decisions must be an array")
-        return False
-    if decisions.get("scope_fingerprint") != plan.get("scope_fingerprint"):
-        errors.append(
-            "decisions record: scope_fingerprint does not match the current plan; "
-            "the approval is stale or belongs to a different scope"
-        )
-        return False
-    gates = {gate["gate_id"]: gate for gate in plan.get("approval_gates", [])}
-    implementation_decision = any(
-        isinstance(record, dict)
-        and record.get("gate_id") in gates
-        and gates[record.get("gate_id")].get("kind") == "implementation"
-        for record in records
-    )
-    execution_plan = plan.get("execution_plan", {})
-    if implementation_decision and execution_plan.get("required") is True:
-        if decisions.get("schema_version") != "2.0":
-            errors.append(
-                "decisions record: Domain execution-plan decisions require schema_version 2.0"
-            )
-            return False
-        presented = decisions.get("presented_execution_plan")
-        if not isinstance(presented, dict):
-            errors.append(
-                "decisions record: Domain implementation decisions require "
-                "presented_execution_plan evidence"
-            )
-            return False
-        if presented.get("artifact") != execution_plan.get("artifact"):
-            errors.append(
-                "decisions record: presented execution-plan artifact does not match "
-                "the current Domain execution plan"
-            )
-            return False
-        if presented.get("sha256") != execution_plan.get("sha256"):
-            errors.append(
-                "decisions record: presented execution-plan digest does not match "
-                "the current Domain execution plan; the approval is stale"
-            )
-            return False
-        presentation_evidence = presented.get("evidence")
-        if not isinstance(presentation_evidence, list) or not presentation_evidence:
-            errors.append(
-                "decisions record: presented execution plan requires non-empty "
-                "user-visible Markdown presentation evidence"
-            )
-            return False
-        if any(
-            not isinstance(item, dict)
-            or item.get("plan_sha256") != execution_plan.get("sha256")
-            for item in presentation_evidence
-        ):
-            errors.append(
-                "decisions record: every presentation receipt must bind to the current "
-                "Domain execution-plan digest"
-            )
-            return False
-        execution_plan["status"] = "presented"
-        execution_plan["presentation_evidence"] = sorted(
-            {str(item["reference"]) for item in presentation_evidence}
-        )
-    for record in records:
-        if not isinstance(record, dict):
-            errors.append("decisions record: every decision must be an object")
-            return False
-        gate_id = record.get("gate_id")
-        decision = record.get("decision")
-        evidence = record.get("evidence")
-        if gate_id not in gates:
-            errors.append(f"decisions record: unknown gate '{gate_id}'")
-            return False
-        if decision not in {"approved", "rejected"}:
-            errors.append(
-                f"decisions record: gate '{gate_id}' decision must be approved or rejected"
-            )
-            return False
-        if not isinstance(evidence, list) or not evidence:
-            errors.append(
-                f"decisions record: gate '{gate_id}' requires non-empty decision evidence"
-            )
-            return False
-        if any(
-            not isinstance(item, dict)
-            or item.get("actor_role") != gates[gate_id].get("required_role")
-            or item.get("scope_fingerprint") != plan.get("scope_fingerprint")
-            for item in evidence
-        ):
-            errors.append(
-                f"decisions record: gate '{gate_id}' evidence must identify the required "
-                "role and bind to the current scope fingerprint"
-            )
-            return False
-        gates[gate_id]["status"] = decision
-        gates[gate_id]["evidence"] = sorted(
-            {str(item["reference"]) for item in evidence}
-        )
-    return True
-
-
-def derive_status(plan: dict) -> str:
-    if plan["missing_inputs"]:
-        return "needs_input"
-    if plan["conflicts"]:
-        return "unroutable"
-    gates = plan["approval_gates"]
-    if any(gate["status"] == "rejected" for gate in gates):
-        return "approval_rejected"
-    if any(gate["status"] == "pending" for gate in gates):
-        return "needs_approval"
-    return "routed"
-
-
-def discover_domain_root(root: Path) -> Path | None:
-    candidate = os.environ.get("HARNESS_DOMAIN_PACKS_CHECKOUT", "")
-    if candidate:
-        path = Path(candidate)
-        return path if (path / ".git").is_dir() else None
-    sibling = root.resolve().parent / "harness-domain-packs"
-    return sibling if (sibling / ".git").is_dir() else None
-
-
-def main() -> int:
-    parser = argparse.ArgumentParser(
-        description="Resolve a Task Envelope into one fail-closed Routing Plan."
-    )
-    parser.add_argument("envelope", type=Path, help="Task Envelope JSON (contract 2.0)")
-    parser.add_argument("--root", type=Path, default=Path("."), help="Kernel root")
-    parser.add_argument(
-        "--domain-root",
-        type=Path,
-        default=None,
-        help="Authorized Domain Packs checkout "
-        "(default: HARNESS_DOMAIN_PACKS_CHECKOUT or sibling harness-domain-packs)",
-    )
-    parser.add_argument(
-        "--overlay", type=Path, default=None, help="Optional project overlay JSON"
-    )
-    parser.add_argument(
-        "--decisions", type=Path, default=None, help="Optional decisions record JSON"
-    )
-    parser.add_argument(
-        "--execution-plan",
-        type=Path,
-        default=None,
-        help="Optional target-project changes/<change-id>/task.md produced by the selected Domain workflow",
-    )
-    parser.add_argument("-o", "--output", type=Path, default=None, help="Output path")
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--root', type=Path, default=Path(__file__).resolve().parents[1])
+    parser.add_argument('--envelope', type=Path, required=True)
+    parser.add_argument('--domain-root', type=Path)
+    parser.add_argument('--overlay', type=Path)
+    parser.add_argument('--output', type=Path)
     args = parser.parse_args()
-
-    root = args.root.resolve()
-    errors: list[str] = []
-
-    envelope = load_json(args.envelope, "task envelope", errors)
-    envelope_schema = load_json(
-        root / "schemas" / "task-envelope.schema.json", "task envelope schema", errors
-    )
-    if errors:
-        return fail_input(errors)
-    schema_errors = [
-        f"task envelope: {error}"
-        for error in validate_instance(envelope, envelope_schema)
-    ]
-    if schema_errors:
-        return fail_input(schema_errors)
-
-    workflow_registry = load_json(
-        root / "config" / "task-workflows.json", "task workflow registry", errors
-    )
-    source_config = load_json(
-        root / "config" / "domain-pack-sources.json", "source configuration", errors
-    )
-    if errors:
-        return fail_input(errors)
-
-    workflow = select_workflow(envelope, workflow_registry)
-    if workflow is None:
-        return fail_input(
-            [
-                f"task_class '{envelope.get('task_class')}' matches no registered "
-                "Kernel task workflow; the envelope is rejected at the input "
-                "boundary because no conforming Routing Plan can be emitted"
-            ]
-        )
-
-    source = vds.select_source(source_config, None, errors)
-    if errors:
-        return fail_input(errors)
-
-    plan: dict = {
-        "schema_version": "4.0",
-        "task_id": envelope["task_id"],
-        "source": {
-            "source_id": source.get("id", ""),
-            "repository": source.get("repository", ""),
-            "revision": source.get("ref", ""),
-            "registry": source.get("registry", ""),
-        },
-        "workflow_selection": {
-            "workflow_id": workflow["id"],
-            "version": workflow["version"],
-            "registry": "config/task-workflows.json",
-            "reason": (
-                f"task_class '{envelope['task_class']}' is declared by registered "
-                f"workflow '{workflow['id']}'."
-            ),
-        },
-        "assessment": {},
-        "scope_fingerprint": "",
-        "execution_mode": "model_native",
-        "execution_plan": {
-            "required": False,
-            "status": "not-required",
-            "artifact": None,
-            "sha256": None,
-            "domain_ids": [],
-            "presentation_evidence": [],
-        },
-        "fallbacks": [],
-        "status": "",
-        "selections": [],
-        "approval_gates": [],
-        "conflicts": [],
-        "missing_inputs": [],
-    }
-
-    if envelope.get("task_class") == "defect" and not envelope.get("expected_behavior"):
-        plan["missing_inputs"].append(
-            "expected_behavior: defect remediation requires the expected accepted "
-            "behavior to define the contract deviation"
-        )
-
-    overlay: dict | None = None
-    if args.overlay is not None:
-        overlay = load_json(args.overlay, "project overlay", errors)
-        overlay_schema = load_json(
-            root / "schemas" / "project-domain-overlay.schema.json",
-            "project overlay schema",
-            errors,
-        )
+    try:
+        envelope = json.loads(args.envelope.read_text())
+        errors = validate_instance(envelope, json.loads((args.root / 'schemas/task-envelope.schema.json').read_text()))
         if errors:
-            return fail_input(errors)
-        overlay_errors = [
-            f"project overlay: {error}"
-            for error in validate_instance(overlay, overlay_schema)
-        ]
-        if overlay_errors:
-            return fail_input(overlay_errors)
-
-    if not plan["missing_inputs"]:
-        domain_root = args.domain_root or discover_domain_root(root)
-        if domain_root is None:
-            return fail_input(
-                [
-                    "no authorized Domain Packs checkout available; set "
-                    "HARNESS_DOMAIN_PACKS_CHECKOUT or pass --domain-root"
-                ]
-            )
-        resolver = DomainResolver(domain_root, source.get("ref", ""))
-        selections, conflicts, missing, fallbacks = resolve_domains(
-            envelope, resolver, source.get("registry", ""), overlay
-        )
-        if resolver.errors:
-            return fail_input(
-                [f"pinned Domain revision: {error}" for error in resolver.errors]
-            )
-        plan["missing_inputs"].extend(missing)
-        if not plan["missing_inputs"] and not conflicts and not selections:
-            fallbacks.append(
-                f"No active enabled Domain capability matches task_type "
-                f"'{envelope.get('task_type')}'; execute model-native under the selected "
-                "Kernel workflow, approvals, permissions, constraints, and evidence requirements."
-            )
-        if conflicts:
-            plan["conflicts"] = conflicts
-        else:
-            plan["selections"] = selections
-        plan["fallbacks"] = sorted(set(fallbacks))
-
-    plan["execution_mode"] = (
-        "domain_augmented" if plan["selections"] else "model_native"
-    )
-
-    plan["assessment"] = derive_assessment(envelope, len(plan["selections"]))
-    implementation_gate_required = (
-        workflow.get("approval_policy") == "always-before-implementation"
-        or plan["assessment"].get("risk_level") in {"G1", "G2", "G3"}
-    )
-    requires_domain_execution_plan = (
-        plan["execution_mode"] == "domain_augmented"
-        and envelope.get("operation") != "inspect"
-        and implementation_gate_required
-    )
-    plan["execution_plan"] = {
-        "required": requires_domain_execution_plan,
-        "status": "missing" if requires_domain_execution_plan else "not-required",
-        "artifact": None,
-        "sha256": None,
-        "domain_ids": sorted(
-            selection["domain_id"] for selection in plan["selections"]
-        ) if requires_domain_execution_plan else [],
-        "presentation_evidence": [],
-    }
-    if args.execution_plan is not None:
-        if not requires_domain_execution_plan:
-            return fail_input(
-                ["execution plan provided but the routed task does not require a Domain execution plan"]
-            )
-        if args.execution_plan.name != "task.md" or "changes" not in args.execution_plan.parts:
-            return fail_input(
-                ["execution plan must be the target project's changes/<change-id>/task.md"]
-            )
-        try:
-            plan_text = args.execution_plan.read_text(encoding="utf-8")
-        except (OSError, UnicodeDecodeError) as exc:
-            return fail_input([f"execution plan: cannot read Markdown: {exc}"])
-        if not plan_text.strip():
-            return fail_input(["execution plan: task.md must contain a non-empty Markdown plan"])
-        plan["execution_plan"].update(
-            {
-                "status": "draft",
-                "artifact": args.execution_plan.as_posix(),
-                "sha256": file_digest(args.execution_plan),
-            }
-        )
-    plan["scope_fingerprint"] = scope_fingerprint(
-        envelope,
-        workflow,
-        plan["selections"],
-        plan["fallbacks"],
-        plan["execution_plan"],
-    )
-    if not plan["missing_inputs"] and not plan["conflicts"]:
-        plan["approval_gates"] = build_gates(
-            envelope, workflow, plan["assessment"], plan["scope_fingerprint"]
-        )
-
-    plan["status"] = derive_status(plan)
-
-    if args.decisions is not None:
-        if plan["status"] != "needs_approval":
-            return fail_input(
-                [
-                    f"decisions record provided but plan status is "
-                    f"'{plan['status']}'; decisions apply only to needs_approval plans"
-                ]
-            )
-        decisions = load_json(args.decisions, "decisions record", errors)
-        decisions_schema = load_json(
-            root / "schemas" / "approval-decisions.schema.json",
-            "approval decisions schema",
-            errors,
-        )
-        if errors:
-            return fail_input(errors)
-        decisions_schema_errors = [
-            f"decisions record: {error}"
-            for error in validate_instance(decisions, decisions_schema)
-        ]
-        if decisions_schema_errors:
-            return fail_input(decisions_schema_errors)
-        decision_errors: list[str] = []
-        if plan["execution_plan"].get("required") and plan["execution_plan"].get("status") == "missing":
-            return fail_input(
-                [
-                    "Domain implementation approval requires --execution-plan pointing to "
-                    "the current target-project changes/<change-id>/task.md"
-                ]
-            )
-        if not apply_decisions(plan, decisions, decision_errors):
-            return fail_input(decision_errors)
-        plan["status"] = derive_status(plan)
-
-    rendered = json.dumps(plan, indent=2, ensure_ascii=False) + "\n"
-    if args.output is not None:
-        args.output.write_text(rendered, encoding="utf-8")
+            raise ValueError('; '.join(errors))
+        source = json.loads((args.root / 'config/domain-pack-sources.json').read_text())['sources'][0]
+        domain_root = args.domain_root or Path(os.environ.get('HARNESS_DOMAIN_PACKS_CHECKOUT', str(args.root.parent / 'domains')))
+        if not domain_root.exists():
+            domain_root = args.root.parent / 'harness-engineering-domain-packs'
+        overlay = json.loads(args.overlay.read_text()) if args.overlay else None
+        if overlay is not None:
+            errors = validate_instance(overlay, json.loads((args.root / 'schemas/project-domain-overlay.schema.json').read_text()))
+            if errors:
+                raise ValueError('; '.join(errors))
+        plan = resolve(envelope, domain_root, source, overlay)
+    except (ValueError, OSError, KeyError, TypeError) as exc:
+        plan = {'schema_version': '5.0', 'status': 'source_error', 'message': str(exc), 'selections': [], 'issues': []}
+    if args.output:
+        atomic_json(args.output, plan)
     else:
-        print(rendered, end="")
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+        print(json.dumps(plan, ensure_ascii=False, indent=2))
+    return 2 if plan['status'] == 'source_error' else 0
+if __name__ == '__main__':
+    sys.exit(main())

@@ -46,29 +46,23 @@ def broken_links(root: Path) -> list[str]:
 
 
 def stale_changes(root: Path, today: dt.date) -> list[str]:
-    root = root.resolve()
-    errors: list[str] = []
-    changes = root / "changes"
-    if not changes.is_dir():
-        return errors
-    for directory in sorted(changes.iterdir()):
-        if not directory.is_dir() or directory.name.startswith("_") or directory.name == "archive":
-            continue
-        requirements = directory / "requirements.md"
-        if not requirements.exists():
-            errors.append(f"{directory}: active change has no requirements.md")
-            continue
-        content = requirements.read_text(encoding="utf-8")
-        status_match = STATUS.search(content)
-        if status_match and status_match.group(1) == "done":
-            continue
-        match = REVIEW_BY.search(content)
-        if not match:
-            errors.append(f"{requirements}: active change has no valid Review-By date")
-            continue
-        review_by = dt.date.fromisoformat(match.group(1))
-        if review_by < today:
-            errors.append(f"{requirements}: Review-By {review_by} is past due")
+    # Protocol 4 tasks use authoritative events; old Review-By fields are retired.
+    import json
+    errors = []
+    for path in (root / 'changes').rglob('task-state.json'):
+        try:
+            state = json.loads(path.read_text())
+            if state.get('flow_status') == 'ended':
+                continue
+            events = state.get('events', [])
+            if not events:
+                errors.append(f'{path}: active task has no event timestamp')
+                continue
+            updated = dt.datetime.fromisoformat(events[-1]['at']).date()
+            if (today - updated).days > 30:
+                errors.append(f'{path}: active state has not been updated for 30 days')
+        except (ValueError, KeyError, TypeError) as exc:
+            errors.append(f'{path}: invalid task events: {exc}')
     return errors
 
 
